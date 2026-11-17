@@ -6,8 +6,8 @@
   },
   "events": [
     {
-      "id": "evt-1794906978031",
-      "code": "ELH-001",
+      "id": "evt-1794907807039",
+      "code": "EVT-001",
       "title": "eLHa Bike",
       "category": "bike-community",
       "category_lbl": "Bike Community",
@@ -21,7 +21,7 @@
       "summary": "Mengajak seluruh komunitas sepeda untuk berkumpul dan bersepeda bersama tanpa membedakan jenis sepeda maupun latar belakang komunitas.\nMenghadirkan suasana festival yang menyenangkan melalui musik, hiburan, games, dan berbagai aktivitas menarik.",
       "tiers": [
         {
-          "tier_id": "tier-1794906978031-1",
+          "tier_id": "tier-1794907807039-1",
           "name": "Tiket Reguler",
           "price": 50000,
           "quota": 500,
