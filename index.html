@@ -8,7 +8,7 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 	<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@500;600;700&family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-	<link rel="stylesheet" href="assets/css/style.css?v=20261117j" />
+	<link rel="stylesheet" href="assets/css/style.css?v=20261117k" />
 </head>
 <body>
 <div id="elha-eo-app" class="elha-eo-wrapper" data-theme="light" data-active-view="landing">
@@ -448,6 +448,7 @@
 				<!-- DASHBOARD TABS -->
 				<div class="elha-admin-tabs" role="tablist" aria-label="Menu Dashboard Admin">
 					<button type="button" class="elha-admin-tab is-active" data-admin-tab="events" role="tab" aria-selected="true">Kelola Event &amp; Tiket</button>
+					<button type="button" class="elha-admin-tab" data-admin-tab="verify" role="tab" aria-selected="false">Verifikasi Tiket <span id="elha-admin-verify-badge" class="elha-tab-badge" hidden>0</span></button>
 					<button type="button" class="elha-admin-tab" data-admin-tab="quotas" role="tab" aria-selected="false">Monitor Kategori &amp; Kuota</button>
 					<button type="button" class="elha-admin-tab" data-admin-tab="settings" role="tab" aria-selected="false">Pengaturan &amp; Promo</button>
 					<button type="button" class="elha-admin-tab" data-admin-tab="data" role="tab" aria-selected="false">Ekspor &amp; Impor JSON</button>
@@ -577,6 +578,110 @@
 								</button>
 							</div>
 						</form>
+					</div>
+				</div>
+
+				<!-- TAB 2: VERIFIKASI TIKET & VALIDASI PEMBAYARAN -->
+				<div id="elha-admin-pane-verify" class="elha-admin-pane" hidden>
+					<div class="elha-admin-form-col">
+						<div class="elha-admin-col-head">
+							<div>
+								<h3 style="margin: 0 0 4px 0;">Sistem Verifikasi Pembayaran &amp; Validasi E-Tiket</h3>
+								<p class="elha-checkout-sub">Kelola konfirmasi transfer, verifikasi pesanan menjadi Lunas, dan kirimkan tautan E-Tiket resmi terverifikasi ke WhatsApp pembeli.</p>
+							</div>
+							<div class="elha-verify-stats">
+								<span class="elha-stat-pill is-pending">Menunggu: <strong id="elha-verify-count-pending">0</strong></span>
+								<span class="elha-stat-pill is-verified">Lunas: <strong id="elha-verify-count-verified">0</strong></span>
+							</div>
+						</div>
+
+						<!-- SEARCH & FILTER ROW -->
+						<div class="elha-verify-search-box">
+							<div class="elha-form-row-two">
+								<div class="elha-form-row">
+									<label for="elha-verify-search-input">Cari Kode Booking / Nama / No. WA / Seri Barcode</label>
+									<input type="search" id="elha-verify-search-input" class="elha-input elha-mono-text" placeholder="Contoh: ELHA-2611-XXXX atau 0812..." />
+								</div>
+								<div class="elha-form-row">
+									<label for="elha-verify-filter-status">Filter Status</label>
+									<select id="elha-verify-filter-status" class="elha-select">
+										<option value="all">Semua Status Pesanan</option>
+										<option value="pending" selected>Menunggu Konfirmasi (Belum Lunas)</option>
+										<option value="verified">Lunas &amp; Terverifikasi</option>
+									</select>
+								</div>
+							</div>
+						</div>
+
+						<!-- SELECTED ORDER DETAIL CARD -->
+						<div id="elha-verify-selected-box" class="elha-verify-card" hidden>
+							<div class="elha-verify-card-head">
+								<div>
+									<span class="elha-code-tag" id="elha-verify-card-code">ELHA-2611-XXXX</span>
+									<h4 id="elha-verify-card-title">Rincian Tiket Pesanan</h4>
+								</div>
+								<span id="elha-verify-card-status-badge" class="elha-status-badge is-pending">Menunggu Konfirmasi</span>
+							</div>
+
+							<div class="elha-verify-card-body">
+								<div class="elha-eticket-grid">
+									<div>
+										<small>Nama Pemegang Tiket</small>
+										<strong id="elha-verify-card-buyer">-</strong>
+									</div>
+									<div>
+										<small>Nomor Telepon / WhatsApp</small>
+										<strong id="elha-verify-card-phone" class="elha-mono-text">-</strong>
+									</div>
+									<div>
+										<small>Event</small>
+										<strong id="elha-verify-card-event">-</strong>
+									</div>
+									<div>
+										<small>Kategori &amp; Jumlah Tiket</small>
+										<strong id="elha-verify-card-tier">-</strong>
+									</div>
+									<div>
+										<small>Total Tagihan</small>
+										<strong class="elha-mono-text" id="elha-verify-card-total">Rp 0</strong>
+									</div>
+									<div>
+										<small>Status &amp; Waktu Verifikasi</small>
+										<strong id="elha-verify-card-time">Menunggu Verifikasi Admin</strong>
+									</div>
+								</div>
+
+								<div id="elha-verify-card-notes-wrap" class="elha-verify-notes" hidden>
+									<small>Catatan Pesanan:</small>
+									<p id="elha-verify-card-notes" class="elha-mono-text"></p>
+								</div>
+
+								<div class="elha-verify-actions">
+									<button type="button" id="elha-verify-action-approve" class="elha-btn elha-btn-primary">
+										Verifikasi Lunas &amp; Aktifkan E-Tiket
+									</button>
+									<a id="elha-verify-action-send-wa" href="#" target="_blank" rel="noopener noreferrer" class="elha-btn elha-btn-blue" hidden>
+										Kirim E-Tiket Lunas ke WA Pembeli
+									</a>
+									<button type="button" id="elha-verify-action-view-pass" class="elha-btn elha-btn-secondary">
+										Pratinjau E-Tiket Digital
+									</button>
+									<button type="button" id="elha-verify-action-unverify" class="elha-btn elha-btn-secondary" hidden>
+										Ubah ke Belum Lunas
+									</button>
+									<button type="button" id="elha-verify-action-delete" class="elha-btn elha-btn-danger">
+										Hapus dari Log
+									</button>
+								</div>
+							</div>
+						</div>
+
+						<!-- ORDERS LIST TABLE -->
+						<div class="elha-admin-col-head" style="margin-top: 20px;">
+							<strong>Daftar Pesanan Tiket (<span id="elha-orders-table-count">0</span>)</strong>
+							<button type="button" id="elha-clear-orders-btn" class="elha-btn elha-btn-secondary elha-btn-sm">Bersihkan Riwayat Selesai</button>
+						</div>
+						<div id="elha-admin-orders-wrap" class="elha-quota-table-wrap"></div>
 					</div>
 				</div>
 
@@ -739,7 +844,7 @@
 							<span class="elha-eticket-label">KODE BOOKING E-TIKET</span>
 							<strong class="elha-mono-text elha-eticket-code" id="elha-receipt-status-heading">ELHA-2611-XXXX</strong>
 						</div>
-						<span class="elha-wa-tag">E-TICKET PASS</span>
+						<span class="elha-wa-tag" id="elha-receipt-pass-tag">E-TICKET PASS</span>
 					</div>
 
 					<div class="elha-eticket-pass-body">
@@ -761,7 +866,10 @@
 							</div>
 							<div>
 								<small>Status Tiket</small>
-								<strong id="elha-receipt-status-sub">Menunggu Konfirmasi Pembayaran</strong>
+								<div>
+									<span id="elha-receipt-status-badge" class="elha-status-badge is-pending">Menunggu Konfirmasi Pembayaran</span>
+									<span id="elha-receipt-status-sub" class="elha-status-note">Silakan kirim rincian pesanan ke Admin via WhatsApp untuk aktivasi</span>
+								</div>
 							</div>
 						</div>
 
@@ -784,6 +892,9 @@
 					<button type="button" id="elha-copy-wa-text-btn" class="elha-btn elha-btn-secondary">
 						Salin Rincian
 					</button>
+					<button type="button" id="elha-copy-ticket-link-btn" class="elha-btn elha-btn-secondary" hidden>
+						Salin Link E-Tiket
+					</button>
 					<a href="https://wa.me/6281234567890" target="_blank" rel="noopener noreferrer" id="elha-wa-direct-link" class="elha-btn elha-btn-primary">
 						Konfirmasi &amp; Aktifkan Tiket
 					</a>
@@ -792,6 +903,6 @@
 		</div>
 	</div>
 </div>
-<script src="assets/js/app.js?v=20261117j"></script>
+<script src="assets/js/app.js?v=20261117k"></script>
 </body>
 </html>

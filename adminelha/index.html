@@ -11,7 +11,7 @@
 			} catch (e) {}
 			var rootPath = window.location.pathname.replace(/\/adminelha\/?(index\.html)?$/i, '/');
 			if (!rootPath) rootPath = '/';
-			window.location.replace(rootPath);
+			window.location.replace(rootPath + (window.location.search || ''));
 		})();
 	</script>
 </head>

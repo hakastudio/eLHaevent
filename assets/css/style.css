@@ -1881,6 +1881,247 @@ body {
 	accent-color: var(--elha-accent);
 }
 
+/* Verification System Styles */
+.elha-status-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 4px 10px;
+	border-radius: 9999px;
+	font-size: 0.76rem;
+	font-weight: 700;
+	letter-spacing: 0.02em;
+	background-color: #FEF3C7;
+	color: #92400E;
+	border: 1px solid #FCD34D;
+}
+
+.elha-status-badge.is-verified {
+	background-color: #D1FAE5;
+	color: #065F46;
+	border-color: #6EE7B7;
+}
+
+.elha-eo-wrapper[data-theme="dark"] .elha-status-badge {
+	background-color: rgba(245, 158, 11, 0.18);
+	color: #FCD34D;
+	border-color: rgba(245, 158, 11, 0.4);
+}
+
+.elha-eo-wrapper[data-theme="dark"] .elha-status-badge.is-verified {
+	background-color: rgba(16, 185, 129, 0.18);
+	color: #6EE7B7;
+	border-color: rgba(16, 185, 129, 0.4);
+}
+
+.elha-status-note {
+	display: block;
+	font-size: 0.72rem;
+	color: var(--elha-text-muted);
+	margin-top: 4px;
+}
+
+.elha-verified-pass {
+	border-color: #059669 !important;
+}
+
+.elha-verified-pass .elha-eticket-pass-head {
+	background: linear-gradient(135deg, #064E3B, #059669) !important;
+}
+
+.elha-verified-tag {
+	display: inline-flex;
+	align-items: center;
+	background-color: #10B981;
+	color: #FFFFFF;
+	font-weight: 800;
+	font-size: 0.68rem;
+	padding: 3px 8px;
+	border-radius: 9999px;
+	letter-spacing: 0.04em;
+}
+
+.elha-verify-stats {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	align-items: center;
+}
+
+.elha-stat-pill {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 4px 10px;
+	border-radius: 9999px;
+	font-size: 0.76rem;
+	font-weight: 600;
+	border: 1px solid var(--elha-border-subtle);
+	background-color: var(--elha-surface);
+	color: var(--elha-text);
+}
+
+.elha-stat-pill.is-pending {
+	background-color: rgba(217, 119, 6, 0.1);
+	color: #B45309;
+	border-color: rgba(217, 119, 6, 0.3);
+}
+
+.elha-stat-pill.is-verified {
+	background-color: rgba(16, 185, 129, 0.1);
+	color: #059669;
+	border-color: rgba(16, 185, 129, 0.3);
+}
+
+.elha-eo-wrapper[data-theme="dark"] .elha-stat-pill.is-pending {
+	color: #FCD34D;
+}
+
+.elha-eo-wrapper[data-theme="dark"] .elha-stat-pill.is-verified {
+	color: #6EE7B7;
+}
+
+.elha-tab-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 18px;
+	height: 18px;
+	padding: 0 5px;
+	font-size: 0.68rem;
+	font-weight: 700;
+	border-radius: 9999px;
+	background-color: #DC2626;
+	color: #FFFFFF;
+	vertical-align: middle;
+	margin-left: 4px;
+}
+
+.elha-verify-search-box {
+	margin-top: 14px;
+	margin-bottom: 12px;
+}
+
+.elha-verify-card {
+	border: 2px solid var(--elha-blue);
+	border-radius: 14px;
+	background-color: var(--elha-card-bg);
+	overflow: hidden;
+	margin-top: 14px;
+	margin-bottom: 16px;
+}
+
+.elha-verify-card.is-verified-border {
+	border-color: #059669;
+}
+
+.elha-verify-card-head {
+	padding: 12px 16px;
+	background-color: var(--elha-surface);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	border-bottom: 1px solid var(--elha-border-subtle);
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.elha-verify-card-head h4 {
+	font-family: var(--elha-font-serif);
+	font-size: 1.05rem;
+	font-weight: 800;
+	margin: 2px 0 0 0;
+}
+
+.elha-verify-card-body {
+	padding: 14px 16px;
+}
+
+.elha-verify-notes {
+	padding: 10px 12px;
+	background-color: var(--elha-surface);
+	border-radius: 8px;
+	margin-top: 10px;
+	border: 1px solid var(--elha-border-subtle);
+}
+
+.elha-verify-notes small {
+	font-weight: 700;
+	color: var(--elha-text-muted);
+}
+
+.elha-verify-notes p {
+	margin: 4px 0 0 0;
+	font-size: 0.85rem;
+}
+
+.elha-verify-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 14px;
+}
+
+.elha-btn-danger {
+	background-color: #EF4444;
+	color: #FFFFFF;
+	border: none;
+	font-weight: 700;
+	padding: 8px 14px;
+	border-radius: 10px;
+	cursor: pointer;
+	min-height: 44px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 0.84rem;
+	transition: background-color 0.2s ease;
+}
+
+.elha-btn-danger:hover {
+	background-color: #DC2626;
+}
+
+.elha-table-action-btn {
+	min-height: 34px;
+	padding: 4px 10px;
+	font-size: 0.78rem;
+	border-radius: 6px;
+	font-weight: 700;
+	cursor: pointer;
+	border: 1px solid var(--elha-border-subtle);
+	background-color: var(--elha-bg);
+	color: var(--elha-text);
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.elha-table-action-btn.is-verify-quick {
+	background-color: #059669;
+	color: #FFFFFF;
+	border-color: #059669;
+}
+
+.elha-table-action-btn.is-verify-quick:hover {
+	background-color: #047857;
+}
+
+.elha-table-action-btn.is-view-quick {
+	background-color: var(--elha-surface);
+	color: var(--elha-blue);
+	border-color: var(--elha-blue);
+}
+
+.elha-eo-wrapper[data-theme="dark"] .elha-table-action-btn.is-view-quick {
+	color: var(--elha-accent);
+	border-color: var(--elha-accent);
+}
+
+.elha-admin-tab:last-child:nth-child(odd) {
+	grid-column: span 2;
+}
+
 .elha-admin-form-actions {
 	display: flex;
 	flex-direction: column;

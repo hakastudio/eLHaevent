@@ -827,6 +827,134 @@
 	var checkoutForm = document.getElementById('elha-ticket-checkout-form');
 	var checkoutFeedback = document.getElementById('elha-checkout-feedback');
 
+	var ORDERS_STORAGE_KEY = 'elha_orders_v1';
+
+	function getSavedOrders() {
+		try {
+			var raw = localStorage.getItem(ORDERS_STORAGE_KEY);
+			if (raw) {
+				var parsed = JSON.parse(raw);
+				if (Array.isArray(parsed)) return parsed;
+			}
+		} catch (e) {}
+		return [];
+	}
+
+	function saveOrders(orders) {
+		try {
+			localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders.slice(0, 100)));
+		} catch (e) {}
+	}
+
+	function encodeOrderPayload(order) {
+		try {
+			var compact = {
+				c: order.code,
+				n: order.buyerName,
+				p: order.buyerPhone,
+				m: order.buyerNotes || '',
+				t: order.eventTitle,
+				v: order.eventVenue,
+				d: order.eventDate,
+				k: order.tierName,
+				q: order.qty || 1,
+				a: order.totalAmount,
+				ec: order.eventCode || '',
+				st: order.status === 'verified' ? 'v' : 'p',
+				vt: order.verifiedAt || '',
+				cr: order.createdDateStr || ''
+			};
+			return encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(compact)))));
+		} catch (e) {
+			return '';
+		}
+	}
+
+	function decodeOrderPayload(str) {
+		if (!str) return null;
+		try {
+			var jsonStr = decodeURIComponent(escape(atob(decodeURIComponent(str))));
+			var c = JSON.parse(jsonStr);
+			if (!c || !c.c) return null;
+			return {
+				code: c.c,
+				buyerName: c.n || '',
+				buyerPhone: c.p || '',
+				buyerNotes: c.m || '',
+				eventTitle: c.t || '',
+				eventVenue: c.v || '',
+				eventDate: c.d || '',
+				tierName: c.k || '',
+				qty: c.q || 1,
+				totalAmount: c.a || 0,
+				totalFormatted: formatRupiah(c.a || 0),
+				eventCode: c.ec || '',
+				status: c.st === 'v' ? 'verified' : 'pending',
+				verifiedAt: c.vt || null,
+				createdDateStr: c.cr || 'Online Order'
+			};
+		} catch (e) {
+			return null;
+		}
+	}
+
+	function addOrUpdateOrder(newOrder) {
+		var orders = getSavedOrders();
+		var idx = -1;
+		for (var i = 0; i < orders.length; i++) {
+			if (orders[i].code === newOrder.code) {
+				idx = i;
+				break;
+			}
+		}
+		if (idx >= 0) {
+			if (orders[idx].status === 'verified' && newOrder.status !== 'verified') {
+				newOrder.status = 'verified';
+				newOrder.verifiedAt = orders[idx].verifiedAt;
+			}
+			orders[idx] = Object.assign({}, orders[idx], newOrder);
+		} else {
+			orders.unshift(newOrder);
+		}
+		saveOrders(orders);
+		updateOrdersBadgeAndStats();
+		return newOrder;
+	}
+
+	function findOrderByCode(code) {
+		if (!code) return null;
+		var clean = code.trim().toUpperCase();
+		var orders = getSavedOrders();
+		for (var i = 0; i < orders.length; i++) {
+			if (orders[i].code === clean) {
+				return orders[i];
+			}
+		}
+		return null;
+	}
+
+	function updateOrdersBadgeAndStats() {
+		var orders = getSavedOrders();
+		var pendingCount = 0;
+		var verifiedCount = 0;
+		for (var i = 0; i < orders.length; i++) {
+			if (orders[i].status === 'verified') verifiedCount++;
+			else pendingCount++;
+		}
+		var pendingEl = document.getElementById('elha-verify-count-pending');
+		var verifiedEl = document.getElementById('elha-verify-count-verified');
+		var badgeEl = document.getElementById('elha-admin-verify-badge');
+		var countTableEl = document.getElementById('elha-orders-table-count');
+
+		if (pendingEl) pendingEl.textContent = pendingCount;
+		if (verifiedEl) verifiedEl.textContent = verifiedCount;
+		if (countTableEl) countTableEl.textContent = orders.length;
+		if (badgeEl) {
+			badgeEl.textContent = pendingCount;
+			badgeEl.hidden = pendingCount === 0;
+		}
+	}
+
 	function generateBookingCode() {
 		var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 		var suffix = '';
@@ -837,17 +965,17 @@
 	}
 
 	function buildWhatsAppOrderText(order) {
+		var adminVerifyUrl = window.location.origin + getBasePath() + '/adminelha?verify=' + order.code + '&od=' + encodeOrderPayload(order);
 		var lines = [
 			'Halo ' + config.settings.whatsapp_admin_lbl + ',',
-			'Saya ingin mengonfirmasi E-Tiket dengan rincian berikut:',
+			'Saya ingin mengonfirmasi pemesanan E-Tiket dengan rincian berikut:',
 			'',
 			'Kode Booking E-Tiket: ' + order.code,
 			'Event: ' + order.eventTitle,
 			'Jadwal: ' + order.eventDate,
 			'Lokasi: ' + order.eventVenue,
-			'Kategori Tiket: ' + order.tierName,
-			'Jumlah: ' + order.qty + ' Tiket',
-			'Total Pembayaran: ' + order.totalFormatted,
+			'Kategori Tiket: ' + (order.qty || 1) + 'x ' + order.tierName,
+			'Total Tagihan: ' + order.totalFormatted,
 			'',
 			'Pemegang E-Tiket:',
 			'Nama: ' + order.buyerName,
@@ -856,8 +984,84 @@
 		if (order.buyerNotes) {
 			lines.push('Catatan: ' + order.buyerNotes);
 		}
-		lines.push('', 'Mohon informasi instruksi pembayaran untuk mengaktifkan E-Tiket ini. Terima kasih.');
+		lines.push(
+			'',
+			'Link Verifikasi Admin:',
+			adminVerifyUrl,
+			'',
+			'Mohon instruksi pembayaran untuk aktivasi E-Tiket ini. Terima kasih.'
+		);
 		return lines.join('\n');
+	}
+
+	function showOrderReceiptModal(order, isVerified) {
+		var statusHeading = document.getElementById('elha-receipt-status-heading');
+		var statusBadge = document.getElementById('elha-receipt-status-badge');
+		var statusSub = document.getElementById('elha-receipt-status-sub');
+		var passTag = document.getElementById('elha-receipt-pass-tag');
+		var passBox = document.getElementById('elha-printable-eticket');
+		var etEventName = document.getElementById('elha-eticket-event-name');
+		var etVenueDate = document.getElementById('elha-eticket-venue-date');
+		var etBuyer = document.getElementById('elha-eticket-buyer');
+		var etTier = document.getElementById('elha-eticket-tier');
+		var etTotal = document.getElementById('elha-eticket-total');
+		var etBarcode = document.getElementById('elha-eticket-barcode');
+		var etSerial = document.getElementById('elha-eticket-serial');
+		var waTextarea = document.getElementById('elha-wa-preview-text');
+		var waDirectLink = document.getElementById('elha-wa-direct-link');
+		var copyTicketLinkBtn = document.getElementById('elha-copy-ticket-link-btn');
+
+		if (statusHeading) statusHeading.textContent = order.code;
+		if (etEventName) etEventName.textContent = order.eventTitle;
+		if (etVenueDate) etVenueDate.textContent = order.eventVenue + ' | ' + order.eventDate;
+		if (etBuyer) etBuyer.textContent = order.buyerName + (order.buyerPhone ? ' (' + order.buyerPhone + ')' : '');
+		if (etTier) etTier.textContent = (order.qty || 1) + 'x ' + order.tierName;
+		if (etTotal) etTotal.textContent = order.totalFormatted;
+		var evCode = order.eventCode || 'EVT';
+		if (etBarcode) etBarcode.innerHTML = renderSvgBarcode(order.code + '-' + evCode);
+		if (etSerial) etSerial.textContent = order.code + ' | ' + evCode;
+
+		var isLunas = isVerified || order.status === 'verified';
+		if (passBox) {
+			passBox.classList.toggle('elha-verified-pass', isLunas);
+		}
+		if (statusBadge) {
+			statusBadge.className = isLunas ? 'elha-status-badge is-verified' : 'elha-status-badge is-pending';
+			statusBadge.textContent = isLunas ? 'LUNAS & AKTIF (TERVERIFIKASI)' : 'Menunggu Konfirmasi Pembayaran';
+		}
+		if (statusSub) {
+			statusSub.textContent = isLunas
+				? (order.verifiedAt ? 'Diverifikasi pada: ' + order.verifiedAt : 'Resmi Terverifikasi oleh Admin eLHa Event')
+				: 'Silakan kirim rincian pesanan ke Admin via WhatsApp untuk aktivasi';
+		}
+		if (passTag) {
+			passTag.textContent = isLunas ? 'E-TIKET RESMI: LUNAS' : 'E-TICKET PASS';
+			passTag.className = isLunas ? 'elha-verified-tag' : 'elha-wa-tag';
+		}
+
+		var ticketUrl = window.location.origin + getBasePath() + '/?ticket=' + order.code + '&od=' + encodeOrderPayload(order);
+		if (copyTicketLinkBtn) {
+			copyTicketLinkBtn.hidden = !isLunas;
+			copyTicketLinkBtn.setAttribute('data-ticket-url', ticketUrl);
+		}
+
+		var waMessage = isLunas
+			? ('Halo Admin ' + (config.settings.whatsapp_admin_lbl || 'eLHa Event') + ',\nSaya memiliki E-Tiket Resmi Lunas:\nKode Booking: ' + order.code + '\nEvent: ' + order.eventTitle + '\nLink E-Tiket: ' + ticketUrl)
+			: buildWhatsAppOrderText(order);
+
+		if (waTextarea) waTextarea.value = waMessage;
+		if (waDirectLink) {
+			var cleanNumber = (config.settings.whatsapp_number || '6281234567890').replace(/[^0-9]/g, '');
+			if (isLunas) {
+				waDirectLink.textContent = 'Bagikan E-Tiket ke WhatsApp';
+				waDirectLink.href = 'https://wa.me/?text=' + encodeURIComponent('E-Tiket Resmi ' + order.eventTitle + ' (' + order.code + '): ' + ticketUrl);
+			} else {
+				waDirectLink.textContent = 'Konfirmasi & Aktifkan Tiket';
+				waDirectLink.href = 'https://wa.me/' + cleanNumber + '?text=' + encodeURIComponent(waMessage);
+			}
+		}
+
+		openModal('elha-receipt-modal', submitCheckoutBtn);
 	}
 
 	if (checkoutForm) {
@@ -892,51 +1096,31 @@
 			var subtotal = tierData.price * qty;
 			var finalTotal = Math.round(subtotal * (1 - discountRate));
 			var bookingCode = generateBookingCode();
+			var now = new Date();
+			var dateStr = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) + ', ' +
+				String(now.getHours()).padStart(2, '0') + '.' + String(now.getMinutes()).padStart(2, '0') + ' WIB';
 
 			var order = {
 				code: bookingCode,
 				buyerName: buyerName,
 				buyerPhone: buyerPhone,
 				buyerNotes: buyerNotes,
+				eventId: evObj.id,
+				eventCode: evObj.code,
 				eventTitle: evObj.title,
 				eventDate: evObj.date_label + ' (' + evObj.time_label + ')',
 				eventVenue: evObj.venue,
 				tierName: tierData.name,
 				qty: qty,
 				totalAmount: finalTotal,
-				totalFormatted: formatRupiah(finalTotal)
+				totalFormatted: formatRupiah(finalTotal),
+				status: 'pending',
+				verifiedAt: null,
+				createdDateStr: dateStr
 			};
 
-			var statusHeading = document.getElementById('elha-receipt-status-heading');
-			var statusSub = document.getElementById('elha-receipt-status-sub');
-			var etEventName = document.getElementById('elha-eticket-event-name');
-			var etVenueDate = document.getElementById('elha-eticket-venue-date');
-			var etBuyer = document.getElementById('elha-eticket-buyer');
-			var etTier = document.getElementById('elha-eticket-tier');
-			var etTotal = document.getElementById('elha-eticket-total');
-			var etBarcode = document.getElementById('elha-eticket-barcode');
-			var etSerial = document.getElementById('elha-eticket-serial');
-			var waTextarea = document.getElementById('elha-wa-preview-text');
-			var waDirectLink = document.getElementById('elha-wa-direct-link');
-
-			if (statusHeading) statusHeading.textContent = bookingCode;
-			if (statusSub) statusSub.textContent = 'Menunggu Konfirmasi Pembayaran';
-			if (etEventName) etEventName.textContent = order.eventTitle;
-			if (etVenueDate) etVenueDate.textContent = order.eventVenue + ' | ' + order.eventDate;
-			if (etBuyer) etBuyer.textContent = order.buyerName + ' (' + order.buyerPhone + ')';
-			if (etTier) etTier.textContent = order.qty + 'x ' + order.tierName;
-			if (etTotal) etTotal.textContent = order.totalFormatted;
-			if (etBarcode) etBarcode.innerHTML = renderSvgBarcode(bookingCode + '-' + evObj.code);
-			if (etSerial) etSerial.textContent = bookingCode + ' | ' + evObj.code;
-
-			var waMessage = buildWhatsAppOrderText(order);
-			if (waTextarea) waTextarea.value = waMessage;
-			if (waDirectLink) {
-				var cleanNumber = (config.settings.whatsapp_number || '6281234567890').replace(/[^0-9]/g, '');
-				waDirectLink.href = 'https://wa.me/' + cleanNumber + '?text=' + encodeURIComponent(waMessage);
-			}
-
-			openModal('elha-receipt-modal', submitCheckoutBtn);
+			addOrUpdateOrder(order);
+			showOrderReceiptModal(order, false);
 		});
 	}
 
@@ -959,6 +1143,24 @@
 			setTimeout(function () {
 				copyWaTextBtn.textContent = prev;
 			}, 2000);
+		});
+	}
+
+	var copyTicketLinkBtn = document.getElementById('elha-copy-ticket-link-btn');
+	if (copyTicketLinkBtn) {
+		copyTicketLinkBtn.addEventListener('click', function () {
+			var link = this.getAttribute('data-ticket-url') || window.location.href;
+			if (navigator.clipboard && navigator.clipboard.writeText) {
+				navigator.clipboard.writeText(link).then(function () {
+					var prev = copyTicketLinkBtn.textContent;
+					copyTicketLinkBtn.textContent = 'Link E-Tiket Disalin!';
+					setTimeout(function () { copyTicketLinkBtn.textContent = prev; }, 2000);
+				}).catch(function () {
+					window.prompt('Salin link E-Tiket resmi berikut:', link);
+				});
+			} else {
+				window.prompt('Salin link E-Tiket resmi berikut:', link);
+			}
 		});
 	}
 
@@ -1199,6 +1401,7 @@
 	var adminTabBtns = app.querySelectorAll('[data-admin-tab]');
 	var adminPanes = {
 		events: document.getElementById('elha-admin-pane-events'),
+		verify: document.getElementById('elha-admin-pane-verify'),
 		quotas: document.getElementById('elha-admin-pane-quotas'),
 		settings: document.getElementById('elha-admin-pane-settings'),
 		data: document.getElementById('elha-admin-pane-data')
@@ -1215,6 +1418,263 @@
 				adminPanes[key].hidden = key !== targetTab;
 			}
 		}
+		if (targetTab === 'verify') {
+			renderAdminOrdersTable();
+		}
+	}
+
+	// Order Verification Engine
+	var verifySearchInput = document.getElementById('elha-verify-search-input');
+	var verifyFilterStatus = document.getElementById('elha-verify-filter-status');
+	var adminOrdersWrap = document.getElementById('elha-admin-orders-wrap');
+	var clearOrdersBtn = document.getElementById('elha-clear-orders-btn');
+	var selectedBox = document.getElementById('elha-verify-selected-box');
+	var selectedCodeEl = document.getElementById('elha-verify-card-code');
+	var selectedBadgeEl = document.getElementById('elha-verify-card-status-badge');
+	var selectedBuyerEl = document.getElementById('elha-verify-card-buyer');
+	var selectedPhoneEl = document.getElementById('elha-verify-card-phone');
+	var selectedEventEl = document.getElementById('elha-verify-card-event');
+	var selectedTierEl = document.getElementById('elha-verify-card-tier');
+	var selectedTotalEl = document.getElementById('elha-verify-card-total');
+	var selectedTimeEl = document.getElementById('elha-verify-card-time');
+	var selectedNotesWrap = document.getElementById('elha-verify-card-notes-wrap');
+	var selectedNotesEl = document.getElementById('elha-verify-card-notes');
+	var btnApprove = document.getElementById('elha-verify-action-approve');
+	var btnSendWa = document.getElementById('elha-verify-action-send-wa');
+	var btnViewPass = document.getElementById('elha-verify-action-view-pass');
+	var btnUnverify = document.getElementById('elha-verify-action-unverify');
+	var btnDelete = document.getElementById('elha-verify-action-delete');
+
+	var activeVerificationOrder = null;
+
+	function renderAdminOrdersTable() {
+		if (!adminOrdersWrap) return;
+		updateOrdersBadgeAndStats();
+		var orders = getSavedOrders();
+
+		var query = verifySearchInput ? verifySearchInput.value.trim().toLowerCase() : '';
+		var statusFilter = verifyFilterStatus ? verifyFilterStatus.value : 'all';
+
+		var filtered = orders.filter(function (ord) {
+			var matchStatus = statusFilter === 'all' || ord.status === statusFilter;
+			if (!matchStatus) return false;
+			if (!query) return true;
+			var searchHaystack = [
+				ord.code,
+				ord.buyerName,
+				ord.buyerPhone,
+				ord.eventTitle,
+				ord.tierName,
+				ord.eventCode || ''
+			].join(' ').toLowerCase();
+			return searchHaystack.indexOf(query) !== -1;
+		});
+
+		if (filtered.length === 0) {
+			var emptyMsg = orders.length === 0
+				? 'Belum ada pesanan tiket tercatat. Pesanan dari formulir checkout akan otomatis masuk ke sini.'
+				: 'Tidak ada pesanan tiket yang cocok dengan pencarian atau filter status.';
+			adminOrdersWrap.innerHTML = '<div class="elha-event-mini-summary">' + emptyMsg + '</div>';
+			return;
+		}
+
+		var html = '<table class="elha-quota-table"><thead><tr>' +
+			'<th>Kode Booking</th>' +
+			'<th>Pemesan</th>' +
+			'<th>Event &amp; Tiket</th>' +
+			'<th>Total Tagihan</th>' +
+			'<th>Status</th>' +
+			'<th>Aksi Verifikasi</th>' +
+			'</tr></thead><tbody>';
+
+		for (var i = 0; i < filtered.length; i++) {
+			var o = filtered[i];
+			var isVer = o.status === 'verified';
+			var statusBadge = isVer
+				? '<span class="elha-status-badge is-verified">Lunas</span>'
+				: '<span class="elha-status-badge is-pending">Menunggu</span>';
+
+			html += '<tr>' +
+				'<td><strong class="elha-mono-text">' + o.code + '</strong><br><small style="color:var(--elha-text-muted);">' + (o.createdDateStr || 'Online') + '</small></td>' +
+				'<td><strong>' + o.buyerName + '</strong><br><small class="elha-mono-text">' + o.buyerPhone + '</small></td>' +
+				'<td><strong>' + o.eventTitle + '</strong><br><small>' + (o.qty || 1) + 'x ' + o.tierName + '</small></td>' +
+				'<td><strong class="elha-mono-text">' + o.totalFormatted + '</strong></td>' +
+				'<td>' + statusBadge + '</td>' +
+				'<td>' +
+				'<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
+				'<button type="button" class="elha-table-action-btn is-view-quick" data-order-action="select" data-order-code="' + o.code + '">Kelola</button>' +
+				(!isVer ? '<button type="button" class="elha-table-action-btn is-verify-quick" data-order-action="quick-approve" data-order-code="' + o.code + '">Verifikasi Lunas</button>' : '') +
+				'<button type="button" class="elha-table-action-btn" data-order-action="view-pass" data-order-code="' + o.code + '">Pas</button>' +
+				'</div>' +
+				'</td>' +
+				'</tr>';
+		}
+		html += '</tbody></table>';
+		adminOrdersWrap.innerHTML = html;
+	}
+
+	function selectOrderForVerification(order) {
+		if (!order) return;
+		activeVerificationOrder = order;
+
+		if (!selectedBox) return;
+		selectedBox.hidden = false;
+
+		if (selectedCodeEl) selectedCodeEl.textContent = order.code;
+		if (selectedBuyerEl) selectedBuyerEl.textContent = order.buyerName;
+		if (selectedPhoneEl) selectedPhoneEl.textContent = order.buyerPhone;
+		if (selectedEventEl) selectedEventEl.textContent = order.eventTitle;
+		if (selectedTierEl) selectedTierEl.textContent = (order.qty || 1) + 'x ' + order.tierName;
+		if (selectedTotalEl) selectedTotalEl.textContent = order.totalFormatted;
+
+		if (order.buyerNotes && selectedNotesWrap && selectedNotesEl) {
+			selectedNotesWrap.hidden = false;
+			selectedNotesEl.textContent = order.buyerNotes;
+		} else if (selectedNotesWrap) {
+			selectedNotesWrap.hidden = true;
+		}
+
+		var isVer = order.status === 'verified';
+		if (selectedBadgeEl) {
+			selectedBadgeEl.className = isVer ? 'elha-status-badge is-verified' : 'elha-status-badge is-pending';
+			selectedBadgeEl.textContent = isVer ? 'Lunas & Terverifikasi' : 'Menunggu Konfirmasi';
+		}
+		if (selectedTimeEl) {
+			selectedTimeEl.textContent = isVer
+				? (order.verifiedAt ? 'Diverifikasi: ' + order.verifiedAt : 'Terverifikasi Resmi')
+				: 'Menunggu Verifikasi (Dipesan: ' + (order.createdDateStr || 'Online') + ')';
+		}
+
+		selectedBox.classList.toggle('is-verified-border', isVer);
+
+		if (btnApprove) btnApprove.hidden = isVer;
+		if (btnUnverify) btnUnverify.hidden = !isVer;
+
+		if (btnSendWa) {
+			btnSendWa.hidden = !isVer;
+			if (isVer) {
+				var custTicketUrl = window.location.origin + getBasePath() + '/?ticket=' + order.code + '&od=' + encodeOrderPayload(order);
+				var cleanPhone = (order.buyerPhone || '').replace(/[^0-9]/g, '');
+				if (cleanPhone.indexOf('08') === 0) {
+					cleanPhone = '628' + cleanPhone.substring(2);
+				}
+				var replyLines = [
+					'Halo ' + order.buyerName + ',',
+					'Pembayaran E-Tiket Anda untuk acara ' + order.eventTitle + ' telah DIVERIFIKASI & LUNAS.',
+					'',
+					'Rincian E-Tiket Resmi:',
+					'Kode Booking: ' + order.code,
+					'Event: ' + order.eventTitle,
+					'Kategori: ' + (order.qty || 1) + 'x ' + order.tierName,
+					'Status: LUNAS & AKTIF (TERVERIFIKASI)',
+					'',
+					'Buka dan simpan E-Tiket resmi Anda di link berikut:',
+					custTicketUrl,
+					'',
+					'Tunjukkan barcode pada E-Tiket saat registrasi di Gate Check-In. Terima kasih telah memesan melalui eLHa Event.'
+				];
+				btnSendWa.href = 'https://wa.me/' + cleanPhone + '?text=' + encodeURIComponent(replyLines.join('\n'));
+			}
+		}
+
+		selectedBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+	}
+
+	if (adminOrdersWrap) {
+		adminOrdersWrap.addEventListener('click', function (e) {
+			var btn = e.target.closest('[data-order-action]');
+			if (!btn) return;
+			var act = btn.getAttribute('data-order-action');
+			var code = btn.getAttribute('data-order-code');
+			var ord = findOrderByCode(code);
+			if (!ord) return;
+
+			if (act === 'select') {
+				selectOrderForVerification(ord);
+			} else if (act === 'quick-approve') {
+				var now = new Date();
+				ord.status = 'verified';
+				ord.verifiedAt = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) + ', ' +
+					String(now.getHours()).padStart(2, '0') + '.' + String(now.getMinutes()).padStart(2, '0') + ' WIB';
+				addOrUpdateOrder(ord);
+				selectOrderForVerification(ord);
+				renderAdminOrdersTable();
+			} else if (act === 'view-pass') {
+				showOrderReceiptModal(ord, ord.status === 'verified');
+			}
+		});
+	}
+
+	if (btnApprove) {
+		btnApprove.addEventListener('click', function () {
+			if (!activeVerificationOrder) return;
+			var now = new Date();
+			activeVerificationOrder.status = 'verified';
+			activeVerificationOrder.verifiedAt = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) + ', ' +
+				String(now.getHours()).padStart(2, '0') + '.' + String(now.getMinutes()).padStart(2, '0') + ' WIB';
+			addOrUpdateOrder(activeVerificationOrder);
+			selectOrderForVerification(activeVerificationOrder);
+			renderAdminOrdersTable();
+		});
+	}
+
+	if (btnUnverify) {
+		btnUnverify.addEventListener('click', function () {
+			if (!activeVerificationOrder) return;
+			activeVerificationOrder.status = 'pending';
+			activeVerificationOrder.verifiedAt = null;
+			addOrUpdateOrder(activeVerificationOrder);
+			selectOrderForVerification(activeVerificationOrder);
+			renderAdminOrdersTable();
+		});
+	}
+
+	if (btnDelete) {
+		btnDelete.addEventListener('click', function () {
+			if (!activeVerificationOrder) return;
+			if (window.confirm('Hapus pesanan ' + activeVerificationOrder.code + ' dari log pesanan?')) {
+				var orders = getSavedOrders().filter(function (o) { return o.code !== activeVerificationOrder.code; });
+				saveOrders(orders);
+				activeVerificationOrder = null;
+				if (selectedBox) selectedBox.hidden = true;
+				renderAdminOrdersTable();
+			}
+		});
+	}
+
+	if (btnViewPass) {
+		btnViewPass.addEventListener('click', function () {
+			if (!activeVerificationOrder) return;
+			showOrderReceiptModal(activeVerificationOrder, activeVerificationOrder.status === 'verified');
+		});
+	}
+
+	if (verifySearchInput) {
+		verifySearchInput.addEventListener('input', function () {
+			renderAdminOrdersTable();
+			var exact = findOrderByCode(this.value);
+			if (exact) {
+				selectOrderForVerification(exact);
+			}
+		});
+	}
+
+	if (verifyFilterStatus) {
+		verifyFilterStatus.addEventListener('change', renderAdminOrdersTable);
+	}
+
+	if (clearOrdersBtn) {
+		clearOrdersBtn.addEventListener('click', function () {
+			if (window.confirm('Hapus seluruh riwayat pesanan yang sudah berstatus Lunas?')) {
+				var orders = getSavedOrders().filter(function (o) { return o.status !== 'verified'; });
+				saveOrders(orders);
+				if (activeVerificationOrder && activeVerificationOrder.status === 'verified') {
+					activeVerificationOrder = null;
+					if (selectedBox) selectedBox.hidden = true;
+				}
+				renderAdminOrdersTable();
+			}
+		});
 	}
 
 	for (var tb = 0; tb < adminTabBtns.length; tb++) {
@@ -1696,7 +2156,34 @@
 		} catch (e) {}
 
 		renderAllEventsUI();
-		if (shouldAutoOpenAdmin) {
+		updateOrdersBadgeAndStats();
+
+		var urlParams = new URLSearchParams(window.location.search);
+		var verifyCodeParam = urlParams.get('verify');
+		var ticketCodeParam = urlParams.get('ticket');
+		var orderDataParam = urlParams.get('od');
+
+		if (orderDataParam) {
+			var decodedOrder = decodeOrderPayload(orderDataParam);
+			if (decodedOrder) {
+				addOrUpdateOrder(decodedOrder);
+			}
+		}
+
+		if (verifyCodeParam) {
+			openAdminStudio(false);
+			switchAdminTab('verify');
+			var targetOrd = findOrderByCode(verifyCodeParam) || (orderDataParam ? decodeOrderPayload(orderDataParam) : null);
+			if (targetOrd) {
+				addOrUpdateOrder(targetOrd);
+				selectOrderForVerification(targetOrd);
+			}
+		} else if (ticketCodeParam) {
+			var custOrd = findOrderByCode(ticketCodeParam) || (orderDataParam ? decodeOrderPayload(orderDataParam) : null);
+			if (custOrd) {
+				showOrderReceiptModal(custOrd, custOrd.status === 'verified');
+			}
+		} else if (shouldAutoOpenAdmin) {
 			openAdminStudio(false);
 		}
 
