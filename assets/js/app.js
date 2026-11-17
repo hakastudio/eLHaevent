@@ -408,7 +408,6 @@
 					'</div>' +
 					'<div class="elha-poster-bottom-code">' +
 					'<span class="elha-mono-text elha-p-code"></span>' +
-					'<span class="elha-p-quota"></span>' +
 					'</div>' +
 					'</div>' +
 					'<div class="elha-poster-body">' +
@@ -426,13 +425,14 @@
 				if (ev.banner_image) {
 					var posterArtEl = article.querySelector('.elha-poster-art');
 					posterArtEl.style.backgroundImage =
-						'linear-gradient(180deg, rgba(11, 30, 59, 0.54) 0%, rgba(11, 30, 59, 0.78) 100%), url("' + ev.banner_image.replace(/"/g, '%22') + '")';
+						'linear-gradient(180deg, rgba(11, 30, 59, 0.2) 0%, rgba(11, 30, 59, 0.45) 60%, rgba(11, 30, 59, 0.72) 100%), url("' + ev.banner_image.replace(/"/g, '%22') + '")';
 				}
 
 				article.querySelector('.elha-poster-date').textContent = ev.date_label;
 				article.querySelector('.elha-poster-cat').textContent = ev.category_lbl;
 				article.querySelector('.elha-p-code').textContent = ev.code;
-				article.querySelector('.elha-p-quota').textContent = ev.quota_label;
+				var quotaEl = article.querySelector('.elha-p-quota');
+				if (quotaEl) quotaEl.textContent = '';
 				article.querySelector('.elha-row-title').textContent = ev.title;
 				article.querySelector('.elha-row-venue').textContent = ev.venue + ' \u2022 ' + ev.time_label;
 

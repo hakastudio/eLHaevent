@@ -820,14 +820,18 @@ body {
 }
 
 .elha-poster-art {
-	min-height: 76px;
-	padding: 10px 14px;
+	min-height: 180px;
+	aspect-ratio: 16 / 9;
+	padding: 12px 14px;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
 	gap: 8px;
 	color: #FFFFFF;
 	position: relative;
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
 }
 
 .poster-terracotta {
@@ -878,7 +882,20 @@ body {
 	justify-content: space-between;
 	gap: 8px;
 	font-size: 0.7rem;
-	opacity: 0.92;
+	opacity: 0.95;
+}
+
+.elha-p-code {
+	background-color: rgba(11, 30, 59, 0.72);
+	padding: 3px 8px;
+	border-radius: 6px;
+	font-size: 0.72rem;
+	letter-spacing: 0.04em;
+	backdrop-filter: blur(4px);
+}
+
+.elha-p-quota {
+	display: none !important;
 }
 
 .elha-poster-body {
