@@ -22,8 +22,8 @@ Dirancang menggunakan **HTML5, CSS3, dan Vanilla JavaScript murni** tanpa keterg
 ## Cara Edit & Posting Event (Khusus Admin)
 Tombol **Kelola Event** disembunyikan dari pengunjung umum agar pembeli tiket tidak bingung. Sebagai pemilik website, Anda memiliki 2 cara untuk mengelola event:
 
-1. **Membuka Event Studio Rahasia di Browser:**
-   - Tambahkan `?admin=elha` di akhir URL website Anda (contoh: `http://localhost:8080/?admin=elha` atau `https://nama-web.vercel.app/?admin=elha`), **atau**
+1. **Membuka Dashboard Admin lewat URL `/adminelha`:**
+   - Buka alamat `/adminelha` di akhir domain website Anda (contoh: `http://localhost:8080/adminelha` atau `https://domain-anda.com/adminelha`), **atau**
    - Tekan kombinasi tombol keyboard **`Ctrl + Shift + E`** di halaman website.
    - Setelah menambah/mengedit acara di form, klik **Download File `events.json`**, lalu simpan ke [`assets/data/events.json`](assets/data/events.json) dan push ke GitHub agar tampil permanen bagi seluruh pengunjung.
 2. **Edit Langsung File JSON:**

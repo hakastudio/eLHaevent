@@ -119,6 +119,11 @@
 	var faqSection = document.getElementById('tanya-jawab');
 	var viewSwitchBtns = app.querySelectorAll('[data-view-target]');
 
+	function getBasePath() {
+		var p = window.location.pathname.replace(/\/adminelha\/?(index\.html)?$/i, '').replace(/\/index\.html$/i, '').replace(/\/+$/, '');
+		return p || '';
+	}
+
 	function switchView(targetView, scrollToTop) {
 		var mode = (targetView === 'checkout' || targetView === 'admin') ? targetView : 'landing';
 		app.setAttribute('data-active-view', mode);
@@ -127,6 +132,17 @@
 		if (viewCheckout) viewCheckout.hidden = mode !== 'checkout';
 		if (viewAdmin) viewAdmin.hidden = mode !== 'admin';
 		if (faqSection) faqSection.hidden = mode === 'admin';
+
+		try {
+			if (window.history && window.history.replaceState) {
+				var base = getBasePath();
+				if (mode === 'admin') {
+					window.history.replaceState(null, '', base + '/adminelha');
+				} else if (/\/adminelha\/?$/i.test(window.location.pathname)) {
+					window.history.replaceState(null, '', (base || '/') + window.location.search);
+				}
+			}
+		} catch (e) {}
 
 		for (var i = 0; i < viewSwitchBtns.length; i++) {
 			var btn = viewSwitchBtns[i];
@@ -1415,14 +1431,23 @@
 		}
 	}
 
-	// Unlock Admin Studio button only via ?admin=elha (or ?admin=1) URL parameter or Ctrl+Shift+E shortcut
+	// Unlock Admin Studio via /adminelha URL path (or ?admin=elha fallback or Ctrl+Shift+E)
+	var shouldAutoOpenAdmin = false;
 	(function checkAdminAccess() {
 		try {
+			var isPathAdmin = /\/adminelha\/?(index\.html)?$/i.test(window.location.pathname);
+			var isRouteSession = sessionStorage.getItem('elha_admin_route') === '1';
+			if (isRouteSession) {
+				sessionStorage.removeItem('elha_admin_route');
+			}
 			var params = new URLSearchParams(window.location.search);
 			var adminParam = params.get('admin');
-			if (adminParam === 'elha' || adminParam === '1') {
+			if (isPathAdmin || isRouteSession || adminParam === 'elha' || adminParam === '1') {
 				if (openAdminBtn) openAdminBtn.hidden = false;
 				if (mobileAdminBtn) mobileAdminBtn.hidden = false;
+				if (isPathAdmin || isRouteSession) {
+					shouldAutoOpenAdmin = true;
+				}
 			}
 		} catch (e) {}
 
@@ -1671,14 +1696,21 @@
 		} catch (e) {}
 
 		renderAllEventsUI();
+		if (shouldAutoOpenAdmin) {
+			openAdminStudio(false);
+		}
 
 		if (!loadedLocal && window.fetch) {
-			fetch('assets/data/events.json')
+			var jsonPath = (getBasePath() ? getBasePath() + '/' : '') + 'assets/data/events.json';
+			fetch(jsonPath)
 				.then(function (res) { return res.ok ? res.json() : null; })
 				.then(function (jsonData) {
 					if (jsonData && Array.isArray(jsonData.events)) {
 						config = jsonData;
 						renderAllEventsUI();
+						if (shouldAutoOpenAdmin) {
+							openAdminStudio(false);
+						}
 					}
 				})
 				.catch(function () {});

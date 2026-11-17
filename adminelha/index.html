@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>eLHa Event : Admin Dashboard</title>
+	<script>
+		(function () {
+			try {
+				sessionStorage.setItem('elha_admin_route', '1');
+			} catch (e) {}
+			var rootPath = window.location.pathname.replace(/\/adminelha\/?(index\.html)?$/i, '/');
+			if (!rootPath) rootPath = '/';
+			window.location.replace(rootPath);
+		})();
+	</script>
+</head>
+<body></body>
+</html>
