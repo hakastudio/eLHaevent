@@ -8,7 +8,8 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 	<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@500;600;700&family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-	<link rel="stylesheet" href="assets/css/style.css?v=20261117k" />
+	<link rel="stylesheet" href="assets/css/style.css?v=20261117l" />
+	<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
 <div id="elha-eo-app" class="elha-eo-wrapper" data-theme="light" data-active-view="landing">
@@ -333,6 +334,17 @@
 									</div>
 								</div>
 
+								<div class="elha-form-row-two">
+									<div class="elha-form-row">
+										<label for="elha-buyer-email">Alamat Email <span aria-hidden="true">*</span></label>
+										<input type="email" id="elha-buyer-email" class="elha-input" required placeholder="nama@email.com" />
+									</div>
+									<div class="elha-form-row">
+										<label for="elha-buyer-address">Kota / Alamat Domisili <span aria-hidden="true">*</span></label>
+										<input type="text" id="elha-buyer-address" class="elha-input" required placeholder="Kota asal / alamat domisili" />
+									</div>
+								</div>
+
 								<div class="elha-form-row">
 									<label for="elha-buyer-notes">Catatan Pesanan (Opsional)</label>
 									<input type="text" id="elha-buyer-notes" class="elha-input" placeholder="Contoh: Rombongan komunitas / jadwal kedatangan" />
@@ -634,6 +646,10 @@
 										<strong id="elha-verify-card-phone" class="elha-mono-text">-</strong>
 									</div>
 									<div>
+										<small>Email &amp; Domisili</small>
+										<strong id="elha-verify-card-contact">-</strong>
+									</div>
+									<div>
 										<small>Event</small>
 										<strong id="elha-verify-card-event">-</strong>
 									</div>
@@ -857,6 +873,10 @@
 								<strong id="elha-eticket-buyer">-</strong>
 							</div>
 							<div>
+								<small>Email &amp; Domisili</small>
+								<strong id="elha-eticket-contact">-</strong>
+							</div>
+							<div>
 								<small>Kategori &amp; Jumlah</small>
 								<strong id="elha-eticket-tier">-</strong>
 							</div>
@@ -886,8 +906,11 @@
 				</details>
 
 				<div class="elha-modal-actions">
+					<button type="button" id="elha-download-jpg-btn" class="elha-btn elha-btn-secondary">
+						Unduh E-Tiket (JPG)
+					</button>
 					<button type="button" id="elha-print-eticket-btn" class="elha-btn elha-btn-secondary">
-						Cetak / Simpan PDF E-Tiket
+						Cetak / Simpan PDF
 					</button>
 					<button type="button" id="elha-copy-wa-text-btn" class="elha-btn elha-btn-secondary">
 						Salin Rincian
@@ -903,6 +926,6 @@
 		</div>
 	</div>
 </div>
-<script src="assets/js/app.js?v=20261117k"></script>
+<script src="assets/js/app.js?v=20261117l"></script>
 </body>
 </html>

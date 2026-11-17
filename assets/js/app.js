@@ -852,6 +852,8 @@
 				c: order.code,
 				n: order.buyerName,
 				p: order.buyerPhone,
+				em: order.buyerEmail || '',
+				ad: order.buyerAddress || '',
 				m: order.buyerNotes || '',
 				t: order.eventTitle,
 				v: order.eventVenue,
@@ -880,6 +882,8 @@
 				code: c.c,
 				buyerName: c.n || '',
 				buyerPhone: c.p || '',
+				buyerEmail: c.em || '',
+				buyerAddress: c.ad || '',
 				buyerNotes: c.m || '',
 				eventTitle: c.t || '',
 				eventVenue: c.v || '',
@@ -964,6 +968,174 @@
 		return 'ELHA-2611-' + suffix;
 	}
 
+	var currentReceiptOrder = null;
+
+	function triggerFileDownload(dataUrl, filename) {
+		var a = document.createElement('a');
+		a.download = filename;
+		a.href = dataUrl;
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+	}
+
+	function renderDirectCanvasJpg(order) {
+		var canvas = document.createElement('canvas');
+		canvas.width = 1200;
+		canvas.height = 800;
+		var ctx = canvas.getContext('2d');
+		if (!ctx) return;
+
+		var isVer = order && order.status === 'verified';
+
+		ctx.fillStyle = '#071326';
+		ctx.fillRect(0, 0, 1200, 800);
+
+		ctx.fillStyle = '#0F2342';
+		if (ctx.roundRect) ctx.roundRect(40, 40, 1120, 720, 24);
+		else ctx.rect(40, 40, 1120, 720);
+		ctx.fill();
+
+		ctx.strokeStyle = isVer ? '#059669' : '#15469E';
+		ctx.lineWidth = 4;
+		ctx.stroke();
+
+		var grad = ctx.createLinearGradient(40, 40, 1160, 160);
+		if (isVer) {
+			grad.addColorStop(0, '#064E3B');
+			grad.addColorStop(1, '#059669');
+		} else {
+			grad.addColorStop(0, '#0B1E3B');
+			grad.addColorStop(1, '#15469E');
+		}
+		ctx.fillStyle = grad;
+		ctx.fillRect(40, 40, 1120, 120);
+
+		ctx.fillStyle = '#FF9852';
+		ctx.font = 'bold 18px "IBM Plex Mono", Consolas, monospace';
+		ctx.fillText('KODE BOOKING E-TIKET', 70, 80);
+
+		ctx.fillStyle = '#FFFFFF';
+		ctx.font = 'bold 36px "IBM Plex Mono", Consolas, monospace';
+		ctx.fillText(order ? order.code : 'ELHA-2611-XXXX', 70, 125);
+
+		ctx.fillStyle = isVer ? '#10B981' : '#FF7315';
+		if (ctx.roundRect) ctx.roundRect(880, 72, 240, 44, 22);
+		else ctx.rect(880, 72, 240, 44);
+		ctx.fill();
+		ctx.fillStyle = '#FFFFFF';
+		ctx.font = 'bold 18px "Onest", sans-serif';
+		ctx.textAlign = 'center';
+		ctx.fillText(isVer ? 'LUNAS & AKTIF' : 'E-TICKET PASS', 1000, 100);
+		ctx.textAlign = 'left';
+
+		ctx.fillStyle = '#F8FAFC';
+		ctx.font = 'bold 34px "Bricolage Grotesque", sans-serif';
+		ctx.fillText(order ? order.eventTitle : 'eLHa Event', 70, 215);
+
+		ctx.fillStyle = '#B8CAE6';
+		ctx.font = '20px "Onest", sans-serif';
+		var venueDateText = (order ? order.eventVenue : '') + ' \u2022 ' + (order ? order.eventDate : '');
+		ctx.fillText(venueDateText, 70, 252);
+
+		ctx.fillStyle = '#142C52';
+		if (ctx.roundRect) ctx.roundRect(70, 280, 1060, 240, 16);
+		else ctx.rect(70, 280, 1060, 240);
+		ctx.fill();
+
+		ctx.fillStyle = '#B8CAE6';
+		ctx.font = '16px "Onest", sans-serif';
+		ctx.fillText('PEMEGANG TIKET', 100, 315);
+		ctx.fillStyle = '#FFFFFF';
+		ctx.font = 'bold 22px "Onest", sans-serif';
+		ctx.fillText((order ? order.buyerName : '-') + ' (' + (order ? order.buyerPhone : '-') + ')', 100, 348);
+
+		ctx.fillStyle = '#B8CAE6';
+		ctx.font = '16px "Onest", sans-serif';
+		ctx.fillText('EMAIL & DOMISILI', 100, 395);
+		ctx.fillStyle = '#FFFFFF';
+		ctx.font = 'bold 20px "Onest", sans-serif';
+		ctx.fillText((order && order.buyerEmail ? order.buyerEmail : '-') + ' \u2022 ' + (order && order.buyerAddress ? order.buyerAddress : '-'), 100, 428);
+
+		ctx.fillStyle = '#B8CAE6';
+		ctx.font = '16px "Onest", sans-serif';
+		ctx.fillText('KATEGORI & JUMLAH', 100, 475);
+		ctx.fillStyle = '#FFFFFF';
+		ctx.font = 'bold 22px "Onest", sans-serif';
+		ctx.fillText((order ? (order.qty || 1) + 'x ' + order.tierName : '-'), 100, 505);
+
+		ctx.fillStyle = '#B8CAE6';
+		ctx.font = '16px "Onest", sans-serif';
+		ctx.fillText('TOTAL PEMBAYARAN', 650, 315);
+		ctx.fillStyle = '#FF9852';
+		ctx.font = 'bold 28px "IBM Plex Mono", monospace';
+		ctx.fillText(order ? order.totalFormatted : 'Rp 0', 650, 350);
+
+		ctx.fillStyle = '#B8CAE6';
+		ctx.font = '16px "Onest", sans-serif';
+		ctx.fillText('STATUS TIKET', 650, 395);
+		ctx.fillStyle = isVer ? '#34D399' : '#FBBF24';
+		ctx.font = 'bold 22px "Onest", sans-serif';
+		ctx.fillText(isVer ? 'LUNAS & AKTIF (TERVERIFIKASI)' : 'MENUNGGU KONFIRMASI PEMBAYARAN', 650, 428);
+
+		ctx.fillStyle = '#B8CAE6';
+		ctx.font = '16px "Onest", sans-serif';
+		ctx.fillText(isVer ? ('Diverifikasi: ' + (order.verifiedAt || 'Resmi')) : 'Silakan konfirmasi pembayaran ke Admin', 650, 465);
+
+		ctx.fillStyle = '#FFFFFF';
+		if (ctx.roundRect) ctx.roundRect(70, 545, 1060, 160, 14);
+		else ctx.rect(70, 545, 1060, 160);
+		ctx.fill();
+
+		ctx.fillStyle = '#0B1E3B';
+		var seedStr = (order ? order.code : 'ELHA') + '-BARCODE';
+		var barX = 140;
+		for (var b = 0; b < 75; b++) {
+			var charVal = seedStr.charCodeAt(b % seedStr.length) + b;
+			var w = (charVal % 3 === 0) ? 5 : ((charVal % 2 === 0) ? 3 : 2);
+			var gap = ((charVal * 3) % 4) + 3;
+			ctx.fillRect(barX, 565, w, 85);
+			barX += w + gap;
+			if (barX > 1050) break;
+		}
+
+		ctx.fillStyle = '#0B1E3B';
+		ctx.font = 'bold 18px "IBM Plex Mono", Consolas, monospace';
+		ctx.textAlign = 'center';
+		ctx.fillText((order ? order.code : '') + ' | SCAN BARCODE DI GATE CHECK-IN | OFFICIAL PASS', 600, 680);
+		ctx.textAlign = 'left';
+
+		var filename = 'e-tiket-' + (order && order.code ? order.code : 'elha') + '.jpg';
+		var dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+		triggerFileDownload(dataUrl, filename);
+	}
+
+	function downloadEticketAsJpg(order) {
+		var passEl = document.getElementById('elha-printable-eticket');
+		var btn = document.getElementById('elha-download-jpg-btn');
+		var filename = 'e-tiket-' + (order && order.code ? order.code : 'elha') + '.jpg';
+
+		if (window.html2canvas && passEl) {
+			var prevText = btn ? btn.textContent : '';
+			if (btn) btn.textContent = 'Menyiapkan Gambar JPG...';
+			window.html2canvas(passEl, {
+				scale: 2,
+				useCORS: true,
+				logging: false,
+				backgroundColor: '#071326'
+			}).then(function (canvas) {
+				var dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+				triggerFileDownload(dataUrl, filename);
+				if (btn) btn.textContent = prevText;
+			}).catch(function () {
+				renderDirectCanvasJpg(order);
+				if (btn) btn.textContent = prevText;
+			});
+		} else {
+			renderDirectCanvasJpg(order);
+		}
+	}
+
 	function buildWhatsAppOrderText(order) {
 		var adminVerifyUrl = window.location.origin + getBasePath() + '/adminelha?verify=' + order.code + '&od=' + encodeOrderPayload(order);
 		var lines = [
@@ -979,7 +1151,9 @@
 			'',
 			'Pemegang E-Tiket:',
 			'Nama: ' + order.buyerName,
-			'No. Telepon/WA: ' + order.buyerPhone
+			'No. Telepon/WA: ' + order.buyerPhone,
+			'Email: ' + (order.buyerEmail || '-'),
+			'Domisili: ' + (order.buyerAddress || '-')
 		];
 		if (order.buyerNotes) {
 			lines.push('Catatan: ' + order.buyerNotes);
@@ -995,6 +1169,8 @@
 	}
 
 	function showOrderReceiptModal(order, isVerified) {
+		currentReceiptOrder = order;
+
 		var statusHeading = document.getElementById('elha-receipt-status-heading');
 		var statusBadge = document.getElementById('elha-receipt-status-badge');
 		var statusSub = document.getElementById('elha-receipt-status-sub');
@@ -1003,6 +1179,7 @@
 		var etEventName = document.getElementById('elha-eticket-event-name');
 		var etVenueDate = document.getElementById('elha-eticket-venue-date');
 		var etBuyer = document.getElementById('elha-eticket-buyer');
+		var etContact = document.getElementById('elha-eticket-contact');
 		var etTier = document.getElementById('elha-eticket-tier');
 		var etTotal = document.getElementById('elha-eticket-total');
 		var etBarcode = document.getElementById('elha-eticket-barcode');
@@ -1015,6 +1192,7 @@
 		if (etEventName) etEventName.textContent = order.eventTitle;
 		if (etVenueDate) etVenueDate.textContent = order.eventVenue + ' | ' + order.eventDate;
 		if (etBuyer) etBuyer.textContent = order.buyerName + (order.buyerPhone ? ' (' + order.buyerPhone + ')' : '');
+		if (etContact) etContact.textContent = (order.buyerEmail || '-') + ' \u2022 ' + (order.buyerAddress || '-');
 		if (etTier) etTier.textContent = (order.qty || 1) + 'x ' + order.tierName;
 		if (etTotal) etTotal.textContent = order.totalFormatted;
 		var evCode = order.eventCode || 'EVT';
@@ -1070,19 +1248,25 @@
 
 			var buyerNameInput = document.getElementById('elha-buyer-name');
 			var buyerPhoneInput = document.getElementById('elha-buyer-phone');
+			var buyerEmailInput = document.getElementById('elha-buyer-email');
+			var buyerAddressInput = document.getElementById('elha-buyer-address');
 			var buyerNotesInput = document.getElementById('elha-buyer-notes');
 
 			var buyerName = buyerNameInput ? buyerNameInput.value.trim() : '';
 			var buyerPhone = buyerPhoneInput ? buyerPhoneInput.value.trim() : '';
+			var buyerEmail = buyerEmailInput ? buyerEmailInput.value.trim() : '';
+			var buyerAddress = buyerAddressInput ? buyerAddressInput.value.trim() : '';
 			var buyerNotes = buyerNotesInput ? buyerNotesInput.value.trim() : '';
 
-			if (!buyerName || !buyerPhone) {
+			if (!buyerName || !buyerPhone || !buyerEmail || !buyerAddress) {
 				if (checkoutFeedback) {
 					checkoutFeedback.hidden = false;
-					checkoutFeedback.textContent = 'Mohon isi Nama Lengkap dan Nomor Telepon/WhatsApp Anda terlebih dahulu.';
+					checkoutFeedback.textContent = 'Mohon lengkapi Nama Lengkap, Nomor Telepon/WhatsApp, Alamat Email, dan Kota Domisili Anda terlebih dahulu.';
 				}
 				if (!buyerName && buyerNameInput) buyerNameInput.focus();
 				else if (!buyerPhone && buyerPhoneInput) buyerPhoneInput.focus();
+				else if (!buyerEmail && buyerEmailInput) buyerEmailInput.focus();
+				else if (!buyerAddress && buyerAddressInput) buyerAddressInput.focus();
 				return;
 			}
 
@@ -1104,6 +1288,8 @@
 				code: bookingCode,
 				buyerName: buyerName,
 				buyerPhone: buyerPhone,
+				buyerEmail: buyerEmail,
+				buyerAddress: buyerAddress,
 				buyerNotes: buyerNotes,
 				eventId: evObj.id,
 				eventCode: evObj.code,
@@ -1128,6 +1314,15 @@
 	if (printEticketBtn) {
 		printEticketBtn.addEventListener('click', function () {
 			window.print();
+		});
+	}
+
+	var downloadJpgBtn = document.getElementById('elha-download-jpg-btn');
+	if (downloadJpgBtn) {
+		downloadJpgBtn.addEventListener('click', function () {
+			if (currentReceiptOrder) {
+				downloadEticketAsJpg(currentReceiptOrder);
+			}
 		});
 	}
 
@@ -1433,6 +1628,7 @@
 	var selectedBadgeEl = document.getElementById('elha-verify-card-status-badge');
 	var selectedBuyerEl = document.getElementById('elha-verify-card-buyer');
 	var selectedPhoneEl = document.getElementById('elha-verify-card-phone');
+	var selectedContactEl = document.getElementById('elha-verify-card-contact');
 	var selectedEventEl = document.getElementById('elha-verify-card-event');
 	var selectedTierEl = document.getElementById('elha-verify-card-tier');
 	var selectedTotalEl = document.getElementById('elha-verify-card-total');
@@ -1523,6 +1719,7 @@
 		if (selectedCodeEl) selectedCodeEl.textContent = order.code;
 		if (selectedBuyerEl) selectedBuyerEl.textContent = order.buyerName;
 		if (selectedPhoneEl) selectedPhoneEl.textContent = order.buyerPhone;
+		if (selectedContactEl) selectedContactEl.textContent = (order.buyerEmail || '-') + ' \u2022 ' + (order.buyerAddress || '-');
 		if (selectedEventEl) selectedEventEl.textContent = order.eventTitle;
 		if (selectedTierEl) selectedTierEl.textContent = (order.qty || 1) + 'x ' + order.tierName;
 		if (selectedTotalEl) selectedTotalEl.textContent = order.totalFormatted;
