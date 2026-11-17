@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="eLHa Event : Platform resmi pemesanan E-Tiket pameran, bazar kurasi, dan workshop komunitas." />
+	<title>eLHa Event : Official Event &amp; Ticketing Platform</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@500;600;700&family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+	<link rel="stylesheet" href="assets/css/style.css?v=20261117i" />
+</head>
+<body>
+<div id="elha-eo-app" class="elha-eo-wrapper" data-theme="light" data-active-view="landing">
+	<a href="#elha-main-content" class="elha-skip-link">Langsung ke konten utama</a>
+
+	<header class="elha-header" role="banner">
+		<div class="elha-container elha-header-inner">
+			<a href="#beranda" class="elha-brand" data-nav-action="go-home">
+				<span class="elha-brand-text">
+					<strong>eLHa Event</strong>
+				</span>
+			</a>
+
+			<nav class="elha-desktop-nav" aria-label="Navigasi Utama">
+				<a href="#agenda-event" class="elha-nav-link" data-nav-section="agenda-event">Jelajah Event</a>
+				<a href="#cara-pesan" class="elha-nav-link" data-nav-section="cara-pesan">Cara Pesan</a>
+				<a href="#tanya-jawab" class="elha-nav-link" data-nav-section="tanya-jawab">FAQ</a>
+			</nav>
+
+			<div class="elha-view-switcher" role="group" aria-label="Pilih Tampilan Halaman">
+				<button type="button" class="elha-switch-btn is-active" data-view-target="landing" aria-pressed="true">
+					Katalog Event
+				</button>
+				<button type="button" class="elha-switch-btn" data-view-target="checkout" aria-pressed="false">
+					Checkout Tiket
+				</button>
+			</div>
+
+			<div class="elha-header-actions">
+				<button type="button" id="elha-open-admin-btn" class="elha-theme-btn elha-desktop-only-admin" aria-label="Buka panel kelola event" hidden>
+					<span>Kelola Event</span>
+				</button>
+
+				<button type="button" id="elha-theme-toggle" class="elha-theme-btn elha-theme-icon-btn" aria-label="Ganti ke mode gelap" aria-pressed="false">
+					<svg id="elha-icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+						<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+					</svg>
+					<svg id="elha-icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" hidden>
+						<circle cx="12" cy="12" r="4" />
+						<path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+					</svg>
+				</button>
+
+				<button type="button" id="elha-mobile-menu-btn" class="elha-mobile-menu-btn" aria-expanded="false" aria-controls="elha-mobile-drawer" aria-label="Buka menu navigasi">
+					<span class="elha-hamburger-box" aria-hidden="true">
+						<span class="elha-hamburger-line"></span>
+						<span class="elha-hamburger-line"></span>
+						<span class="elha-hamburger-line"></span>
+					</span>
+				</button>
+			</div>
+		</div>
+
+		<div id="elha-mobile-drawer" class="elha-mobile-drawer" hidden>
+			<nav class="elha-mobile-nav" aria-label="Navigasi Seluler">
+				<a href="#agenda-event" class="elha-mobile-link" data-nav-section="agenda-event">Jelajah Event</a>
+				<a href="#cara-pesan" class="elha-mobile-link" data-nav-section="cara-pesan">Cara Pesan Tiket</a>
+				<a href="#tanya-jawab" class="elha-mobile-link" data-nav-section="tanya-jawab">FAQ Tiket</a>
+				<button type="button" id="elha-mobile-admin-btn" class="elha-btn elha-btn-blue elha-mobile-cta" hidden>
+					Kelola Event
+				</button>
+				<button type="button" class="elha-btn elha-btn-primary elha-mobile-cta" data-view-target="checkout">
+					Checkout Tiket
+				</button>
+			</nav>
+		</div>
+	</header>
+
+	<main id="elha-main-content" class="elha-main" role="main">
+		<!-- VIEW 1: EVENT TICKETING LANDING PAGE -->
+		<div id="elha-view-landing" class="elha-view-panel is-visible">
+			<!-- HERO SPOTLIGHT EVENT (COMPACT BANNER - AUTO SHOWS WHEN EVENT EXISTS) -->
+			<section id="beranda" class="elha-hero-section" hidden>
+				<div class="elha-container">
+					<div class="elha-hero-grid">
+						<div class="elha-hero-copy">
+							<div class="elha-hero-pill-row">
+								<span class="elha-live-pill">FEATURED EVENT</span>
+								<span class="elha-hero-date-pill" id="elha-hero-featured-date">12 - 14 Desember 2026</span>
+							</div>
+							<h1 class="elha-hero-title" id="elha-hero-featured-title">Pekan Raya Kriya &amp; Kuliner Nusantara 2026</h1>
+							<p class="elha-hero-lead" id="elha-hero-featured-summary">Eksibisi kurasi 120 pengrajin keramik, instalasi tenun kontemporer, dan bazar kuliner warisan nusantara dengan panggung lokakarya interaktif.</p>
+
+							<div class="elha-hero-meta-strip">
+								<div class="elha-meta-chip">
+									<small>Lokasi Venue</small>
+									<strong id="elha-hero-featured-venue">Hall B, Jakarta Convention Center, Senayan</strong>
+								</div>
+								<div class="elha-meta-chip">
+									<small>Jam Operasional</small>
+									<strong id="elha-hero-featured-time">10.00 - 21.00 WIB</strong>
+								</div>
+							</div>
+
+							<div class="elha-hero-cta-group">
+								<button type="button" id="elha-hero-primary-btn" class="elha-btn elha-btn-primary" data-quick-event="evt-kriya-2026" data-quick-tier="kriya-daily">
+									Beli Tiket Sekarang
+								</button>
+								<a href="#agenda-event" class="elha-btn elha-btn-secondary" data-nav-section="agenda-event">
+									Lihat Semua Event
+								</a>
+							</div>
+						</div>
+
+						<!-- RIGHT: COMPACT FAST TICKET SELECTOR -->
+						<aside class="elha-hero-ticket-card" aria-label="Pilih Tiket Cepat">
+							<div class="elha-ticket-stub elha-hero-compact-stub">
+								<div class="elha-ticket-stub-top">
+									<div class="elha-stub-meta-row">
+										<span class="elha-code-tag" id="elha-hero-featured-code">EXH-2601</span>
+										<span class="elha-category-tag" id="elha-hero-featured-quota">180 Tiket Tersedia</span>
+									</div>
+									<h2 class="elha-stub-title">Pilih Kategori Tiket</h2>
+								</div>
+
+								<div class="elha-ticket-stub-bottom">
+									<div id="elha-hero-tier-list" class="elha-stub-tier-list" role="group" aria-label="Pilihan Cepat Kategori Tiket">
+										<button type="button" class="elha-quick-tier-btn" data-quick-event="evt-kriya-2026" data-quick-tier="kriya-daily">
+											<span class="elha-quick-tier-name">Daily Exhibition Pass (1 Hari)</span>
+											<strong class="elha-quick-tier-price">Rp 45.000</strong>
+										</button>
+									</div>
+									<button type="button" id="elha-hero-stub-btn" class="elha-btn elha-btn-blue elha-btn-full" data-quick-event="evt-kriya-2026" data-quick-tier="kriya-daily">
+										Lanjut ke Checkout Tiket
+									</button>
+								</div>
+							</div>
+						</aside>
+					</div>
+				</div>
+			</section>
+
+			<!-- SECTION 2: KATALOG EVENT TICKETING GRID -->
+			<section id="agenda-event" class="elha-section elha-agenda-section">
+				<div class="elha-container">
+					<div class="elha-section-header-split">
+						<div>
+							<p class="elha-kicker">UPCOMING EVENTS</p>
+							<h2 class="elha-section-title">Pilih Event &amp; Dapatkan Tiketmu</h2>
+						</div>
+
+						<div class="elha-search-box">
+							<label for="elha-event-search" class="elha-sr-only">Cari nama event atau kota</label>
+							<input type="search" id="elha-event-search" class="elha-input" placeholder="Cari nama event atau lokasi..." />
+						</div>
+					</div>
+
+					<div class="elha-catalog-controls">
+						<div id="elha-filter-tabs" class="elha-filter-tabs" role="tablist" aria-label="Filter Kategori Event">
+							<button type="button" class="elha-filter-tab is-active" data-filter-cat="all" role="tab" aria-selected="true">Semua Event</button>
+						</div>
+					</div>
+
+					<div id="elha-events-loading" class="elha-state-panel" role="status" aria-live="polite" hidden>
+						<div class="elha-spinner" aria-hidden="true"></div>
+						<h3>Memuat Daftar Event &amp; Ketersediaan Tiket...</h3>
+						<p>Mohon tunggu sebentar, sistem sedang menyiapkan katalog tiket terbaru.</p>
+					</div>
+
+					<div id="elha-events-empty" class="elha-state-panel" role="status" aria-live="polite">
+						<h3 id="elha-empty-title">Belum Ada Event yang Diposting</h3>
+						<p id="elha-empty-desc">Katalog event dan kategori masih kosong. Silakan buat kategori dan posting event pertama Anda melalui Event Studio.</p>
+						<div class="elha-empty-actions">
+							<button type="button" id="elha-empty-studio-btn" class="elha-btn elha-btn-primary">
+								+ Buat Event &amp; Kategori Baru
+							</button>
+							<button type="button" id="elha-reset-filter-btn" class="elha-btn elha-btn-secondary" hidden>
+								Tampilkan Semua Event
+							</button>
+						</div>
+					</div>
+
+					<div id="elha-events-error" class="elha-state-panel" role="alert" hidden>
+						<h3>Gagal Memuat Katalog Tiket</h3>
+						<p>Terjadi gangguan koneksi. Silakan muat ulang atau langsung buka halaman checkout tiket.</p>
+						<div class="elha-state-actions">
+							<button type="button" id="elha-retry-load-btn" class="elha-btn elha-btn-primary">
+								Muat Ulang
+							</button>
+						</div>
+					</div>
+
+					<!-- VISUAL EVENT POSTER CARDS GRID (POPULATED DYNAMICALLY) -->
+					<div id="elha-events-list" class="elha-event-poster-grid" role="list" hidden></div>
+				</div>
+			</section>
+
+			<!-- SECTION 3: CARA PESAN TIKET -->
+			<section id="cara-pesan" class="elha-section elha-steps-section">
+				<div class="elha-container">
+					<div class="elha-steps-header">
+						<p class="elha-kicker">E-TICKET SYSTEM</p>
+						<h2 class="elha-section-title">Alur Pemesanan &amp; Penerbitan E-Tiket</h2>
+					</div>
+
+					<ol class="elha-workflow-grid">
+						<li class="elha-workflow-step">
+							<span class="elha-step-index">01</span>
+							<h3>Pilih Event &amp; Kategori</h3>
+							<p>Pilih jadwal acara dan jenis tiket (Harian, Terusan, Workshop, atau Booth Bazar).</p>
+						</li>
+						<li class="elha-workflow-step">
+							<span class="elha-step-index">02</span>
+							<h3>Isi Identitas Pemegang Tiket</h3>
+							<p>Tentukan jumlah tiket dan lengkapi nama serta nomor aktif pemesan.</p>
+						</li>
+						<li class="elha-workflow-step">
+							<span class="elha-step-index">03</span>
+							<h3>E-Tiket &amp; Barcode Terbit Otomatis</h3>
+							<p>Sistem langsung menerbitkan Kartu E-Tiket Digital lengkap dengan Kode Booking &amp; Barcode yang dapat dicetak/disimpan PDF.</p>
+						</li>
+						<li class="elha-workflow-step">
+							<span class="elha-step-index">04</span>
+							<h3>Konfirmasi &amp; Scan di Gate</h3>
+							<p>Selesaikan konfirmasi pembayaran ke Admin dan tunjukkan E-Tiket Anda di pintu masuk venue.</p>
+						</li>
+					</ol>
+				</div>
+			</section>
+		</div>
+
+		<!-- VIEW 2: HALAMAN CHECKOUT TIKET -->
+		<section id="elha-view-checkout" class="elha-view-panel elha-checkout-section" aria-labelledby="elha-checkout-heading" hidden>
+			<div class="elha-container">
+				<div class="elha-checkout-topbar">
+					<button type="button" class="elha-btn elha-btn-secondary" data-view-target="landing">
+						&larr; Kembali ke Katalog Event
+					</button>
+					<div class="elha-checkout-step-indicator">
+						<span class="elha-code-tag">EXPRESS E-TICKET CHECKOUT</span>
+					</div>
+				</div>
+
+				<div class="elha-checkout-layout">
+					<!-- LEFT: STREAMLINED ORDER FORM -->
+					<form id="elha-ticket-checkout-form" class="elha-checkout-form-col" novalidate>
+						<div class="elha-checkout-card">
+							<h1 id="elha-checkout-heading" class="elha-checkout-main-title">Checkout Tiket Event</h1>
+							<p class="elha-checkout-sub">Lengkapi rincian tiket dan identitas pemesan di bawah ini untuk menerbitkan Kartu E-Tiket Digital &amp; Kode Booking resmi Anda.</p>
+
+							<div class="elha-form-row">
+								<label for="elha-checkout-event-select">1. Pilih Event</label>
+								<select id="elha-checkout-event-select" class="elha-select">
+									<option value="evt-kriya-2026">Pekan Raya Kriya &amp; Kuliner Nusantara 2026 (12 - 14 Desember 2026)</option>
+									<option value="evt-bazar-kopi">Pasar Seduh &amp; Bazar Komunitas Roastery Lokal (20 - 21 Desember 2026)</option>
+									<option value="evt-komunitas-desain">Temu Kolektif Ilustrator &amp; Bursa Zine Independen (10 Januari 2027)</option>
+									<option value="evt-expo-umkm">Forum Kemitraan Ritel &amp; Eksibisi Produk Daerah (24 - 26 Januari 2027)</option>
+								</select>
+							</div>
+
+							<div id="elha-selected-event-banner" class="elha-event-mini-summary">
+								<span id="elha-summary-venue">Hall B, Jakarta Convention Center, Senayan</span> &bull;
+								<span id="elha-summary-date">12 - 14 Desember 2026 | 10.00 - 21.00 WIB</span>
+							</div>
+
+							<div class="elha-form-row" style="margin-top: 18px;">
+								<label>2. Pilih Kategori Tiket</label>
+								<div id="elha-checkout-tiers-container" class="elha-tier-radio-group" role="radiogroup" aria-label="Kategori Tiket">
+									<label class="elha-tier-card is-selected">
+										<input type="radio" name="elha_ticket_tier" value="kriya-daily" data-tier-name="Daily Exhibition Pass (1 Hari)" data-tier-price="45000" checked />
+										<span class="elha-tier-card-body">
+											<span class="elha-tier-card-top">
+												<strong>Daily Exhibition Pass (1 Hari)</strong>
+												<span class="elha-tier-card-price">Rp 45.000</span>
+											</span>
+											<small class="elha-tier-card-note">Akses seluruh hall pameran utama &amp; area bazar kuliner</small>
+										</span>
+									</label>
+									<label class="elha-tier-card">
+										<input type="radio" name="elha_ticket_tier" value="kriya-3day" data-tier-name="3-Day All Access + Katalog Cetak" data-tier-price="110000" />
+										<span class="elha-tier-card-body">
+											<span class="elha-tier-card-top">
+												<strong>3-Day All Access + Katalog Cetak</strong>
+												<span class="elha-tier-card-price">Rp 110.000</span>
+											</span>
+											<small class="elha-tier-card-note">Akses 3 hari penuh, jalur cepat VIP Gate B, &amp; buku katalog cetak</small>
+										</span>
+									</label>
+									<label class="elha-tier-card">
+										<input type="radio" name="elha_ticket_tier" value="kriya-workshop" data-tier-name="Exhibition Pass + Sesi Keramik Studio" data-tier-price="225000" />
+										<span class="elha-tier-card-body">
+											<span class="elha-tier-card-top">
+												<strong>Exhibition Pass + Sesi Keramik Studio</strong>
+												<span class="elha-tier-card-price">Rp 225.000</span>
+											</span>
+											<small class="elha-tier-card-note">Termasuk bahan tanah liat stoneware, pembakaran karya, &amp; akses pameran</small>
+										</span>
+									</label>
+								</div>
+							</div>
+
+							<div class="elha-qty-promo-row">
+								<div class="elha-qty-control">
+									<label for="elha-checkout-qty">Jumlah Tiket</label>
+									<div class="elha-stepper">
+										<button type="button" id="elha-qty-minus" class="elha-stepper-btn" aria-label="Kurangi jumlah tiket">-</button>
+										<input type="number" id="elha-checkout-qty" class="elha-qty-input" value="1" min="1" max="20" aria-label="Jumlah tiket" />
+										<button type="button" id="elha-qty-plus" class="elha-stepper-btn" aria-label="Tambah jumlah tiket">+</button>
+									</div>
+								</div>
+
+								<div class="elha-promo-control">
+									<label for="elha-promo-input">Kode Promo (Coba: <code>KOMUNITAS10</code>)</label>
+									<div class="elha-promo-input-group">
+										<input type="text" id="elha-promo-input" class="elha-input" placeholder="Kode promo" />
+										<button type="button" id="elha-apply-promo-btn" class="elha-btn elha-btn-secondary">Pakai</button>
+									</div>
+									<small id="elha-promo-status" class="elha-promo-status" aria-live="polite"></small>
+								</div>
+							</div>
+
+							<div class="elha-buyer-section">
+								<h2 class="elha-buyer-heading">3. Data Pemegang E-Tiket</h2>
+								<div class="elha-form-row-two">
+									<div class="elha-form-row">
+										<label for="elha-buyer-name">Nama Lengkap <span aria-hidden="true">*</span></label>
+										<input type="text" id="elha-buyer-name" class="elha-input" required placeholder="Nama sesuai KTP/identitas" />
+									</div>
+									<div class="elha-form-row">
+										<label for="elha-buyer-phone">Nomor Telepon / WhatsApp <span aria-hidden="true">*</span></label>
+										<input type="tel" id="elha-buyer-phone" class="elha-input" required placeholder="081234567890" />
+									</div>
+								</div>
+
+								<div class="elha-form-row">
+									<label for="elha-buyer-notes">Catatan Pesanan (Opsional)</label>
+									<input type="text" id="elha-buyer-notes" class="elha-input" placeholder="Contoh: Rombongan komunitas / jadwal kedatangan" />
+								</div>
+							</div>
+
+							<div id="elha-checkout-feedback" class="elha-feedback-banner" role="alert" hidden></div>
+
+							<button type="submit" id="elha-checkout-submit-btn" class="elha-btn elha-btn-primary elha-btn-large elha-btn-full">
+								Pesan &amp; Terbitkan E-Tiket Sekarang
+							</button>
+						</div>
+					</form>
+
+					<!-- RIGHT: LIVE DIGITAL BOARDING PASS SUMMARY -->
+					<aside class="elha-checkout-stub-col" aria-label="Ringkasan E-Tiket">
+						<div class="elha-ticket-stub elha-checkout-live-stub">
+							<div class="elha-stub-dark-header">
+								<div class="elha-stub-meta-row">
+									<span class="elha-code-tag" id="elha-stub-code">EXH-2601</span>
+									<span class="elha-wa-tag" id="elha-stub-pay-badge">OFFICIAL E-TICKET</span>
+								</div>
+								<h2 class="elha-stub-title-light" id="elha-stub-event-title">Pekan Raya Kriya &amp; Kuliner Nusantara 2026</h2>
+								<p class="elha-stub-venue-line" id="elha-stub-venue">Hall B, Jakarta Convention Center, Senayan</p>
+								<p class="elha-stub-date-line" id="elha-stub-date">12 - 14 Desember 2026 (10.00 - 21.00 WIB)</p>
+							</div>
+
+							<div class="elha-ticket-perforation" aria-hidden="true">
+								<span class="elha-notch elha-notch-left"></span>
+								<span class="elha-perforation-line"></span>
+								<span class="elha-notch elha-notch-right"></span>
+							</div>
+
+							<div class="elha-ticket-stub-bottom">
+								<dl class="elha-stub-calc-list">
+									<div class="elha-calc-row">
+										<dt>Kategori Tiket</dt>
+										<dd id="elha-stub-tier-name">Daily Exhibition Pass (1 Hari)</dd>
+									</div>
+									<div class="elha-calc-row">
+										<dt>Harga Satuan</dt>
+										<dd class="elha-mono-text" id="elha-stub-unit-price">Rp 45.000</dd>
+									</div>
+									<div class="elha-calc-row">
+										<dt>Jumlah Tiket</dt>
+										<dd class="elha-mono-text" id="elha-stub-qty">1 Tiket</dd>
+									</div>
+									<div class="elha-calc-row" id="elha-stub-discount-row" hidden>
+										<dt>Diskon Promo (10%)</dt>
+										<dd class="elha-mono-text" id="elha-stub-discount">-Rp 0</dd>
+									</div>
+									<div class="elha-calc-row elha-calc-total">
+										<dt>Total Bayar</dt>
+										<dd class="elha-mono-text" id="elha-stub-total">Rp 45.000</dd>
+									</div>
+								</dl>
+
+								<div class="elha-stub-payment-note" id="elha-stub-payment-note">
+									<strong>Layanan Tiket Resmi:</strong>
+									<span class="elha-mono-text">+6281234567890</span>
+								</div>
+
+								<button type="button" id="elha-copy-summary-btn" class="elha-btn elha-btn-secondary elha-btn-full">
+									Salin Ringkasan Tiket
+								</button>
+							</div>
+						</div>
+					</aside>
+				</div>
+			</div>
+		</section>
+
+		<!-- VIEW 3: HALAMAN DASHBOARD ADMIN (TIDAK MELAYANG / INLINE FULL PAGE) -->
+		<section id="elha-view-admin" class="elha-view-panel elha-admin-section" aria-labelledby="elha-admin-page-title" hidden>
+			<div class="elha-container">
+				<div class="elha-checkout-topbar">
+					<button type="button" class="elha-btn elha-btn-secondary" data-view-target="landing">
+						&larr; Kembali ke Katalog Event
+					</button>
+					<div class="elha-admin-topbar-actions">
+						<span class="elha-code-tag">ADMIN DASHBOARD</span>
+						<button type="button" id="elha-admin-new-btn-top" class="elha-btn elha-btn-primary">
+							+ Buat Event Baru
+						</button>
+					</div>
+				</div>
+
+				<div class="elha-admin-page-head">
+					<h1 id="elha-admin-page-title" class="elha-section-title">Dashboard Pengelola eLHa Event</h1>
+					<p class="elha-checkout-sub">Kelola seluruh event, banner, kategori tiket beserta batasan kuotanya, pengaturan WhatsApp, serta ekspor/impor data dalam satu halaman penuh.</p>
+				</div>
+
+				<!-- DASHBOARD KPI SUMMARY -->
+				<div class="elha-admin-stats-grid" aria-label="Ringkasan Statistik Event">
+					<div class="elha-stat-card">
+						<small>Total Event</small>
+						<strong id="elha-stat-events" class="elha-mono-text">0</strong>
+					</div>
+					<div class="elha-stat-card">
+						<small>Kategori Tiket</small>
+						<strong id="elha-stat-tiers" class="elha-mono-text">0</strong>
+					</div>
+					<div class="elha-stat-card">
+						<small>Total Kuota Tiket</small>
+						<strong id="elha-stat-quota" class="elha-mono-text">0</strong>
+					</div>
+					<div class="elha-stat-card">
+						<small>WhatsApp Admin</small>
+						<strong id="elha-stat-wa" class="elha-mono-text">+6281234567890</strong>
+					</div>
+				</div>
+
+				<!-- DASHBOARD TABS -->
+				<div class="elha-admin-tabs" role="tablist" aria-label="Menu Dashboard Admin">
+					<button type="button" class="elha-admin-tab is-active" data-admin-tab="events" role="tab" aria-selected="true">Kelola Event &amp; Tiket</button>
+					<button type="button" class="elha-admin-tab" data-admin-tab="quotas" role="tab" aria-selected="false">Monitor Kategori &amp; Kuota</button>
+					<button type="button" class="elha-admin-tab" data-admin-tab="settings" role="tab" aria-selected="false">Pengaturan &amp; Promo</button>
+					<button type="button" class="elha-admin-tab" data-admin-tab="data" role="tab" aria-selected="false">Ekspor &amp; Impor JSON</button>
+				</div>
+
+				<!-- TAB 1: KELOLA EVENT -->
+				<div id="elha-admin-pane-events" class="elha-admin-pane">
+					<div class="elha-admin-split">
+						<!-- DAFTAR EVENT AKTIF -->
+						<div class="elha-admin-list-col">
+							<div class="elha-admin-col-head">
+								<strong>Daftar Event (<span id="elha-admin-count">0</span>)</strong>
+								<button type="button" id="elha-admin-new-btn" class="elha-btn elha-btn-blue elha-btn-sm">+ Event Baru</button>
+							</div>
+							<input type="search" id="elha-admin-search" class="elha-input elha-admin-search-input" placeholder="Cari event di dashboard..." />
+							<div id="elha-admin-events-list" class="elha-admin-events-list"></div>
+						</div>
+
+						<!-- FORM EDITOR EVENT -->
+						<form id="elha-admin-event-form" class="elha-admin-form-col" novalidate>
+							<h2 id="elha-admin-form-heading" class="elha-admin-form-title">Posting Event Baru</h2>
+							<input type="hidden" id="elha-ev-id" value="" />
+
+							<div class="elha-form-row">
+								<label for="elha-ev-title">Judul Event <span aria-hidden="true">*</span></label>
+								<input type="text" id="elha-ev-title" class="elha-input" required placeholder="Contoh: Festival Musik & Kreatif 2027" />
+							</div>
+
+							<div class="elha-form-row-two">
+								<div class="elha-form-row">
+									<label for="elha-ev-code">Kode Seri Tiket</label>
+									<input type="text" id="elha-ev-code" class="elha-input elha-mono-text" placeholder="EVT-101" />
+								</div>
+								<div class="elha-form-row">
+									<label for="elha-ev-cat">Kategori Event (Bebas Kustom)</label>
+									<input type="text" id="elha-ev-cat" class="elha-input" placeholder="Misal: Konser Musik, Seminar, Bazar" />
+								</div>
+							</div>
+
+							<!-- BANNER GAMBAR (UPLOAD / LINK URL) + ATURAN UKURAN -->
+							<div class="elha-banner-editor-box">
+								<div class="elha-banner-editor-head">
+									<strong>Banner Kartu &amp; Poster Event</strong>
+									<span class="elha-banner-rule-badge">Rasio 2:1 (1200 x 600 px)</span>
+								</div>
+								<p class="elha-banner-rules">
+									Aturan Banner: Gunakan gambar landscape ukuran ideal <strong>1200 x 600 px</strong> (rasio 2:1), format <strong>JPG / PNG / WebP</strong>, maksimal <strong>1 MB</strong>. Jika tidak memakai gambar, sistem menggunakan warna tema di bawah.
+								</p>
+
+								<div class="elha-form-row-two">
+									<div class="elha-form-row">
+										<label for="elha-ev-banner-file">Upload Gambar Banner</label>
+										<input type="file" id="elha-ev-banner-file" class="elha-input elha-file-input" accept="image/jpeg,image/png,image/webp" />
+									</div>
+									<div class="elha-form-row">
+										<label for="elha-ev-banner-url">Atau Link Gambar (URL / Google Drive)</label>
+										<input type="url" id="elha-ev-banner-url" class="elha-input" placeholder="Link Google Drive atau URL gambar..." />
+									</div>
+								</div>
+
+								<div class="elha-form-row-two">
+									<div class="elha-form-row">
+										<label for="elha-ev-theme">Tema Warna Cadangan</label>
+										<select id="elha-ev-theme" class="elha-select">
+											<option value="terracotta">Biru Navy &amp; Oranye</option>
+											<option value="emerald">Biru Royal Elektrik</option>
+											<option value="amber">Oranye Amber &amp; Navy</option>
+											<option value="slate">Biru Klasik &amp; Tembaga</option>
+										</select>
+									</div>
+									<div class="elha-form-row">
+										<label for="elha-ev-quota">Total Kuota Event (Otomatis)</label>
+										<input type="text" id="elha-ev-quota" class="elha-input" placeholder="Otomatis dari jumlah kuota tiket" />
+									</div>
+								</div>
+
+								<div id="elha-banner-preview-wrap" class="elha-banner-preview-wrap" hidden>
+									<img id="elha-banner-preview-img" src="" alt="Pratinjau banner event" />
+									<button type="button" id="elha-clear-banner-btn" class="elha-btn elha-btn-secondary elha-btn-sm">Hapus Gambar Banner</button>
+								</div>
+							</div>
+
+							<div class="elha-form-row-two">
+								<div class="elha-form-row">
+									<label for="elha-ev-date">Tanggal Pelaksanaan</label>
+									<input type="text" id="elha-ev-date" class="elha-input" placeholder="15 - 17 Februari 2027" />
+								</div>
+								<div class="elha-form-row">
+									<label for="elha-ev-time">Jam Operasional</label>
+									<input type="text" id="elha-ev-time" class="elha-input" placeholder="10.00 - 21.00 WIB" />
+								</div>
+							</div>
+
+							<div class="elha-form-row">
+								<label for="elha-ev-venue">Lokasi Venue</label>
+								<input type="text" id="elha-ev-venue" class="elha-input" placeholder="JCC Senayan, Jakarta" />
+							</div>
+
+							<div class="elha-form-row">
+								<label for="elha-ev-summary">Deskripsi Singkat Event</label>
+								<textarea id="elha-ev-summary" class="elha-textarea" rows="2" placeholder="Ringkasan acara..."></textarea>
+							</div>
+
+							<!-- DYNAMIC TICKET CATEGORIES WITH QUOTA LIMIT -->
+							<div class="elha-form-row">
+								<div class="elha-admin-col-head">
+									<label>Kategori Tiket &amp; Batasan Kuota (<span id="elha-tier-count-lbl">1</span> Kategori)</label>
+									<button type="button" id="elha-add-tier-btn" class="elha-btn elha-btn-blue elha-btn-sm">+ Tambah Kategori Tiket</button>
+								</div>
+								<p class="elha-banner-rules">Atur nama kategori tiket (misal: Tiket Reguler, VIP), harga, dan batasan kuota (misal: 200 atau lebih). Pembeli tidak dapat memesan melebihi batasan kuota tiap kategori.</p>
+								<div id="elha-admin-tiers-container" class="elha-admin-tiers-grid"></div>
+							</div>
+
+							<label class="elha-admin-checkbox">
+								<input type="checkbox" id="elha-ev-featured" />
+								<span>Jadikan Featured Event di Banner Utama (Hero)</span>
+							</label>
+
+							<div id="elha-admin-feedback" class="elha-feedback-banner" role="status" hidden></div>
+
+							<div class="elha-admin-form-actions">
+								<button type="submit" class="elha-btn elha-btn-primary">
+									Simpan &amp; Posting Event
+								</button>
+								<button type="button" id="elha-export-json-btn" class="elha-btn elha-btn-blue">
+									Unduh File events.json
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+
+				<!-- TAB 2: MONITOR KATEGORI & BATASAN KUOTA -->
+				<div id="elha-admin-pane-quotas" class="elha-admin-pane" hidden>
+					<div class="elha-admin-form-col">
+						<h3>Ringkasan Kategori Tiket &amp; Batasan Kuota</h3>
+						<p class="elha-checkout-sub">Pantau seluruh kategori tiket beserta batas kuota yang aktif di setiap event.</p>
+						<div id="elha-admin-quota-table-wrap" class="elha-quota-table-wrap"></div>
+					</div>
+				</div>
+
+				<!-- TAB 3: PENGATURAN BRAND & PROMO -->
+				<div id="elha-admin-pane-settings" class="elha-admin-pane" hidden>
+					<form id="elha-admin-settings-form" class="elha-admin-form-col" novalidate>
+						<h3>Pengaturan Layanan WhatsApp, Brand &amp; Promo</h3>
+						<div class="elha-form-row-two">
+							<div class="elha-form-row">
+								<label for="elha-set-brand">Nama Brand Platform</label>
+								<input type="text" id="elha-set-brand" class="elha-input" placeholder="eLHa Event" />
+							</div>
+							<div class="elha-form-row">
+								<label for="elha-admin-wa">Nomor WhatsApp Admin (Format 628xxx)</label>
+								<input type="text" id="elha-admin-wa" class="elha-input elha-mono-text" placeholder="6281234567890" />
+							</div>
+						</div>
+						<div class="elha-form-row-two">
+							<div class="elha-form-row">
+								<label for="elha-set-admin-lbl">Nama Sapaan Admin di Pesan WA</label>
+								<input type="text" id="elha-set-admin-lbl" class="elha-input" placeholder="Admin eLHa Event" />
+							</div>
+							<div class="elha-form-row">
+								<label for="elha-set-promo-code">Kode Voucher Promo</label>
+								<input type="text" id="elha-set-promo-code" class="elha-input elha-mono-text" placeholder="KOMUNITAS10" />
+							</div>
+						</div>
+						<div class="elha-form-row-two">
+							<div class="elha-form-row">
+								<label for="elha-set-promo-pct">Persentase Diskon Promo (%)</label>
+								<input type="number" id="elha-set-promo-pct" class="elha-input elha-mono-text" min="0" max="90" placeholder="10" />
+							</div>
+						</div>
+						<div id="elha-settings-feedback" class="elha-feedback-banner" role="status" hidden></div>
+						<div class="elha-admin-form-actions">
+							<button type="submit" class="elha-btn elha-btn-primary">Simpan Pengaturan</button>
+						</div>
+					</form>
+				</div>
+
+				<!-- TAB 4: EKSPOR & IMPOR DATA -->
+				<div id="elha-admin-pane-data" class="elha-admin-pane" hidden>
+					<div class="elha-admin-form-col">
+						<h3>Sinkronisasi Data Website (GitHub &amp; Vercel)</h3>
+						<p class="elha-checkout-sub">Setelah selesai menyusun event di Dashboard, unduh file <code>events.json</code> lalu simpan ke folder <code>assets/data/events.json</code> sebelum push ke GitHub atau Vercel agar tampil permanen untuk semua pengunjung.</p>
+						<div class="elha-admin-data-actions">
+							<button type="button" id="elha-export-json-btn-tab" class="elha-btn elha-btn-blue">Unduh File events.json</button>
+							<label class="elha-btn elha-btn-secondary elha-import-label">
+								Impor File events.json
+								<input type="file" id="elha-import-json-input" accept=".json,application/json" hidden />
+							</label>
+							<button type="button" id="elha-reset-default-btn" class="elha-btn elha-btn-secondary">Kosongkan Semua Event</button>
+						</div>
+						<div id="elha-data-feedback" class="elha-feedback-banner" role="status" hidden></div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- SHARED SECTION: FAQ & INFORMASI PEMBELIAN TIKET RINGKAS -->
+		<section id="tanya-jawab" class="elha-section elha-faq-section">
+			<div class="elha-container">
+				<p class="elha-kicker">PANDUAN &amp; KETENTUAN RESMI</p>
+				<h2 class="elha-section-title">Informasi Pembelian &amp; Ketentuan Tiket</h2>
+
+				<div class="elha-faq-list">
+					<details class="elha-faq-item">
+						<summary>Bagaimana proses penerbitan E-Tiket setelah checkout?</summary>
+						<div class="elha-faq-body">
+							<p>Sistem otomatis menerbitkan <strong>Kartu E-Tiket Digital</strong> berisi <strong>Kode Booking</strong> dan <strong>Barcode</strong> yang dapat langsung disimpan sebagai PDF serta dikonfirmasikan ke Admin.</p>
+						</div>
+					</details>
+
+					<details class="elha-faq-item">
+						<summary>Bagaimana cara menukarkan E-Tiket di lokasi acara?</summary>
+						<div class="elha-faq-body">
+							<p>Tunjukkan <strong>Kartu E-Tiket Digital</strong> (di layar HP atau cetak) beserta kartu identitas di loket <strong>Gate Check-In</strong> untuk dipindai dan ditukar dengan gelang akses.</p>
+						</div>
+					</details>
+
+					<details class="elha-faq-item">
+						<summary>Metode pembayaran apa saja yang tersedia?</summary>
+						<div class="elha-faq-body">
+							<p>Pembayaran dilayani melalui <strong>QRIS Resmi</strong> (seluruh Mobile Banking &amp; E-Wallet), <strong>Virtual Account Bank</strong> (BCA, Mandiri, BNI, BRI), dan transfer rekening resmi.</p>
+						</div>
+					</details>
+
+					<details class="elha-faq-item">
+						<summary>Bagaimana cara beli tiket rombongan atau sewa booth?</summary>
+						<div class="elha-faq-body">
+							<p>Pesan hingga <strong>20 tiket sekaligus</strong> dan gunakan kode <code>KOMUNITAS10</code> untuk diskon 10%. Untuk sewa <strong>Booth Bazar (2x2m)</strong>, pilih kategori tiket Sewa Booth pada event terkait.</p>
+						</div>
+					</details>
+
+					<details class="elha-faq-item">
+						<summary>Apakah tiket dapat dijadwalkan ulang atau dipindahtangankan?</summary>
+						<div class="elha-faq-body">
+							<p>Tiket berlaku sesuai tanggal yang dipilih namun <strong>dapat dipindahtangankan</strong> dengan menginformasikan perubahan nama pemegang tiket ke Admin maksimal <strong>H-1</strong> acara.</p>
+						</div>
+					</details>
+
+					<details class="elha-faq-item">
+						<summary>Bagaimana ketentuan tiket anak-anak &amp; fasilitas venue?</summary>
+						<div class="elha-faq-body">
+							<p>Anak usia di bawah <strong>6 tahun (atau tinggi &lt; 110 cm)</strong> gratis didampingi orang tua. Seluruh venue dilengkapi akses kursi roda, ruang laktasi, mushola, dan pos medis.</p>
+						</div>
+					</details>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<footer class="elha-footer" role="contentinfo">
+		<div class="elha-container elha-footer-inner">
+			<div class="elha-footer-brand">
+				<strong>eLHa Event</strong>
+				<p>Platform resmi pemesanan tiket pameran, bazar kurasi, dan workshop komunitas.</p>
+			</div>
+
+			<div class="elha-footer-cta">
+				<button type="button" class="elha-btn elha-btn-primary" data-view-target="checkout">
+					Beli Tiket Sekarang
+				</button>
+			</div>
+		</div>
+	</footer>
+
+	<!-- FLOATING BACK TO TOP BUTTON (ARROW ONLY) -->
+	<button type="button" id="elha-back-to-top" class="elha-back-to-top" aria-label="Kembali ke bagian atas halaman" hidden>
+		<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+			<path d="M18 15l-6-6-6 6" />
+		</svg>
+	</button>
+
+	<!-- MODAL: PRINTABLE DIGITAL E-TICKET & ORDER CONFIRMATION -->
+	<div id="elha-receipt-modal" class="elha-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="elha-receipt-modal-title" hidden>
+		<div class="elha-modal-card">
+			<div class="elha-modal-header">
+				<div>
+					<span class="elha-code-tag" id="elha-receipt-badge">E-TIKET DIGITAL RESMI</span>
+					<h2 id="elha-receipt-modal-title">E-Tiket &amp; Konfirmasi Pesanan</h2>
+				</div>
+				<button type="button" class="elha-modal-close" data-close-modal="elha-receipt-modal" aria-label="Tutup jendela">&times;</button>
+			</div>
+
+			<div class="elha-modal-body">
+				<!-- PRINTABLE DIGITAL E-TICKET PASS -->
+				<div id="elha-printable-eticket" class="elha-eticket-pass">
+					<div class="elha-eticket-pass-head">
+						<div>
+							<span class="elha-eticket-label">KODE BOOKING E-TIKET</span>
+							<strong class="elha-mono-text elha-eticket-code" id="elha-receipt-status-heading">ELHA-2611-XXXX</strong>
+						</div>
+						<span class="elha-wa-tag">E-TICKET PASS</span>
+					</div>
+
+					<div class="elha-eticket-pass-body">
+						<h3 id="elha-eticket-event-name">Pekan Raya Kriya &amp; Kuliner Nusantara 2026</h3>
+						<p id="elha-eticket-venue-date">Hall B, Jakarta Convention Center, Senayan</p>
+
+						<div class="elha-eticket-grid">
+							<div>
+								<small>Pemegang Tiket</small>
+								<strong id="elha-eticket-buyer">-</strong>
+							</div>
+							<div>
+								<small>Kategori &amp; Jumlah</small>
+								<strong id="elha-eticket-tier">-</strong>
+							</div>
+							<div>
+								<small>Total Tagihan</small>
+								<strong class="elha-mono-text" id="elha-eticket-total">Rp 0</strong>
+							</div>
+							<div>
+								<small>Status Tiket</small>
+								<strong id="elha-receipt-status-sub">Menunggu Konfirmasi Pembayaran</strong>
+							</div>
+						</div>
+
+						<div class="elha-eticket-barcode-box">
+							<div id="elha-eticket-barcode" class="elha-barcode-svg" aria-hidden="true"></div>
+							<span class="elha-mono-text" id="elha-eticket-serial">SCAN BARCODE DI GATE CHECK-IN</span>
+						</div>
+					</div>
+				</div>
+
+				<details class="elha-wa-preview-collapse">
+					<summary>Lihat Teks Rincian Pesanan Otomatis</summary>
+					<textarea id="elha-wa-preview-text" class="elha-textarea elha-mono-text" rows="5" readonly></textarea>
+				</details>
+
+				<div class="elha-modal-actions">
+					<button type="button" id="elha-print-eticket-btn" class="elha-btn elha-btn-secondary">
+						Cetak / Simpan PDF E-Tiket
+					</button>
+					<button type="button" id="elha-copy-wa-text-btn" class="elha-btn elha-btn-secondary">
+						Salin Rincian
+					</button>
+					<a href="https://wa.me/6281234567890" target="_blank" rel="noopener noreferrer" id="elha-wa-direct-link" class="elha-btn elha-btn-primary">
+						Konfirmasi &amp; Aktifkan Tiket
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script src="assets/js/app.js?v=20261117i"></script>
+</body>
+</html>

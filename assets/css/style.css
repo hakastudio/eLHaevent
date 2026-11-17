@@ -1,0 +1,2113 @@
+body {
+	margin: 0;
+	padding: 0;
+	background-color: #F8FAFC;
+}
+
+/* eLHa Event - Modern Orange & Royal Blue Mobile-First Ticketing UI */
+
+.elha-eo-wrapper {
+	--elha-bg: #F8FAFC;
+	--elha-surface: #EEF2F8;
+	--elha-surface-elevated: #FFFFFF;
+	--elha-header-glass: rgba(248, 250, 252, 0.9);
+	--elha-hero-bg: #0B1E3B;
+	--elha-hero-text: #F8FAFC;
+	--elha-hero-muted: #B8CAE6;
+	--elha-text: #0B1E3B;
+	--elha-text-muted: #3B5275;
+	--elha-accent: #FF7315;
+	--elha-accent-hover: #E85E00;
+	--elha-accent-strong: #C84700;
+	--elha-accent-soft: rgba(255, 115, 21, 0.11);
+	--elha-accent-text: #0B1E3B;
+	--elha-blue: #15469E;
+	--elha-blue-hover: #0F357A;
+	--elha-blue-text: #FFFFFF;
+	--elha-border-subtle: rgba(11, 30, 59, 0.1);
+	--elha-border: #556E94;
+	--elha-focus: #FF7315;
+	--elha-shadow-sm: 0 4px 18px rgba(11, 30, 59, 0.05);
+	--elha-shadow-md: 0 18px 40px -10px rgba(11, 30, 59, 0.11);
+	--elha-shadow-lg: 0 28px 60px -15px rgba(11, 30, 59, 0.28);
+	--elha-radius-sm: 12px;
+	--elha-radius-md: 18px;
+	--elha-radius-lg: 22px;
+	--elha-font-serif: 'Bricolage Grotesque', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+	--elha-font-sans: 'Onest', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+	--elha-font-mono: 'IBM Plex Mono', Consolas, monospace;
+
+	background-color: var(--elha-bg);
+	color: var(--elha-text);
+	font-family: var(--elha-font-sans);
+	font-size: 16px;
+	line-height: 1.55;
+	box-sizing: border-box;
+	width: 100%;
+	overflow-x: clip;
+	-webkit-font-smoothing: antialiased;
+	-webkit-tap-highlight-color: transparent;
+	transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.elha-eo-wrapper[data-theme="dark"] {
+	--elha-bg: #071326;
+	--elha-surface: #0F2342;
+	--elha-surface-elevated: #142C52;
+	--elha-header-glass: rgba(7, 19, 38, 0.9);
+	--elha-hero-bg: #0D2240;
+	--elha-hero-text: #F8FAFC;
+	--elha-hero-muted: #B8CAE6;
+	--elha-text: #F8FAFC;
+	--elha-text-muted: #B8CAE6;
+	--elha-accent: #FF8533;
+	--elha-accent-hover: #FF9852;
+	--elha-accent-strong: #FF9852;
+	--elha-accent-soft: rgba(255, 133, 51, 0.16);
+	--elha-accent-text: #071326;
+	--elha-blue: #2563EB;
+	--elha-blue-hover: #3B82F6;
+	--elha-blue-text: #FFFFFF;
+	--elha-border-subtle: rgba(248, 250, 252, 0.12);
+	--elha-border: #6482AD;
+	--elha-focus: #FF8533;
+	--elha-shadow-sm: 0 4px 18px rgba(0, 0, 0, 0.3);
+	--elha-shadow-md: 0 18px 40px -10px rgba(0, 0, 0, 0.5);
+	--elha-shadow-lg: 0 28px 60px -15px rgba(0, 0, 0, 0.7);
+}
+
+.elha-eo-wrapper *,
+.elha-eo-wrapper *::before,
+.elha-eo-wrapper *::after {
+	box-sizing: border-box;
+}
+
+.elha-eo-wrapper [hidden] {
+	display: none !important;
+}
+
+.elha-skip-link {
+	position: absolute;
+	top: -100px;
+	left: 16px;
+	z-index: 1000;
+	background: var(--elha-accent);
+	color: var(--elha-accent-text);
+	padding: 12px 20px;
+	font-weight: 700;
+	border-radius: var(--elha-radius-sm);
+	text-decoration: none;
+}
+.elha-skip-link:focus { top: 12px; }
+
+.elha-eo-wrapper a:focus-visible,
+.elha-eo-wrapper button:focus-visible,
+.elha-eo-wrapper input:focus-visible,
+.elha-eo-wrapper select:focus-visible,
+.elha-eo-wrapper textarea:focus-visible,
+.elha-eo-wrapper summary:focus-visible {
+	outline: 3px solid var(--elha-focus);
+	outline-offset: 2px;
+}
+
+.elha-sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+.elha-container {
+	width: 100%;
+	max-width: 1180px;
+	margin: 0 auto;
+	padding: 0 clamp(1rem, 3.5vw, 2.5rem);
+}
+
+/* Sticky Glass Header (Single glassmorphic surface per R-10) */
+.elha-header {
+	position: sticky;
+	top: 0;
+	z-index: 100;
+	background-color: var(--elha-header-glass);
+	backdrop-filter: blur(16px);
+	-webkit-backdrop-filter: blur(16px);
+	border-bottom: 1px solid var(--elha-border-subtle);
+}
+
+.elha-header-inner {
+	display: grid;
+	grid-template-columns: 44px 1fr 44px;
+	align-items: center;
+	gap: 8px;
+	padding: 10px clamp(1rem, 3.5vw, 2.5rem);
+}
+
+.elha-brand {
+	grid-column: 2;
+	grid-row: 1;
+	justify-self: center;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	text-decoration: none;
+	color: var(--elha-text);
+	min-height: 44px;
+	min-width: 0;
+}
+
+.elha-brand-text {
+	display: flex;
+	align-items: center;
+	line-height: 1;
+}
+
+.elha-brand-text strong {
+	font-family: var(--elha-font-serif);
+	font-size: clamp(1.5rem, 1.35rem + 0.65vw, 1.8rem);
+	font-weight: 800;
+	letter-spacing: -0.03em;
+	color: var(--elha-accent);
+	white-space: nowrap;
+}
+
+.elha-desktop-nav {
+	display: none;
+	align-items: center;
+	gap: 4px;
+}
+
+.elha-nav-link {
+	display: inline-flex;
+	align-items: center;
+	min-height: 44px;
+	padding: 6px 14px;
+	color: var(--elha-text-muted);
+	text-decoration: none;
+	font-weight: 600;
+	font-size: 0.9rem;
+	border-radius: 99px;
+	transition: all 0.15s ease;
+}
+
+.elha-nav-link:hover {
+	color: var(--elha-text);
+	background-color: var(--elha-surface);
+}
+
+.elha-header-actions {
+	display: contents;
+}
+
+.elha-theme-icon-btn {
+	grid-column: 1;
+	grid-row: 1;
+	justify-self: start;
+}
+
+.elha-mobile-menu-btn {
+	grid-column: 3;
+	grid-row: 1;
+	justify-self: end;
+}
+
+/* Mobile-First View Switcher: Full-width 2-column bar on phones, inline on >=680px */
+.elha-view-switcher {
+	grid-column: 1 / -1;
+	grid-row: 2;
+	width: 100%;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	background-color: var(--elha-surface);
+	border-radius: 10px;
+	padding: 3px;
+	gap: 4px;
+}
+
+.elha-switch-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	min-height: 38px;
+	padding: 6px 10px;
+	border: none;
+	border-radius: 8px;
+	background: transparent;
+	color: var(--elha-text-muted);
+	font-family: var(--elha-font-sans);
+	font-size: 0.82rem;
+	font-weight: 700;
+	cursor: pointer;
+	transition: all 0.18s ease;
+}
+
+.elha-switch-btn:active {
+	transform: scale(0.98);
+}
+
+.elha-switch-btn.is-active {
+	background-color: var(--elha-blue);
+	color: var(--elha-blue-text);
+	box-shadow: var(--elha-shadow-sm);
+}
+
+.elha-theme-btn,
+.elha-mobile-menu-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	min-height: 44px;
+	min-width: 44px;
+	padding: 6px 10px;
+	background-color: var(--elha-surface);
+	color: var(--elha-text);
+	border: 1px solid var(--elha-border-subtle);
+	border-radius: 11px;
+	font-family: var(--elha-font-sans);
+	font-size: 0.78rem;
+	font-weight: 700;
+	white-space: nowrap;
+	cursor: pointer;
+	transition: transform 0.12s ease, background-color 0.15s ease;
+}
+
+.elha-theme-btn:active,
+.elha-mobile-menu-btn:active {
+	transform: scale(0.97);
+}
+
+.elha-theme-icon-btn,
+.elha-mobile-menu-btn {
+	width: 44px;
+	height: 44px;
+	padding: 0;
+}
+
+@media (max-width: 1023px) {
+	.elha-desktop-only-admin {
+		display: none !important;
+	}
+}
+
+.elha-hamburger-box {
+	width: 20px;
+	height: 14px;
+	display: inline-flex;
+	flex-direction: column;
+	justify-content: space-between;
+	position: relative;
+}
+
+.elha-hamburger-line {
+	display: block;
+	width: 100%;
+	height: 2px;
+	background-color: var(--elha-text);
+	border-radius: 99px;
+	transition: transform 0.2s ease, opacity 0.15s ease;
+}
+
+.elha-mobile-menu-btn[aria-expanded="true"] .elha-hamburger-line:nth-child(1) {
+	transform: translateY(6px) rotate(45deg);
+}
+
+.elha-mobile-menu-btn[aria-expanded="true"] .elha-hamburger-line:nth-child(2) {
+	opacity: 0;
+}
+
+.elha-mobile-menu-btn[aria-expanded="true"] .elha-hamburger-line:nth-child(3) {
+	transform: translateY(-6px) rotate(-45deg);
+}
+
+.elha-empty-actions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 10px;
+	margin-top: 14px;
+}
+
+.elha-mobile-drawer {
+	border-top: 1px solid var(--elha-border-subtle);
+	background-color: var(--elha-surface-elevated);
+	padding: 14px 16px 18px 16px;
+}
+
+.elha-mobile-nav {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.elha-mobile-link {
+	display: flex;
+	align-items: center;
+	min-height: 46px;
+	padding: 10px 14px;
+	color: var(--elha-text);
+	text-decoration: none;
+	font-weight: 600;
+	font-size: 0.94rem;
+	border-radius: var(--elha-radius-sm);
+	background-color: var(--elha-bg);
+}
+
+/* Typography */
+.elha-kicker {
+	font-family: var(--elha-font-mono);
+	font-size: 0.72rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--elha-accent-strong);
+	margin: 0 0 6px 0;
+}
+
+.elha-section-title {
+	font-family: var(--elha-font-serif);
+	font-size: clamp(1.45rem, 1.2rem + 1.2vw, 2.2rem);
+	font-weight: 800;
+	line-height: 1.16;
+	letter-spacing: -0.025em;
+	margin: 0;
+	color: var(--elha-text);
+}
+
+.elha-mono-text {
+	font-family: var(--elha-font-mono);
+	font-variant-numeric: tabular-nums;
+}
+
+/* Buttons */
+.elha-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	min-height: 46px;
+	padding: 10px 20px;
+	font-family: var(--elha-font-sans);
+	font-size: 0.92rem;
+	font-weight: 700;
+	text-decoration: none;
+	text-align: center;
+	border-radius: 12px;
+	border: 1px solid transparent;
+	cursor: pointer;
+	transition: all 0.18s ease;
+}
+
+.elha-btn:active {
+	transform: scale(0.98);
+}
+
+.elha-btn-primary {
+	background-color: var(--elha-accent);
+	color: var(--elha-accent-text);
+}
+
+.elha-btn-primary:hover {
+	background-color: var(--elha-accent-hover);
+	transform: translateY(-1px);
+	box-shadow: 0 8px 22px -4px rgba(255, 115, 21, 0.45);
+}
+
+.elha-btn-blue {
+	background-color: var(--elha-blue);
+	color: var(--elha-blue-text);
+}
+
+.elha-btn-blue:hover {
+	background-color: var(--elha-blue-hover);
+	transform: translateY(-1px);
+	box-shadow: 0 8px 22px -4px rgba(21, 70, 158, 0.4);
+}
+
+.elha-btn-secondary {
+	background-color: var(--elha-surface);
+	color: var(--elha-text);
+	border-color: var(--elha-border-subtle);
+}
+
+.elha-btn-secondary:hover {
+	background-color: var(--elha-surface-elevated);
+	border-color: var(--elha-border);
+}
+
+.elha-btn-full { width: 100%; }
+.elha-btn-large { min-height: 52px; font-size: 0.96rem; border-radius: 14px; }
+
+/* HERO EVENT SPOTLIGHT BANNER (COMPACT & SIMPLE) */
+.elha-hero-section {
+	padding: 12px 0 16px 0;
+}
+
+.elha-hero-grid {
+	background-color: var(--elha-hero-bg);
+	background-image:
+		radial-gradient(circle at 86% 16%, rgba(255, 115, 21, 0.36), transparent 44%),
+		radial-gradient(circle at 12% 88%, rgba(37, 99, 235, 0.45), transparent 52%);
+	color: var(--elha-hero-text);
+	border-radius: var(--elha-radius-md);
+	padding: clamp(1.1rem, 2.2vw, 1.6rem) clamp(1.1rem, 2.8vw, 2rem);
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: clamp(1rem, 2.5vw, 1.75rem);
+	align-items: center;
+	box-shadow: var(--elha-shadow-md);
+}
+
+.elha-hero-pill-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 8px;
+}
+
+.elha-live-pill {
+	font-family: var(--elha-font-mono);
+	font-size: 0.68rem;
+	font-weight: 700;
+	letter-spacing: 0.05em;
+	padding: 3px 10px;
+	background-color: var(--elha-accent);
+	color: #0B1E3B;
+	border-radius: 99px;
+}
+
+.elha-hero-date-pill {
+	font-family: var(--elha-font-mono);
+	font-size: 0.72rem;
+	font-weight: 600;
+	padding: 3px 10px;
+	background-color: rgba(255, 255, 255, 0.12);
+	color: #FFFFFF;
+	border-radius: 99px;
+}
+
+.elha-hero-title {
+	font-family: var(--elha-font-serif);
+	font-size: clamp(1.35rem, 1.08rem + 1.15vw, 1.9rem);
+	font-weight: 800;
+	line-height: 1.15;
+	letter-spacing: -0.025em;
+	margin: 0 0 8px 0;
+	color: #FFFFFF;
+}
+
+.elha-hero-lead {
+	font-size: 0.88rem;
+	color: var(--elha-hero-muted);
+	margin: 0 0 12px 0;
+	max-width: 56ch;
+	line-height: 1.5;
+}
+
+.elha-hero-meta-strip {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 8px;
+	margin-bottom: 14px;
+}
+
+.elha-meta-chip {
+	background-color: rgba(255, 255, 255, 0.07);
+	border: 1px solid rgba(255, 255, 255, 0.14);
+	border-radius: 10px;
+	padding: 7px 12px;
+}
+
+.elha-meta-chip small {
+	display: block;
+	font-family: var(--elha-font-mono);
+	font-size: 0.64rem;
+	text-transform: uppercase;
+	color: #FF9852;
+	margin-bottom: 1px;
+}
+
+.elha-meta-chip strong {
+	font-size: 0.82rem;
+	color: #FFFFFF;
+	display: block;
+	line-height: 1.3;
+}
+
+.elha-hero-cta-group {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.elha-hero-cta-group .elha-btn {
+	width: 100%;
+	min-height: 44px;
+	padding: 8px 16px;
+	font-size: 0.86rem;
+}
+
+.elha-hero-section .elha-btn-secondary {
+	background-color: rgba(255, 255, 255, 0.1);
+	color: #FFFFFF;
+	border-color: rgba(255, 255, 255, 0.22);
+}
+
+/* Digital Ticket Pass Card */
+.elha-ticket-stub {
+	background-color: var(--elha-surface-elevated);
+	color: var(--elha-text);
+	border-radius: var(--elha-radius-md);
+	box-shadow: var(--elha-shadow-md);
+	position: relative;
+	overflow: hidden;
+	border: 1px solid var(--elha-border-subtle);
+}
+
+.elha-ticket-stub-top {
+	padding: 12px 14px 8px 14px;
+}
+
+.elha-hero-compact-stub .elha-ticket-stub-top {
+	border-bottom: 1px dashed var(--elha-border-subtle);
+}
+
+.elha-stub-meta-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 6px;
+	margin-bottom: 6px;
+}
+
+.elha-code-tag {
+	display: inline-flex;
+	align-items: center;
+	font-family: var(--elha-font-mono);
+	font-size: 0.68rem;
+	font-weight: 700;
+	padding: 3px 9px;
+	background-color: var(--elha-blue);
+	color: #FFFFFF;
+	border-radius: 99px;
+}
+
+.elha-category-tag {
+	display: inline-flex;
+	align-items: center;
+	font-size: 0.68rem;
+	font-weight: 700;
+	padding: 3px 9px;
+	background-color: var(--elha-surface);
+	color: var(--elha-text-muted);
+	border-radius: 99px;
+}
+
+.elha-stub-title {
+	font-family: var(--elha-font-serif);
+	font-size: 0.98rem;
+	font-weight: 800;
+	margin: 0;
+}
+
+.elha-stub-sub {
+	font-size: 0.78rem;
+	color: var(--elha-text-muted);
+	margin: 0;
+}
+
+.elha-ticket-perforation {
+	position: relative;
+	display: flex;
+	align-items: center;
+	height: 20px;
+	background-color: var(--elha-surface-elevated);
+}
+
+.elha-perforation-line {
+	width: 100%;
+	border-top: 1.5px dashed var(--elha-border-subtle);
+}
+
+.elha-notch {
+	width: 18px;
+	height: 18px;
+	background-color: var(--elha-hero-bg);
+	border-radius: 50%;
+	position: absolute;
+	top: 1px;
+}
+
+.elha-checkout-live-stub .elha-notch {
+	background-color: var(--elha-bg);
+	border: 1px solid var(--elha-border-subtle);
+}
+
+.elha-notch-left { left: -10px; }
+.elha-notch-right { right: -10px; }
+
+.elha-ticket-stub-bottom {
+	padding: 10px 14px 12px 14px;
+}
+
+.elha-stub-tier-list {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	margin-bottom: 10px;
+}
+
+.elha-quick-tier-btn {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	width: 100%;
+	min-height: 44px;
+	padding: 7px 12px;
+	background-color: var(--elha-bg);
+	color: var(--elha-text);
+	border: 1px solid var(--elha-border-subtle);
+	border-radius: 10px;
+	font-family: var(--elha-font-sans);
+	text-align: left;
+	cursor: pointer;
+	transition: all 0.15s ease;
+}
+
+.elha-quick-tier-btn:hover,
+.elha-quick-tier-btn:active {
+	border-color: var(--elha-accent);
+	background-color: var(--elha-accent-soft);
+}
+
+.elha-quick-tier-info {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.elha-quick-tier-name {
+	font-size: 0.82rem;
+	font-weight: 700;
+	line-height: 1.25;
+}
+
+.elha-quick-tier-info small {
+	font-size: 0.72rem;
+	color: var(--elha-text-muted);
+}
+
+.elha-quick-tier-price {
+	font-family: var(--elha-font-mono);
+	font-size: 0.84rem;
+	color: var(--elha-accent-strong);
+	font-weight: 700;
+	white-space: nowrap;
+	flex-shrink: 0;
+}
+
+/* EVENT CATALOG SECTION */
+.elha-section {
+	padding: clamp(1.5rem, 3vw, 2.5rem) 0;
+}
+
+.elha-section-header-split {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	margin-bottom: 18px;
+}
+
+.elha-catalog-controls {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	gap: 12px;
+	margin-bottom: 22px;
+}
+
+/* Touch-scrollable category filter bar on mobile, wrapping on tablet/desktop */
+.elha-filter-tabs {
+	display: flex;
+	flex-wrap: nowrap;
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+	scrollbar-width: none;
+	gap: 8px;
+	padding-bottom: 4px;
+	max-width: 100%;
+}
+
+.elha-filter-tabs::-webkit-scrollbar {
+	display: none;
+}
+
+.elha-filter-tab {
+	min-height: 44px;
+	padding: 8px 16px;
+	background-color: var(--elha-surface);
+	color: var(--elha-text-muted);
+	border: none;
+	border-radius: 99px;
+	font-family: var(--elha-font-sans);
+	font-size: 0.86rem;
+	font-weight: 700;
+	white-space: nowrap;
+	flex-shrink: 0;
+	cursor: pointer;
+	transition: all 0.15s ease;
+}
+
+.elha-filter-tab:active {
+	transform: scale(0.97);
+}
+
+.elha-filter-tab.is-active {
+	background-color: var(--elha-blue);
+	color: #FFFFFF;
+}
+
+.elha-search-box {
+	width: 100%;
+}
+
+/* 16px font-size prevents automatic zoom on iOS/Android mobile browsers */
+.elha-input,
+.elha-select,
+.elha-textarea {
+	width: 100%;
+	min-height: 46px;
+	padding: 10px 14px;
+	background-color: var(--elha-surface-elevated);
+	color: var(--elha-text);
+	border: 1px solid var(--elha-border);
+	border-radius: 12px;
+	font-family: var(--elha-font-sans);
+	font-size: 1rem;
+}
+
+/* Visual Event Poster Cards Grid (Compact & Simple) */
+.elha-event-poster-grid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 14px;
+}
+
+.elha-poster-card {
+	background-color: var(--elha-surface-elevated);
+	border: 1px solid var(--elha-border-subtle);
+	border-radius: 16px;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	box-shadow: var(--elha-shadow-sm);
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.elha-poster-card:hover {
+	transform: translateY(-3px);
+	box-shadow: var(--elha-shadow-md);
+}
+
+.elha-poster-art {
+	min-height: 76px;
+	padding: 10px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 8px;
+	color: #FFFFFF;
+	position: relative;
+}
+
+.poster-terracotta {
+	background: radial-gradient(circle at 85% 20%, rgba(255, 165, 90, 0.45), transparent 45%), linear-gradient(135deg, #0B1E3B 0%, #15469E 45%, #E85E00 100%);
+}
+
+.poster-emerald {
+	background: radial-gradient(circle at 80% 25%, rgba(125, 185, 255, 0.35), transparent 45%), linear-gradient(135deg, #07162C 0%, #15469E 65%, #2563EB 100%);
+}
+
+.poster-amber {
+	background: radial-gradient(circle at 85% 20%, rgba(255, 210, 130, 0.35), transparent 45%), linear-gradient(135deg, #9A3400 0%, #E85E00 55%, #0B1E3B 100%);
+}
+
+.poster-slate {
+	background: radial-gradient(circle at 80% 20%, rgba(255, 135, 50, 0.32), transparent 45%), linear-gradient(135deg, #0B1E3B 0%, #1E3A8A 60%, #C84700 100%);
+}
+
+.elha-poster-top-badges {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 6px;
+}
+
+.elha-poster-date {
+	font-family: var(--elha-font-mono);
+	font-size: 0.68rem;
+	font-weight: 700;
+	padding: 3px 9px;
+	background-color: var(--elha-accent);
+	color: #0B1E3B;
+	border-radius: 99px;
+}
+
+.elha-poster-cat {
+	font-size: 0.68rem;
+	font-weight: 700;
+	padding: 3px 9px;
+	background-color: rgba(11, 30, 59, 0.74);
+	border-radius: 99px;
+}
+
+.elha-poster-bottom-code {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	font-size: 0.7rem;
+	opacity: 0.92;
+}
+
+.elha-poster-body {
+	padding: 12px 14px 10px 14px;
+	flex: 1;
+}
+
+.elha-row-title {
+	font-family: var(--elha-font-serif);
+	font-size: 1.04rem;
+	font-weight: 800;
+	line-height: 1.25;
+	letter-spacing: -0.02em;
+	margin: 0 0 4px 0;
+}
+
+.elha-row-venue {
+	font-size: 0.8rem;
+	color: var(--elha-text-muted);
+	margin: 0;
+}
+
+.elha-poster-footer {
+	padding: 10px 14px 12px 14px;
+	border-top: 1px solid var(--elha-border-subtle);
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+}
+
+.elha-poster-footer .elha-btn {
+	min-height: 44px;
+	padding: 7px 16px;
+	font-size: 0.84rem;
+	border-radius: 10px;
+}
+
+.elha-price-box {
+	display: flex;
+	flex-direction: column;
+}
+
+.elha-price-label {
+	font-size: 0.65rem;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: var(--elha-text-muted);
+}
+
+.elha-price-value {
+	font-family: var(--elha-font-mono);
+	font-size: 1.02rem;
+	font-weight: 700;
+	color: var(--elha-accent-strong);
+}
+
+/* 4 Steps Section */
+.elha-workflow-grid {
+	list-style: none;
+	padding: 0;
+	margin: 20px 0 0 0;
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 14px;
+}
+
+.elha-workflow-step {
+	background-color: var(--elha-surface-elevated);
+	border: 1px solid var(--elha-border-subtle);
+	border-radius: var(--elha-radius-md);
+	padding: 20px;
+}
+
+.elha-step-index {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	font-family: var(--elha-font-mono);
+	font-size: 0.82rem;
+	font-weight: 700;
+	background-color: var(--elha-blue);
+	color: #FFFFFF;
+	border-radius: 10px;
+	margin-bottom: 10px;
+}
+
+.elha-workflow-step h3 {
+	font-family: var(--elha-font-serif);
+	font-size: 1.02rem;
+	font-weight: 800;
+	margin: 0 0 4px 0;
+}
+
+.elha-workflow-step p {
+	margin: 0;
+	font-size: 0.86rem;
+	color: var(--elha-text-muted);
+}
+
+/* CHECKOUT VIEW */
+.elha-checkout-section {
+	padding: clamp(1.35rem, 3.5vw, 3rem) 0;
+}
+
+.elha-checkout-topbar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+	margin-bottom: 18px;
+}
+
+.elha-checkout-layout {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 22px;
+	align-items: start;
+}
+
+.elha-checkout-card {
+	background-color: var(--elha-surface-elevated);
+	border: 1px solid var(--elha-border-subtle);
+	border-radius: var(--elha-radius-lg);
+	padding: clamp(1.15rem, 3.5vw, 2.25rem);
+	box-shadow: var(--elha-shadow-sm);
+}
+
+.elha-checkout-main-title {
+	font-family: var(--elha-font-serif);
+	font-size: clamp(1.35rem, 1.15rem + 0.8vw, 1.65rem);
+	font-weight: 800;
+	margin: 0 0 6px 0;
+}
+
+.elha-checkout-sub {
+	color: var(--elha-text-muted);
+	font-size: 0.9rem;
+	margin: 0 0 18px 0;
+}
+
+.elha-form-row {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	margin-bottom: 14px;
+}
+
+.elha-form-row label {
+	font-weight: 700;
+	font-size: 0.88rem;
+}
+
+.elha-form-row-two,
+.elha-qty-promo-row {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 12px;
+}
+
+.elha-event-mini-summary {
+	background-color: var(--elha-surface);
+	border-radius: 10px;
+	padding: 10px 14px;
+	font-size: 0.84rem;
+	color: var(--elha-text);
+	font-weight: 600;
+}
+
+.elha-tier-radio-group {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.elha-tier-card {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	min-height: 54px;
+	padding: 14px;
+	background-color: var(--elha-bg);
+	border: 1.5px solid transparent;
+	border-radius: 14px;
+	cursor: pointer;
+	transition: all 0.15s ease;
+}
+
+.elha-tier-card.is-selected {
+	border-color: var(--elha-accent);
+	background-color: var(--elha-accent-soft);
+}
+
+.elha-tier-card input[type="radio"] {
+	width: 20px;
+	height: 20px;
+	margin-top: 2px;
+	accent-color: var(--elha-accent);
+	flex-shrink: 0;
+}
+
+.elha-tier-card-body { flex: 1; min-width: 0; }
+.elha-tier-card-top, .elha-calc-row {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: 8px;
+}
+
+.elha-tier-card-price {
+	font-family: var(--elha-font-mono);
+	font-weight: 700;
+	color: var(--elha-accent-strong);
+}
+
+.elha-tier-card-note {
+	display: block;
+	color: var(--elha-text-muted);
+	font-size: 0.8rem;
+	margin-top: 2px;
+}
+
+.elha-stepper, .elha-promo-input-group {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.elha-promo-input-group .elha-input {
+	min-width: 0;
+	flex: 1;
+}
+
+.elha-stepper-btn {
+	min-width: 46px;
+	min-height: 46px;
+	background-color: var(--elha-surface);
+	color: var(--elha-text);
+	border: none;
+	border-radius: 10px;
+	font-family: var(--elha-font-mono);
+	font-size: 1.15rem;
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.elha-stepper-btn:active {
+	transform: scale(0.95);
+}
+
+.elha-qty-input {
+	width: 68px;
+	min-height: 46px;
+	text-align: center;
+	font-family: var(--elha-font-mono);
+	font-size: 1rem;
+	font-weight: 700;
+	background-color: var(--elha-bg);
+	color: var(--elha-text);
+	border: 1px solid var(--elha-border-subtle);
+	border-radius: 10px;
+}
+
+.elha-promo-status {
+	display: block;
+	margin-top: 6px;
+	font-size: 0.82rem;
+	font-weight: 700;
+	color: var(--elha-accent-strong);
+}
+
+.elha-buyer-section {
+	margin-top: 18px;
+	padding-top: 16px;
+	border-top: 1px solid var(--elha-border-subtle);
+}
+
+.elha-buyer-heading {
+	font-family: var(--elha-font-serif);
+	font-size: 1rem;
+	font-weight: 800;
+	margin: 0 0 12px 0;
+}
+
+/* Right Boarding Pass Summary */
+.elha-stub-dark-header {
+	background: linear-gradient(135deg, var(--elha-hero-bg), var(--elha-blue));
+	color: #FFFFFF;
+	padding: clamp(1.1rem, 2.5vw, 1.375rem);
+}
+
+.elha-wa-tag {
+	font-family: var(--elha-font-mono);
+	font-size: 0.7rem;
+	font-weight: 700;
+	padding: 4px 10px;
+	background-color: var(--elha-accent);
+	color: #0B1E3B;
+	border-radius: 99px;
+}
+
+.elha-stub-title-light {
+	font-family: var(--elha-font-serif);
+	font-size: 1.2rem;
+	font-weight: 800;
+	margin: 8px 0 4px 0;
+	color: #FFFFFF;
+}
+
+.elha-stub-venue-line,
+.elha-stub-date-line {
+	margin: 2px 0;
+	font-size: 0.82rem;
+	color: var(--elha-hero-muted);
+}
+
+.elha-stub-calc-list {
+	margin: 0 0 16px 0;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	font-size: 0.88rem;
+}
+
+.elha-calc-row dd {
+	margin: 0;
+	font-weight: 600;
+	text-align: right;
+}
+
+.elha-calc-total {
+	padding-top: 12px;
+	border-top: 1px solid var(--elha-border-subtle);
+	font-size: 1.1rem;
+	font-weight: 800;
+	color: var(--elha-accent-strong);
+}
+
+.elha-stub-payment-note,
+.elha-feedback-banner {
+	background-color: var(--elha-surface);
+	border-radius: 10px;
+	padding: 12px 14px;
+	margin-bottom: 14px;
+	font-size: 0.84rem;
+}
+
+/* FAQ Section (Compact Accordion) */
+.elha-faq-list {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 10px;
+	margin-top: 14px;
+	align-items: start;
+}
+
+.elha-faq-item {
+	background-color: var(--elha-surface-elevated);
+	border: 1px solid var(--elha-border-subtle);
+	border-radius: 12px;
+	padding: 2px 14px;
+	box-shadow: var(--elha-shadow-sm);
+	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.elha-faq-item[open] {
+	border-color: var(--elha-border);
+}
+
+.elha-faq-item summary {
+	min-height: 44px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+	font-family: var(--elha-font-serif);
+	font-weight: 700;
+	font-size: 0.88rem;
+	line-height: 1.3;
+	cursor: pointer;
+	list-style: none;
+	padding: 8px 0;
+	color: var(--elha-text);
+}
+
+.elha-faq-item summary::-webkit-details-marker {
+	display: none;
+}
+
+.elha-faq-item summary::after {
+	content: "+";
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 26px;
+	height: 26px;
+	border-radius: 7px;
+	background-color: var(--elha-surface);
+	color: var(--elha-blue);
+	font-family: var(--elha-font-mono);
+	font-size: 0.92rem;
+	font-weight: 700;
+	flex-shrink: 0;
+}
+
+.elha-faq-item[open] summary::after {
+	content: "-";
+	background-color: var(--elha-accent);
+	color: #0B1E3B;
+}
+
+.elha-faq-body {
+	padding: 8px 0 12px 0;
+	border-top: 1px solid var(--elha-border-subtle);
+	color: var(--elha-text-muted);
+	font-size: 0.82rem;
+	line-height: 1.55;
+}
+
+.elha-faq-body p {
+	margin: 0;
+}
+
+/* Floating Back to Top Button (Arrow Only) */
+.elha-back-to-top {
+	position: fixed;
+	right: clamp(14px, 2.5vw, 24px);
+	bottom: clamp(16px, 2.5vw, 24px);
+	z-index: 95;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 46px;
+	height: 46px;
+	padding: 0;
+	border-radius: 50%;
+	background-color: var(--elha-accent);
+	color: #0B1E3B;
+	border: 2px solid var(--elha-hero-bg);
+	box-shadow: var(--elha-shadow-md);
+	cursor: pointer;
+	transition: transform 0.18s ease, background-color 0.15s ease;
+}
+
+.elha-back-to-top:hover {
+	background-color: var(--elha-accent-hover);
+	transform: translateY(-2px);
+}
+
+.elha-back-to-top:active {
+	transform: scale(0.96);
+}
+
+/* Footer */
+.elha-footer {
+	padding: 28px 0;
+	border-top: 1px solid var(--elha-border-subtle);
+	background-color: var(--elha-hero-bg);
+	color: #FFFFFF;
+}
+
+.elha-footer-inner {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 16px;
+}
+
+.elha-footer-brand strong {
+	font-family: var(--elha-font-serif);
+	font-size: 1.25rem;
+	color: var(--elha-accent);
+}
+
+.elha-footer-brand p {
+	margin: 4px 0 0 0;
+	font-size: 0.86rem;
+	color: var(--elha-hero-muted);
+}
+
+.elha-footer-cta,
+.elha-footer-cta .elha-btn {
+	width: 100%;
+}
+
+/* Modal & Printable Digital E-Ticket Pass */
+.elha-modal-backdrop {
+	position: fixed;
+	inset: 0;
+	z-index: 999;
+	background-color: rgba(7, 19, 38, 0.78);
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+	padding: 12px;
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+.elha-modal-card {
+	width: 100%;
+	max-width: 560px;
+	background-color: var(--elha-surface-elevated);
+	color: var(--elha-text);
+	border-radius: var(--elha-radius-lg);
+	box-shadow: var(--elha-shadow-lg);
+	overflow: hidden;
+	margin: auto;
+}
+
+.elha-modal-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 14px 18px;
+	border-bottom: 1px solid var(--elha-border-subtle);
+}
+
+.elha-modal-header h2 {
+	font-family: var(--elha-font-serif);
+	font-size: 1.15rem;
+	font-weight: 800;
+	margin: 4px 0 0 0;
+}
+
+.elha-modal-close {
+	min-width: 44px;
+	min-height: 44px;
+	background-color: var(--elha-surface);
+	color: var(--elha-text);
+	border: none;
+	border-radius: 50%;
+	font-size: 1.3rem;
+	cursor: pointer;
+	flex-shrink: 0;
+}
+
+.elha-modal-body {
+	padding: 16px 18px;
+}
+
+.elha-eticket-pass {
+	border: 2px solid var(--elha-blue);
+	border-radius: 16px;
+	overflow: hidden;
+	background-color: var(--elha-bg);
+	margin-bottom: 14px;
+}
+
+.elha-eticket-pass-head {
+	background: linear-gradient(135deg, var(--elha-hero-bg), var(--elha-blue));
+	color: #FFFFFF;
+	padding: 14px 16px;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+}
+
+.elha-eticket-label {
+	display: block;
+	font-family: var(--elha-font-mono);
+	font-size: 0.68rem;
+	color: #FF9852;
+	letter-spacing: 0.06em;
+}
+
+.elha-eticket-code {
+	font-size: 1.1rem;
+	color: #FFFFFF;
+}
+
+.elha-eticket-pass-body {
+	padding: 14px 16px;
+}
+
+.elha-eticket-pass-body h3 {
+	font-family: var(--elha-font-serif);
+	font-size: 1.12rem;
+	font-weight: 800;
+	margin: 0 0 4px 0;
+}
+
+.elha-eticket-pass-body > p {
+	margin: 0 0 12px 0;
+	font-size: 0.82rem;
+	color: var(--elha-text-muted);
+}
+
+.elha-eticket-grid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 10px;
+	padding: 12px;
+	background-color: var(--elha-surface);
+	border-radius: 10px;
+	margin-bottom: 14px;
+}
+
+.elha-eticket-grid small {
+	display: block;
+	font-size: 0.72rem;
+	color: var(--elha-text-muted);
+}
+
+.elha-eticket-grid strong {
+	font-size: 0.85rem;
+	word-break: break-word;
+}
+
+.elha-eticket-barcode-box {
+	text-align: center;
+	padding: 12px;
+	background-color: #FFFFFF;
+	color: #0B1E3B;
+	border: 1px dashed var(--elha-border);
+	border-radius: 10px;
+	overflow-x: auto;
+}
+
+.elha-barcode-svg {
+	display: flex;
+	justify-content: center;
+	margin-bottom: 4px;
+}
+
+.elha-barcode-svg svg {
+	max-width: 100%;
+	height: auto;
+}
+
+.elha-eticket-barcode-box span {
+	font-size: 0.72rem;
+	letter-spacing: 0.06em;
+	font-weight: 700;
+}
+
+.elha-wa-preview-collapse {
+	margin-bottom: 12px;
+	font-size: 0.82rem;
+}
+
+.elha-wa-preview-collapse summary {
+	cursor: pointer;
+	font-weight: 700;
+	color: var(--elha-text-muted);
+	margin-bottom: 6px;
+	min-height: 36px;
+	display: flex;
+	align-items: center;
+}
+
+.elha-modal-actions {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	margin-top: 14px;
+}
+
+.elha-modal-actions .elha-btn {
+	width: 100%;
+}
+
+.elha-modal-actions #elha-wa-direct-link {
+	order: -1;
+}
+
+/* Inline Full-Page Admin Dashboard (No Floating Modal) */
+.elha-admin-section {
+	padding: clamp(1.35rem, 3.5vw, 2.5rem) 0;
+}
+
+.elha-admin-topbar-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px;
+}
+
+.elha-admin-page-head {
+	margin-bottom: 16px;
+}
+
+.elha-admin-form-title {
+	font-family: var(--elha-font-serif);
+	font-size: 1.25rem;
+	font-weight: 800;
+	margin: 0 0 12px 0;
+}
+
+.elha-btn-sm {
+	min-height: 44px;
+	padding: 6px 14px;
+	font-size: 0.8rem;
+}
+
+.elha-admin-stats-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 10px;
+	margin-bottom: 16px;
+}
+
+.elha-stat-card {
+	background-color: var(--elha-bg);
+	border: 1px solid var(--elha-border-subtle);
+	border-radius: 12px;
+	padding: 12px 14px;
+}
+
+.elha-stat-card small {
+	display: block;
+	font-size: 0.72rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: var(--elha-text-muted);
+	margin-bottom: 2px;
+}
+
+.elha-stat-card strong {
+	font-size: 1.08rem;
+	font-weight: 800;
+	color: var(--elha-blue);
+	word-break: break-all;
+}
+
+.elha-eo-wrapper[data-theme="dark"] .elha-stat-card strong {
+	color: var(--elha-accent);
+}
+
+.elha-admin-tabs {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 6px;
+	padding-bottom: 12px;
+	margin-bottom: 14px;
+	border-bottom: 1px solid var(--elha-border-subtle);
+}
+
+.elha-admin-tab {
+	min-height: 44px;
+	padding: 8px 10px;
+	border: 1px solid var(--elha-border-subtle);
+	border-radius: 10px;
+	background-color: var(--elha-bg);
+	color: var(--elha-text-muted);
+	font-family: var(--elha-font-sans);
+	font-size: 0.78rem;
+	font-weight: 700;
+	text-align: center;
+	line-height: 1.25;
+	cursor: pointer;
+	transition: all 0.15s ease;
+}
+
+.elha-admin-tab.is-active {
+	background-color: var(--elha-blue);
+	color: #FFFFFF;
+	border-color: var(--elha-blue);
+}
+
+.elha-admin-search-input {
+	margin-bottom: 10px;
+}
+
+.elha-banner-editor-box {
+	background-color: var(--elha-surface);
+	border: 1px solid var(--elha-border-subtle);
+	border-radius: 12px;
+	padding: 12px 14px;
+	margin-bottom: 14px;
+}
+
+.elha-banner-editor-head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	margin-bottom: 6px;
+}
+
+.elha-banner-rule-badge {
+	font-family: var(--elha-font-mono);
+	font-size: 0.7rem;
+	font-weight: 700;
+	padding: 3px 9px;
+	border-radius: 99px;
+	background-color: var(--elha-accent);
+	color: #0B1E3B;
+}
+
+.elha-banner-rules {
+	margin: 0 0 12px 0;
+	font-size: 0.78rem;
+	line-height: 1.5;
+	color: var(--elha-text-muted);
+}
+
+.elha-file-input {
+	padding: 8px 10px;
+	font-size: 0.85rem;
+}
+
+.elha-banner-preview-wrap {
+	margin-top: 10px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.elha-banner-preview-wrap img {
+	width: 100%;
+	aspect-ratio: 2 / 1;
+	object-fit: cover;
+	border-radius: 10px;
+	border: 1px solid var(--elha-border-subtle);
+	background-color: var(--elha-hero-bg);
+}
+
+.elha-poster-art.has-banner-img,
+.elha-hero-grid.has-banner-img {
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.elha-admin-split {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 20px;
+	align-items: start;
+}
+
+.elha-admin-col-head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	margin-bottom: 10px;
+}
+
+.elha-admin-events-list {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	max-height: 460px;
+	overflow-y: auto;
+}
+
+.elha-admin-ev-item {
+	padding: 12px;
+	background-color: var(--elha-bg);
+	border: 1.5px solid var(--elha-border-subtle);
+	border-radius: 12px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.elha-admin-ev-item.is-editing {
+	border-color: var(--elha-accent);
+	background-color: var(--elha-accent-soft);
+}
+
+.elha-admin-ev-item strong {
+	font-size: 0.88rem;
+	line-height: 1.3;
+}
+
+.elha-admin-ev-item small {
+	font-size: 0.75rem;
+	color: var(--elha-text-muted);
+}
+
+.elha-admin-ev-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+.elha-admin-form-col {
+	background-color: var(--elha-bg);
+	border: 1px solid var(--elha-border-subtle);
+	border-radius: 14px;
+	padding: 14px;
+}
+
+.elha-admin-form-col h3 {
+	font-family: var(--elha-font-serif);
+	font-size: 1.1rem;
+	font-weight: 800;
+	margin: 0 0 12px 0;
+}
+
+.elha-admin-tiers-grid {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.elha-admin-tier-card {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding: 12px;
+	background-color: var(--elha-surface);
+	border: 1px solid var(--elha-border-subtle);
+	border-radius: 12px;
+}
+
+.elha-admin-tier-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	font-size: 0.8rem;
+	font-weight: 700;
+}
+
+.elha-admin-tier-fields {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 8px;
+}
+
+.elha-tier-field-group {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.elha-tier-field-group small {
+	font-size: 0.72rem;
+	font-weight: 700;
+	color: var(--elha-text-muted);
+}
+
+.elha-quota-table-wrap {
+	width: 100%;
+	overflow-x: auto;
+}
+
+.elha-quota-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 0.85rem;
+	min-width: 600px;
+}
+
+.elha-quota-table th,
+.elha-quota-table td {
+	text-align: left;
+	padding: 10px 12px;
+	border-bottom: 1px solid var(--elha-border-subtle);
+}
+
+.elha-quota-table th {
+	font-size: 0.74rem;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: var(--elha-text-muted);
+	background-color: var(--elha-surface);
+}
+
+.elha-admin-data-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin-top: 12px;
+}
+
+.elha-import-label {
+	cursor: pointer;
+}
+
+.elha-admin-checkbox {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	min-height: 44px;
+	font-size: 0.86rem;
+	font-weight: 700;
+	margin: 10px 0;
+	cursor: pointer;
+}
+
+.elha-admin-checkbox input[type="checkbox"] {
+	width: 20px;
+	height: 20px;
+	accent-color: var(--elha-accent);
+}
+
+.elha-admin-form-actions {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	margin-top: 14px;
+}
+
+.elha-admin-form-actions .elha-btn {
+	width: 100%;
+}
+
+.elha-state-panel {
+	background-color: var(--elha-surface-elevated);
+	border: 1px dashed var(--elha-border);
+	border-radius: var(--elha-radius-md);
+	padding: 32px 20px;
+	text-align: center;
+	margin-bottom: 24px;
+}
+
+.elha-spinner {
+	width: 32px;
+	height: 32px;
+	border: 3px solid var(--elha-surface);
+	border-top-color: var(--elha-accent);
+	border-radius: 50%;
+	margin: 0 auto 12px auto;
+	animation: elha-spin 0.8s linear infinite;
+}
+
+@keyframes elha-spin {
+	to { transform: rotate(360deg); }
+}
+
+/* Breakpoint 1: Phablet / Large Phone (>= 520px) */
+@media (min-width: 520px) {
+	.elha-brand-mark {
+		width: 40px;
+		height: 40px;
+		font-size: 0.96rem;
+	}
+
+	.elha-brand-text strong {
+		font-size: 1.08rem;
+	}
+
+	.elha-brand-text small {
+		display: block;
+	}
+
+	.elha-theme-btn {
+		padding: 8px 14px;
+		font-size: 0.85rem;
+	}
+
+	.elha-hero-meta-strip,
+	.elha-eticket-grid {
+		grid-template-columns: 1fr 1fr;
+	}
+
+	.elha-hero-cta-group {
+		flex-direction: row;
+		flex-wrap: wrap;
+	}
+
+	.elha-hero-cta-group .elha-btn {
+		width: auto;
+	}
+}
+
+/* Breakpoint 2: Tablet & Small Laptop (680px - 1023px) */
+@media (min-width: 680px) {
+	.elha-header-inner {
+		display: flex;
+		flex-wrap: nowrap;
+		align-items: center;
+		justify-content: space-between;
+		min-height: 70px;
+		padding: 0 clamp(1rem, 3.5vw, 2.5rem);
+		gap: 12px;
+	}
+
+	.elha-brand,
+	.elha-theme-icon-btn,
+	.elha-mobile-menu-btn {
+		grid-column: auto;
+		grid-row: auto;
+		justify-self: auto;
+	}
+
+	.elha-header-actions {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.elha-view-switcher {
+		grid-column: auto;
+		grid-row: auto;
+		order: 0;
+		width: auto;
+		display: inline-flex;
+		padding: 4px;
+	}
+
+	.elha-switch-btn {
+		min-height: 40px;
+		padding: 6px 14px;
+		font-size: 0.85rem;
+	}
+
+	.elha-admin-tabs {
+		display: flex;
+		flex-wrap: wrap;
+	}
+
+	.elha-admin-tab {
+		padding: 8px 16px;
+		font-size: 0.84rem;
+	}
+
+	.elha-event-poster-grid,
+	.elha-form-row-two,
+	.elha-qty-promo-row,
+	.elha-workflow-grid,
+	.elha-faq-list {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.elha-section-header-split,
+	.elha-catalog-controls,
+	.elha-footer-inner {
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.elha-filter-tabs {
+		flex-wrap: wrap;
+		overflow-x: visible;
+		padding-bottom: 0;
+	}
+
+	.elha-search-box {
+		max-width: 300px;
+	}
+
+	.elha-footer-cta,
+	.elha-footer-cta .elha-btn {
+		width: auto;
+	}
+
+	.elha-modal-backdrop {
+		align-items: center;
+		padding: 20px;
+	}
+
+	.elha-modal-actions {
+		flex-direction: row;
+		flex-wrap: wrap;
+		justify-content: flex-end;
+	}
+
+	.elha-modal-actions .elha-btn {
+		width: auto;
+	}
+
+	.elha-modal-actions #elha-wa-direct-link {
+		order: 0;
+	}
+
+	.elha-admin-stats-grid {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+	}
+
+	.elha-admin-tier-fields {
+		grid-template-columns: 1.3fr 0.85fr 0.75fr;
+	}
+
+	.elha-admin-tier-fields .elha-tier-note-input {
+		grid-column: 1 / -1;
+	}
+
+	.elha-admin-form-actions {
+		flex-direction: row;
+		flex-wrap: wrap;
+	}
+
+	.elha-admin-form-actions .elha-btn {
+		width: auto;
+	}
+}
+
+@media (min-width: 780px) {
+	.elha-admin-split {
+		grid-template-columns: 0.85fr 1.45fr;
+	}
+}
+
+/* Breakpoint 3: Desktop (>= 1024px) */
+@media (min-width: 1024px) {
+	.elha-desktop-nav { display: flex; }
+	.elha-desktop-only-admin { display: inline-flex; }
+	.elha-mobile-menu-btn, .elha-mobile-drawer { display: none !important; }
+	.elha-hero-grid { grid-template-columns: 1.18fr 0.82fr; }
+	.elha-workflow-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+	.elha-checkout-layout { grid-template-columns: 1.2fr 0.8fr; }
+	.elha-checkout-stub-col { position: sticky; top: 88px; }
+}
+
+@media print {
+	.elha-header,
+	.elha-main,
+	.elha-footer,
+	.elha-back-to-top,
+	.elha-modal-header,
+	.elha-wa-preview-collapse,
+	.elha-modal-actions {
+		display: none !important;
+	}
+	.elha-modal-backdrop {
+		position: static;
+		background: none;
+		padding: 0;
+	}
+	.elha-modal-card {
+		box-shadow: none;
+		max-width: 100%;
+	}
+}
