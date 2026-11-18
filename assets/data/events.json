@@ -2,14 +2,12 @@
   "settings": {
     "brand_name": "eLHa Event",
     "whatsapp_number": "6285163671033",
-    "whatsapp_admin_lbl": "Admin eLHa Event",
-    "promo_code": "KOMUNITAS10",
-    "promo_pct": 10
+    "whatsapp_admin_lbl": "Admin eLHa Event"
   },
   "events": [
     {
-      "id": "evt-1794907807039",
-      "code": "EVT-027",
+      "id": "evt-1794986633415",
+      "code": "EVT-353",
       "title": "eLHa Cycling",
       "category": "bike-community",
       "category_lbl": "Bike Community",
@@ -23,7 +21,7 @@
       "summary": "Mengajak seluruh komunitas sepeda untuk berkumpul dan bersepeda bersama tanpa membedakan jenis sepeda maupun latar belakang komunitas.\nMenghadirkan suasana festival yang menyenangkan melalui musik, hiburan, games, dan berbagai aktivitas menarik.",
       "tiers": [
         {
-          "tier_id": "tier-1794982997754-1",
+          "tier_id": "tier-1794986633415-1",
           "name": "Tiket Reguler",
           "price": 50000,
           "quota": 500,
