@@ -861,17 +861,21 @@
 	if (applyPromoBtn && promoInput && promoStatus) {
 		applyPromoBtn.addEventListener('click', function () {
 			var rawCode = promoInput.value.trim().toUpperCase();
-			var activePromoCode = (config.settings.promo_code || 'KOMUNITAS10').trim().toUpperCase();
-			var activePromoPct = Math.max(0, Math.min(90, parseInt(config.settings.promo_pct || 10, 10)));
-			if (rawCode && (rawCode === activePromoCode || rawCode === 'PAMERAN26')) {
-				discountRate = activePromoPct / 100;
-				promoStatus.textContent = 'Promo ' + rawCode + ' aktif: diskon ' + activePromoPct + '% diterapkan.';
-			} else if (!rawCode) {
+			var activePromoCode = (config.settings && config.settings.promo_code ? config.settings.promo_code.trim().toUpperCase() : '');
+			var activePromoPct = Math.max(0, Math.min(90, parseInt(config.settings && config.settings.promo_pct != null ? config.settings.promo_pct : 0, 10)));
+
+			if (!rawCode) {
 				discountRate = 0;
 				promoStatus.textContent = 'Masukkan kode promo terlebih dahulu.';
+				promoStatus.className = 'elha-promo-status is-invalid';
+			} else if (activePromoCode && rawCode === activePromoCode && activePromoPct > 0) {
+				discountRate = activePromoPct / 100;
+				promoStatus.textContent = 'Kode promo ' + rawCode + ' berhasil digunakan: diskon ' + activePromoPct + '% diterapkan.';
+				promoStatus.className = 'elha-promo-status is-valid';
 			} else {
 				discountRate = 0;
-				promoStatus.textContent = 'Gunakan kode ' + activePromoCode + ' untuk diskon ' + activePromoPct + '%.';
+				promoStatus.textContent = 'Kode promo tidak valid atau telah berakhir.';
+				promoStatus.className = 'elha-promo-status is-invalid';
 			}
 			updateStubCalculation();
 		});
@@ -1597,7 +1601,7 @@
 		if (setBrandInput) setBrandInput.value = config.settings.brand_name || 'eLHa Event';
 		if (adminWaInput) adminWaInput.value = config.settings.whatsapp_number || '6281234567890';
 		if (setAdminLblInput) setAdminLblInput.value = config.settings.whatsapp_admin_lbl || 'Admin eLHa Event';
-		if (setPromoCodeInput) setPromoCodeInput.value = config.settings.promo_code || 'KOMUNITAS10';
+		if (setPromoCodeInput) setPromoCodeInput.value = config.settings.promo_code || '';
 		if (setPromoPctInput) setPromoPctInput.value = String(config.settings.promo_pct != null ? config.settings.promo_pct : 10);
 	}
 
@@ -2761,11 +2765,11 @@
 			if (setAdminLblInput && setAdminLblInput.value.trim()) {
 				config.settings.whatsapp_admin_lbl = setAdminLblInput.value.trim();
 			}
-			if (setPromoCodeInput && setPromoCodeInput.value.trim()) {
+			if (setPromoCodeInput) {
 				config.settings.promo_code = setPromoCodeInput.value.trim().toUpperCase();
 			}
 			if (setPromoPctInput) {
-				config.settings.promo_pct = Math.max(0, Math.min(90, parseInt(setPromoPctInput.value || '10', 10)));
+				config.settings.promo_pct = Math.max(0, Math.min(90, parseInt(setPromoPctInput.value || '0', 10)));
 			}
 			saveConfigToLocal();
 			renderAllEventsUI();

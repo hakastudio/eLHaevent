@@ -1172,6 +1172,14 @@ body {
 	color: var(--elha-accent-strong);
 }
 
+.elha-promo-status.is-valid {
+	color: #16a34a;
+}
+
+.elha-promo-status.is-invalid {
+	color: #dc2626;
+}
+
 .elha-buyer-section {
 	margin-top: 18px;
 	padding-top: 16px;
