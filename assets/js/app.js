@@ -266,6 +266,78 @@
 		}
 	}
 
+	var ID_MONTHS_MAP = {
+		januari: 0, jan: 0,
+		februari: 1, feb: 1,
+		maret: 2, mar: 2,
+		april: 3, apr: 3,
+		mei: 4, may: 4,
+		juni: 5, jun: 5,
+		juli: 6, jul: 6,
+		agustus: 7, ags: 7, agt: 7, aug: 7,
+		september: 8, sep: 8, sept: 8,
+		oktober: 9, okt: 9, oct: 9,
+		november: 10, nov: 10,
+		desember: 11, des: 11, dec: 11
+	};
+
+	function parseEventEndDate(dateStr) {
+		if (!dateStr || typeof dateStr !== 'string') return null;
+		var s = dateStr.trim();
+
+		// ISO YYYY-MM-DD
+		var isoMatch = s.match(/(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+		if (isoMatch) {
+			return new Date(parseInt(isoMatch[1], 10), parseInt(isoMatch[2], 10) - 1, parseInt(isoMatch[3], 10), 23, 59, 59, 999);
+		}
+
+		// DD/MM/YYYY
+		var dmyMatch = s.match(/(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
+		if (dmyMatch) {
+			return new Date(parseInt(dmyMatch[3], 10), parseInt(dmyMatch[2], 10) - 1, parseInt(dmyMatch[1], 10), 23, 59, 59, 999);
+		}
+
+		// Range or text (take last date in range)
+		var target = s;
+		if (target.indexOf('-') !== -1) {
+			var parts = target.split('-');
+			target = parts[parts.length - 1].trim();
+		} else if (/sampai|s\/d|hingga/i.test(target)) {
+			var parts2 = target.split(/sampai|s\/d|hingga/i);
+			target = parts2[parts2.length - 1].trim();
+		}
+
+		// Match day, month word, year (e.g. 17 Februari 2027)
+		var textMatch = target.match(/(\d{1,2})\s+([a-zA-Z]+)\s+(\d{4})/);
+		if (textMatch) {
+			var day = parseInt(textMatch[1], 10);
+			var monthWord = textMatch[2].toLowerCase();
+			var year = parseInt(textMatch[3], 10);
+			if (ID_MONTHS_MAP.hasOwnProperty(monthWord)) {
+				return new Date(year, ID_MONTHS_MAP[monthWord], day, 23, 59, 59, 999);
+			}
+		}
+
+		var parsed = Date.parse(target);
+		if (!isNaN(parsed)) {
+			var d = new Date(parsed);
+			d.setHours(23, 59, 59, 999);
+			return d;
+		}
+
+		return null;
+	}
+
+	function isEventClosed(eventObj) {
+		if (!eventObj) return false;
+		if (eventObj.is_closed === true) return true;
+		var endDate = parseEventEndDate(eventObj.date_label || eventObj.date_badge || '');
+		if (endDate && new Date() > endDate) {
+			return true;
+		}
+		return false;
+	}
+
 	function renderAllEventsUI() {
 		renderCategoryFilterTabs();
 
@@ -337,10 +409,17 @@
 		if (heroVenue) heroVenue.textContent = featured.venue;
 		if (heroTime) heroTime.textContent = featured.time_label;
 		if (heroCode) heroCode.textContent = featured.code;
-		if (heroQuota) heroQuota.textContent = featured.quota_label;
+
+		var isFeatClosed = isEventClosed(featured);
+
+		if (heroQuota) {
+			heroQuota.textContent = isFeatClosed ? 'Event Berakhir' : 'Tiket Tersedia';
+			heroQuota.className = isFeatClosed ? 'elha-closed-tag' : 'elha-category-tag';
+		}
 
 		var heroGridEl = heroSection ? heroSection.querySelector('.elha-hero-grid') : null;
 		if (heroGridEl) {
+			heroGridEl.classList.toggle('is-event-closed', isFeatClosed);
 			if (featured.banner_image) {
 				heroGridEl.classList.add('has-banner-img');
 				heroGridEl.style.backgroundImage =
@@ -353,11 +432,25 @@
 
 		if (heroPrimaryBtn) {
 			heroPrimaryBtn.setAttribute('data-quick-event', featured.id);
-			heroPrimaryBtn.setAttribute('data-quick-tier', featured.tiers[0].tier_id);
+			heroPrimaryBtn.setAttribute('data-quick-tier', featured.tiers[0] ? featured.tiers[0].tier_id : '');
+			if (isFeatClosed) {
+				heroPrimaryBtn.textContent = 'Event Telah Berakhir';
+				heroPrimaryBtn.disabled = true;
+			} else {
+				heroPrimaryBtn.textContent = 'Beli Tiket Sekarang';
+				heroPrimaryBtn.disabled = false;
+			}
 		}
 		if (heroStubBtn) {
 			heroStubBtn.setAttribute('data-quick-event', featured.id);
-			heroStubBtn.setAttribute('data-quick-tier', featured.tiers[0].tier_id);
+			heroStubBtn.setAttribute('data-quick-tier', featured.tiers[0] ? featured.tiers[0].tier_id : '');
+			if (isFeatClosed) {
+				heroStubBtn.textContent = 'Pendaftaran Ditutup';
+				heroStubBtn.disabled = true;
+			} else {
+				heroStubBtn.textContent = 'Lanjut ke Checkout Tiket';
+				heroStubBtn.disabled = false;
+			}
 		}
 
 		if (heroTierList) {
@@ -369,15 +462,20 @@
 				btn.className = 'elha-quick-tier-btn';
 				btn.setAttribute('data-quick-event', featured.id);
 				btn.setAttribute('data-quick-tier', tier.tier_id);
-				var qTxt = tier.quota ? ' (Kuota ' + tier.quota + ')' : '';
 				btn.innerHTML =
 					'<span class="elha-quick-tier-name"></span>' +
 					'<strong class="elha-quick-tier-price"></strong>';
-				btn.querySelector('.elha-quick-tier-name').textContent = tier.name + qTxt;
+				btn.querySelector('.elha-quick-tier-name').textContent = tier.name;
 				btn.querySelector('.elha-quick-tier-price').textContent = formatRupiah(tier.price);
-				btn.addEventListener('click', function () {
-					jumpToCheckout(this.getAttribute('data-quick-event'), this.getAttribute('data-quick-tier'));
-				});
+				if (isFeatClosed) {
+					btn.disabled = true;
+					btn.style.cursor = 'not-allowed';
+					btn.style.opacity = '0.75';
+				} else {
+					btn.addEventListener('click', function () {
+						jumpToCheckout(this.getAttribute('data-quick-event'), this.getAttribute('data-quick-tier'));
+					});
+				}
 				heroTierList.appendChild(btn);
 			}
 		}
@@ -392,9 +490,10 @@
 					if (ev.tiers[m].price < minPrice) minPrice = ev.tiers[m].price;
 				}
 				var pTheme = ev.poster_theme || 'terracotta';
+				var isEvClosed = isEventClosed(ev);
 
 				var article = document.createElement('article');
-				article.className = 'elha-schedule-row elha-poster-card';
+				article.className = 'elha-schedule-row elha-poster-card' + (isEvClosed ? ' is-event-closed' : '');
 				article.setAttribute('data-event-id', ev.id);
 				article.setAttribute('data-event-cat', ev.category);
 				article.setAttribute('data-event-search', (ev.title + ' ' + ev.venue + ' ' + ev.category_lbl).toLowerCase());
@@ -419,7 +518,7 @@
 					'<span class="elha-price-label">Tiket Mulai</span>' +
 					'<strong class="elha-price-value">' + formatRupiah(minPrice) + '</strong>' +
 					'</div>' +
-					'<button type="button" class="elha-btn elha-btn-primary" data-select-event="' + ev.id + '">Beli Tiket</button>' +
+					'<button type="button" class="elha-btn ' + (isEvClosed ? 'elha-btn-secondary' : 'elha-btn-primary') + '" data-select-event="' + ev.id + '"' + (isEvClosed ? ' disabled' : '') + '>' + (isEvClosed ? 'Event Ditutup' : 'Beli Tiket') + '</button>' +
 					'</div>';
 
 				if (ev.banner_image) {
@@ -429,16 +528,18 @@
 				}
 
 				article.querySelector('.elha-poster-date').textContent = ev.date_label;
-				article.querySelector('.elha-poster-cat').textContent = ev.category_lbl;
+				article.querySelector('.elha-poster-cat').textContent = ev.category_lbl + (isEvClosed ? ' (Ditutup)' : '');
 				article.querySelector('.elha-p-code').textContent = ev.code;
 				var quotaEl = article.querySelector('.elha-p-quota');
 				if (quotaEl) quotaEl.textContent = '';
 				article.querySelector('.elha-row-title').textContent = ev.title;
 				article.querySelector('.elha-row-venue').textContent = ev.venue + ' \u2022 ' + ev.time_label;
 
-				article.querySelector('[data-select-event]').addEventListener('click', function () {
-					jumpToCheckout(this.getAttribute('data-select-event'), null);
-				});
+				if (!isEvClosed) {
+					article.querySelector('[data-select-event]').addEventListener('click', function () {
+						jumpToCheckout(this.getAttribute('data-select-event'), null);
+					});
+				}
 
 				stateList.appendChild(article);
 			}
@@ -452,7 +553,8 @@
 				var optEv = config.events[s];
 				var opt = document.createElement('option');
 				opt.value = optEv.id;
-				opt.textContent = optEv.title + ' (' + optEv.date_label + ')';
+				var isOptClosed = isEventClosed(optEv);
+				opt.textContent = (isOptClosed ? '[DITUTUP] ' : '') + optEv.title + ' (' + optEv.date_label + ')';
 				eventSelect.appendChild(opt);
 			}
 			var targetEv = findEventById(prevVal || featured.id);
@@ -467,6 +569,10 @@
 
 	function jumpToCheckout(evId, tierId) {
 		var evObj = findEventById(evId);
+		if (evObj && isEventClosed(evObj)) {
+			alert('Mohon maaf, event "' + evObj.title + '" telah selesai melewati tanggal acara. Penjualan tiket telah ditutup.');
+			return;
+		}
 		if (evObj && eventSelect) {
 			eventSelect.value = evObj.id;
 			renderTiersForEvent(evObj, tierId);
@@ -557,6 +663,24 @@
 			return;
 		}
 		tiersContainer.innerHTML = '';
+		var isClosed = isEventClosed(eventObj);
+
+		if (submitCheckoutBtn) {
+			if (isClosed) {
+				submitCheckoutBtn.disabled = true;
+				submitCheckoutBtn.textContent = 'Pendaftaran Ditutup (Event Selesai)';
+			} else {
+				submitCheckoutBtn.disabled = false;
+			}
+		}
+		if (checkoutFeedback) {
+			if (isClosed) {
+				checkoutFeedback.hidden = false;
+				checkoutFeedback.textContent = 'Event "' + eventObj.title + '" telah selesai melewati tanggal acara. Penjualan tiket telah ditutup.';
+			} else {
+				checkoutFeedback.hidden = true;
+			}
+		}
 
 		for (var i = 0; i < eventObj.tiers.length; i++) {
 			var tier = eventObj.tiers[i];
@@ -564,12 +688,19 @@
 
 			var label = document.createElement('label');
 			label.className = 'elha-tier-card' + (isChecked ? ' is-selected' : '');
+			if (isClosed) {
+				label.style.cursor = 'not-allowed';
+				label.style.opacity = '0.7';
+			}
 
 			var radio = document.createElement('input');
 			radio.type = 'radio';
 			radio.name = 'elha_ticket_tier';
 			radio.value = tier.tier_id;
 			radio.checked = isChecked;
+			if (isClosed) {
+				radio.disabled = true;
+			}
 			radio.setAttribute('data-tier-name', tier.name);
 			radio.setAttribute('data-tier-price', String(tier.price));
 			radio.setAttribute('data-tier-quota', String(Math.max(1, parseInt(tier.quota || 200, 10))));
@@ -750,6 +881,13 @@
 	if (copySummaryBtn) {
 		copySummaryBtn.addEventListener('click', function () {
 			var evObj = findEventById(eventSelect ? eventSelect.value : config.events[0].id);
+			if (isEventClosed(evObj)) {
+				if (checkoutFeedback) {
+					checkoutFeedback.hidden = false;
+					checkoutFeedback.textContent = 'Event "' + (evObj ? evObj.title : '') + '" telah selesai melewati tanggal acara atau ditutup. Pembelian tiket tidak dapat diproses.';
+				}
+				return;
+			}
 			var tierData = getSelectedTierData();
 			var qty = qtyInput ? Math.max(1, parseInt(qtyInput.value || '1', 10)) : 1;
 			var total = Math.round(tierData.price * qty * (1 - discountRate));
@@ -1284,6 +1422,13 @@
 			}
 
 			var evObj = findEventById(eventSelect ? eventSelect.value : config.events[0].id);
+			if (isEventClosed(evObj)) {
+				if (checkoutFeedback) {
+					checkoutFeedback.hidden = false;
+					checkoutFeedback.textContent = 'Event "' + (evObj ? evObj.title : '') + '" telah selesai melewati tanggal acara atau ditutup. Pembelian tiket tidak dapat diproses.';
+				}
+				return;
+			}
 			var tierData = getSelectedTierData();
 			var qty = qtyInput ? Math.max(1, parseInt(qtyInput.value || '1', 10)) : 1;
 			var subtotal = tierData.price * qty;
@@ -2341,6 +2486,8 @@
 			if (venueField) venueField.value = '';
 			if (summaryField) summaryField.value = '';
 			if (featField) featField.checked = config.events.length === 0;
+			var closedField = document.getElementById('elha-ev-closed');
+			if (closedField) closedField.checked = false;
 			appendAdminTierRow({ name: 'Tiket Reguler', price: 50000, quota: 200, quota_note: 'Akses area utama acara' });
 		} else {
 			var ev = findEventById(evId);
@@ -2361,6 +2508,8 @@
 			if (venueField) venueField.value = ev.venue;
 			if (summaryField) summaryField.value = ev.summary;
 			if (featField) featField.checked = Boolean(ev.featured);
+			var closedField2 = document.getElementById('elha-ev-closed');
+			if (closedField2) closedField2.checked = Boolean(ev.is_closed);
 			if (Array.isArray(ev.tiers) && ev.tiers.length > 0) {
 				for (var t = 0; t < ev.tiers.length; t++) {
 					appendAdminTierRow(ev.tiers[t]);
@@ -2556,6 +2705,8 @@
 			}
 
 			var finalBanner = normalizeBannerUrl((bannerUrlInput && bannerUrlInput.value.trim()) || currentBannerData || '');
+			var closedField = document.getElementById('elha-ev-closed');
+			var isClosedManual = closedField ? closedField.checked : false;
 
 			var newEventObj = {
 				id: evId || ('evt-' + Date.now()),
@@ -2564,6 +2715,7 @@
 				category: catSlug,
 				category_lbl: catRaw,
 				featured: isFeat || config.events.length === 0,
+				is_closed: isClosedManual,
 				date_label: dateLbl,
 				time_label: timeLbl,
 				venue: venue,

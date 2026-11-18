@@ -1731,6 +1731,59 @@ body {
 	background-repeat: no-repeat;
 }
 
+/* Event Closed / Expired State (Grayscale Banner & Disabled Actions) */
+.elha-hero-grid.is-event-closed {
+	filter: grayscale(100%);
+	position: relative;
+}
+
+.elha-hero-grid.is-event-closed .elha-live-pill {
+	background-color: #475569;
+	color: #ffffff;
+}
+
+.elha-hero-grid.is-event-closed #elha-hero-primary-btn,
+.elha-hero-grid.is-event-closed #elha-hero-stub-btn {
+	background-color: #64748b !important;
+	border-color: #64748b !important;
+	color: #f8fafc !important;
+	cursor: not-allowed !important;
+	opacity: 0.85;
+	pointer-events: none;
+	box-shadow: none !important;
+}
+
+.elha-hero-grid.is-event-closed .elha-quick-tier-btn {
+	cursor: not-allowed !important;
+	pointer-events: none;
+	opacity: 0.75;
+}
+
+.elha-poster-card.is-event-closed .elha-poster-art {
+	filter: grayscale(100%);
+}
+
+.elha-poster-card.is-event-closed .elha-btn-primary {
+	background-color: #64748b !important;
+	border-color: #64748b !important;
+	color: #ffffff !important;
+	cursor: not-allowed !important;
+	pointer-events: none;
+	box-shadow: none !important;
+}
+
+.elha-closed-tag {
+	font-family: var(--elha-font-mono);
+	font-size: 0.72rem;
+	font-weight: 700;
+	padding: 3px 10px;
+	border-radius: 99px;
+	background-color: #475569;
+	color: #f8fafc;
+	letter-spacing: 0.04em;
+	display: inline-block;
+}
+
 .elha-admin-split {
 	display: grid;
 	grid-template-columns: 1fr;
