@@ -2268,6 +2268,13 @@ body {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 
+	.elha-poster-art {
+		height: 165px;
+		min-height: 155px;
+		max-height: 175px;
+		aspect-ratio: auto;
+	}
+
 	.elha-section-header-split,
 	.elha-catalog-controls,
 	.elha-footer-inner {
@@ -2347,6 +2354,13 @@ body {
 	.elha-workflow-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 	.elha-checkout-layout { grid-template-columns: 1.2fr 0.8fr; }
 	.elha-checkout-stub-col { position: sticky; top: 88px; }
+	.elha-event-poster-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+	.elha-poster-art {
+		height: 150px;
+		min-height: 140px;
+		max-height: 160px;
+		aspect-ratio: auto;
+	}
 }
 
 @media print {
