@@ -444,11 +444,15 @@
 						<strong id="elha-stat-events" class="elha-mono-text">0</strong>
 					</div>
 					<div class="elha-stat-card">
-						<small>Kategori Tiket</small>
-						<strong id="elha-stat-tiers" class="elha-mono-text">0</strong>
+						<small>Tiket Terjual (Lunas)</small>
+						<strong id="elha-stat-sold" class="elha-mono-text">0 Tiket</strong>
 					</div>
 					<div class="elha-stat-card">
-						<small>Total Kuota Tiket</small>
+						<small>Total Pendapatan</small>
+						<strong id="elha-stat-revenue" class="elha-mono-text">Rp 0</strong>
+					</div>
+					<div class="elha-stat-card">
+						<small>Sisa Kuota Tiket</small>
 						<strong id="elha-stat-quota" class="elha-mono-text">0</strong>
 					</div>
 					<div class="elha-stat-card">
@@ -461,6 +465,7 @@
 				<div class="elha-admin-tabs" role="tablist" aria-label="Menu Dashboard Admin">
 					<button type="button" class="elha-admin-tab is-active" data-admin-tab="events" role="tab" aria-selected="true">Kelola Event &amp; Tiket</button>
 					<button type="button" class="elha-admin-tab" data-admin-tab="verify" role="tab" aria-selected="false">Verifikasi Tiket <span id="elha-admin-verify-badge" class="elha-tab-badge" hidden>0</span></button>
+					<button type="button" class="elha-admin-tab" data-admin-tab="reports" role="tab" aria-selected="false">Laporan Peserta (Excel)</button>
 					<button type="button" class="elha-admin-tab" data-admin-tab="quotas" role="tab" aria-selected="false">Monitor Kategori &amp; Kuota</button>
 					<button type="button" class="elha-admin-tab" data-admin-tab="settings" role="tab" aria-selected="false">Pengaturan &amp; Promo</button>
 					<button type="button" class="elha-admin-tab" data-admin-tab="data" role="tab" aria-selected="false">Ekspor &amp; Impor JSON</button>
@@ -701,7 +706,67 @@
 					</div>
 				</div>
 
-				<!-- TAB 2: MONITOR KATEGORI & BATASAN KUOTA -->
+				<!-- TAB 3: LAPORAN PESERTA LUNAS & EKSPOR EXCEL / SPREADSHEET -->
+				<div id="elha-admin-pane-reports" class="elha-admin-pane" hidden>
+					<div class="elha-admin-form-col">
+						<div class="elha-admin-col-head">
+							<div>
+								<h3 style="margin: 0 0 4px 0;">Laporan Peserta Terverifikasi (Lunas) &amp; Penjualan</h3>
+								<p class="elha-checkout-sub">Kelola dan unduh data peserta resmi yang sudah berstatus lunas terpisah berdasarkan event ke format Excel / Spreadsheet (.csv).</p>
+							</div>
+							<div class="elha-report-top-actions">
+								<button type="button" id="elha-export-excel-btn" class="elha-btn elha-btn-primary">
+									Unduh Data Excel (.csv)
+								</button>
+							</div>
+						</div>
+
+						<!-- FILTER PER EVENT & SEARCH ROW -->
+						<div class="elha-verify-search-box">
+							<div class="elha-form-row-two">
+								<div class="elha-form-row">
+									<label for="elha-report-event-filter">Pilih Event (Data Terpisah Berdasarkan Event)</label>
+									<select id="elha-report-event-filter" class="elha-select">
+										<option value="all">Semua Event Terdaftar</option>
+									</select>
+								</div>
+								<div class="elha-form-row">
+									<label for="elha-report-search-input">Cari Nama Peserta / WhatsApp / Email / Domisili / Kode</label>
+									<input type="search" id="elha-report-search-input" class="elha-input" placeholder="Ketik nama atau kata kunci..." />
+								</div>
+							</div>
+						</div>
+
+						<!-- MINI KPI PER EVENT -->
+						<div class="elha-admin-stats-grid" style="margin-top: 10px; margin-bottom: 16px;">
+							<div class="elha-stat-card">
+								<small>Peserta Terverifikasi</small>
+								<strong id="elha-rep-stat-participants" class="elha-mono-text">0 Orang</strong>
+							</div>
+							<div class="elha-stat-card">
+								<small>Tiket Terjual (Lunas)</small>
+								<strong id="elha-rep-stat-tickets" class="elha-mono-text">0 Tiket</strong>
+							</div>
+							<div class="elha-stat-card">
+								<small>Total Pendapatan Tiket</small>
+								<strong id="elha-rep-stat-revenue" class="elha-mono-text">Rp 0</strong>
+							</div>
+							<div class="elha-stat-card">
+								<small>Sisa Kuota Tiket</small>
+								<strong id="elha-rep-stat-quota" class="elha-mono-text">0</strong>
+							</div>
+						</div>
+
+						<!-- PARTICIPANTS LIST TABLE -->
+						<div class="elha-admin-col-head" style="margin-top: 16px;">
+							<strong>Daftar Peserta Resmi Lunas (<span id="elha-report-table-count">0</span>)</strong>
+							<span class="elha-stat-pill is-verified" id="elha-report-active-event-badge">Semua Event</span>
+						</div>
+						<div id="elha-report-table-wrap" class="elha-quota-table-wrap"></div>
+					</div>
+				</div>
+
+				<!-- TAB 4: MONITOR KATEGORI & BATASAN KUOTA -->
 				<div id="elha-admin-pane-quotas" class="elha-admin-pane" hidden>
 					<div class="elha-admin-form-col">
 						<h3>Ringkasan Kategori Tiket &amp; Batasan Kuota</h3>

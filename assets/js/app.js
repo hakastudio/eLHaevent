@@ -957,6 +957,15 @@
 			badgeEl.textContent = pendingCount;
 			badgeEl.hidden = pendingCount === 0;
 		}
+		if (typeof updateAdminStats === 'function') {
+			updateAdminStats();
+		}
+		if (typeof renderReportTab === 'function' && typeof adminPanes !== 'undefined' && adminPanes && adminPanes.reports && !adminPanes.reports.hidden) {
+			renderReportTab();
+		}
+		if (typeof renderAdminQuotaTable === 'function' && typeof adminPanes !== 'undefined' && adminPanes && adminPanes.quotas && !adminPanes.quotas.hidden) {
+			renderAdminQuotaTable();
+		}
 	}
 
 	function generateBookingCode() {
@@ -1388,9 +1397,21 @@
 	var tierCountLbl = document.getElementById('elha-tier-count-lbl');
 
 	var statEventsEl = document.getElementById('elha-stat-events');
-	var statTiersEl = document.getElementById('elha-stat-tiers');
+	var statSoldEl = document.getElementById('elha-stat-sold');
+	var statRevenueEl = document.getElementById('elha-stat-revenue');
 	var statQuotaEl = document.getElementById('elha-stat-quota');
 	var statWaEl = document.getElementById('elha-stat-wa');
+
+	var reportEventFilter = document.getElementById('elha-report-event-filter');
+	var reportSearchInput = document.getElementById('elha-report-search-input');
+	var reportTableWrap = document.getElementById('elha-report-table-wrap');
+	var exportExcelBtn = document.getElementById('elha-export-excel-btn');
+	var reportTableCount = document.getElementById('elha-report-table-count');
+	var reportActiveBadge = document.getElementById('elha-report-active-event-badge');
+	var repStatParticipants = document.getElementById('elha-rep-stat-participants');
+	var repStatTickets = document.getElementById('elha-rep-stat-tickets');
+	var repStatRevenue = document.getElementById('elha-rep-stat-revenue');
+	var repStatQuota = document.getElementById('elha-rep-stat-quota');
 
 	var settingsForm = document.getElementById('elha-admin-settings-form');
 	var setBrandInput = document.getElementById('elha-set-brand');
@@ -1402,18 +1423,28 @@
 
 	function updateAdminStats() {
 		var totalEvents = config.events.length;
-		var totalTiers = 0;
 		var totalQuota = 0;
 		for (var i = 0; i < config.events.length; i++) {
 			var ev = config.events[i];
 			if (Array.isArray(ev.tiers)) {
-				totalTiers += ev.tiers.length;
 				totalQuota += getEventTotalQuota(ev);
 			}
 		}
+		var orders = getSavedOrders();
+		var totalSoldTickets = 0;
+		var totalRevenue = 0;
+		for (var o = 0; o < orders.length; o++) {
+			if (orders[o].status === 'verified') {
+				totalSoldTickets += (orders[o].qty || 1);
+				totalRevenue += (orders[o].totalAmount || 0);
+			}
+		}
+		var remainingQuota = Math.max(0, totalQuota - totalSoldTickets);
+
 		if (statEventsEl) statEventsEl.textContent = String(totalEvents);
-		if (statTiersEl) statTiersEl.textContent = String(totalTiers);
-		if (statQuotaEl) statQuotaEl.textContent = totalQuota.toLocaleString('id-ID') + ' Tiket';
+		if (statSoldEl) statSoldEl.textContent = totalSoldTickets.toLocaleString('id-ID') + ' Tiket';
+		if (statRevenueEl) statRevenueEl.textContent = formatRupiah(totalRevenue);
+		if (statQuotaEl) statQuotaEl.textContent = remainingQuota.toLocaleString('id-ID') + ' Tiket';
 		if (statWaEl) statWaEl.textContent = '+' + (config.settings.whatsapp_number || '6281234567890');
 	}
 
@@ -1597,6 +1628,7 @@
 	var adminPanes = {
 		events: document.getElementById('elha-admin-pane-events'),
 		verify: document.getElementById('elha-admin-pane-verify'),
+		reports: document.getElementById('elha-admin-pane-reports'),
 		quotas: document.getElementById('elha-admin-pane-quotas'),
 		settings: document.getElementById('elha-admin-pane-settings'),
 		data: document.getElementById('elha-admin-pane-data')
@@ -1615,6 +1647,11 @@
 		}
 		if (targetTab === 'verify') {
 			renderAdminOrdersTable();
+		} else if (targetTab === 'reports') {
+			populateReportEventFilter();
+			renderReportTab();
+		} else if (targetTab === 'quotas') {
+			renderAdminQuotaTable();
 		}
 	}
 
@@ -1880,34 +1917,348 @@
 		});
 	}
 
+	function escapeHtml(str) {
+		if (str == null) return '';
+		return String(str)
+			.replace(/&/g, '&amp;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;')
+			.replace(/"/g, '&quot;')
+			.replace(/'/g, '&#039;');
+	}
+
 	function renderAdminQuotaTable() {
 		if (!quotaTableWrap) return;
 		if (config.events.length === 0) {
 			quotaTableWrap.innerHTML = '<div class="elha-event-mini-summary">Belum ada event atau kategori tiket yang dibuat.</div>';
 			return;
 		}
-		var html = '<table class="elha-quota-table"><thead><tr><th>Event</th><th>Kategori Event</th><th>Kategori Tiket</th><th>Harga</th><th>Batasan Kuota</th></tr></thead><tbody>';
+		var orders = getSavedOrders();
+		var html = '<table class="elha-quota-table"><thead><tr>' +
+			'<th>Event</th>' +
+			'<th>Kategori Tiket</th>' +
+			'<th>Harga Satuan</th>' +
+			'<th>Terjual (Lunas)</th>' +
+			'<th>Sisa Kuota</th>' +
+			'<th>Total Kuota</th>' +
+			'<th>Total Pendapatan</th>' +
+			'</tr></thead><tbody>';
+
+		var grandSold = 0;
+		var grandQuota = 0;
+		var grandRevenue = 0;
+
 		for (var i = 0; i < config.events.length; i++) {
 			var ev = config.events[i];
 			var tiers = Array.isArray(ev.tiers) ? ev.tiers : [];
 			for (var t = 0; t < tiers.length; t++) {
+				var tier = tiers[t];
+				var tierQuota = tier.quota || 0;
+				var tierSold = 0;
+				var tierRevenue = 0;
+
+				for (var o = 0; o < orders.length; o++) {
+					var ord = orders[o];
+					if (ord.status === 'verified') {
+						var matchEv = ord.eventId === ev.id || ord.eventCode === ev.code || (ord.eventTitle && ord.eventTitle.trim().toLowerCase() === ev.title.trim().toLowerCase());
+						var matchTier = ord.tierName && tier.name && ord.tierName.trim().toLowerCase() === tier.name.trim().toLowerCase();
+						if (matchEv && matchTier) {
+							tierSold += (ord.qty || 1);
+							tierRevenue += (ord.totalAmount || 0);
+						}
+					}
+				}
+
+				var remaining = Math.max(0, tierQuota - tierSold);
+				grandSold += tierSold;
+				grandQuota += tierQuota;
+				grandRevenue += tierRevenue;
+
+				var remDisplay = remaining === 0
+					? '<span class="elha-status-badge is-pending" style="color:var(--elha-danger);background:rgba(239,68,68,0.12);">Habis</span>'
+					: '<strong class="elha-mono-text">' + remaining.toLocaleString('id-ID') + ' Tiket</strong>';
+
 				html += '<tr>' +
-					'<td><strong>' + ev.title + '</strong></td>' +
-					'<td>' + (ev.category_lbl || 'Umum') + '</td>' +
-					'<td>' + tiers[t].name + '</td>' +
-					'<td class="elha-mono-text">' + formatRupiah(tiers[t].price) + '</td>' +
-					'<td class="elha-mono-text"><strong>' + (tiers[t].quota || 0) + ' Tiket</strong></td>' +
+					'<td><strong>' + escapeHtml(ev.title) + '</strong><br><small style="color:var(--elha-text-muted);">' + escapeHtml(ev.code) + ' | ' + escapeHtml(ev.category_lbl || 'Umum') + '</small></td>' +
+					'<td><strong>' + escapeHtml(tier.name) + '</strong></td>' +
+					'<td class="elha-mono-text">' + formatRupiah(tier.price) + '</td>' +
+					'<td class="elha-mono-text"><span class="elha-status-badge is-verified">' + tierSold.toLocaleString('id-ID') + ' Tiket</span></td>' +
+					'<td>' + remDisplay + '</td>' +
+					'<td class="elha-mono-text">' + tierQuota.toLocaleString('id-ID') + ' Tiket</td>' +
+					'<td class="elha-mono-text" style="color:var(--elha-primary);font-weight:700;">' + formatRupiah(tierRevenue) + '</td>' +
 					'</tr>';
 			}
 		}
-		html += '</tbody></table>';
+
+		html += '</tbody><tfoot><tr style="background:rgba(0,0,0,0.03);font-weight:700;">' +
+			'<td colspan="3" style="text-align:right;"><strong>TOTAL KESELURUHAN:</strong></td>' +
+			'<td class="elha-mono-text"><span class="elha-status-badge is-verified">' + grandSold.toLocaleString('id-ID') + ' Tiket</span></td>' +
+			'<td class="elha-mono-text"><strong>' + Math.max(0, grandQuota - grandSold).toLocaleString('id-ID') + ' Tiket</strong></td>' +
+			'<td class="elha-mono-text">' + grandQuota.toLocaleString('id-ID') + ' Tiket</td>' +
+			'<td class="elha-mono-text" style="color:var(--elha-primary);font-weight:800;">' + formatRupiah(grandRevenue) + '</td>' +
+			'</tr></tfoot></table>';
 		quotaTableWrap.innerHTML = html;
+	}
+
+	function populateReportEventFilter() {
+		if (!reportEventFilter) return;
+		var currentVal = reportEventFilter.value || 'all';
+		reportEventFilter.innerHTML = '<option value="all">Semua Event Terdaftar</option>';
+		for (var i = 0; i < config.events.length; i++) {
+			var ev = config.events[i];
+			var opt = document.createElement('option');
+			opt.value = ev.id;
+			opt.textContent = ev.title + ' (' + ev.code + ')';
+			reportEventFilter.appendChild(opt);
+		}
+		if (currentVal) {
+			reportEventFilter.value = currentVal;
+		}
+	}
+
+	function getFilteredReportOrders() {
+		var orders = getSavedOrders();
+		var selectedEvId = reportEventFilter ? reportEventFilter.value : 'all';
+		var query = reportSearchInput ? reportSearchInput.value.trim().toLowerCase() : '';
+
+		var selectedEv = null;
+		if (selectedEvId && selectedEvId !== 'all') {
+			selectedEv = findEventById(selectedEvId);
+		}
+
+		return orders.filter(function (ord) {
+			if (ord.status !== 'verified') return false;
+
+			if (selectedEv) {
+				var matchEvent = ord.eventId === selectedEv.id ||
+					ord.eventCode === selectedEv.code ||
+					(ord.eventTitle && ord.eventTitle.trim().toLowerCase() === selectedEv.title.trim().toLowerCase());
+				if (!matchEvent) return false;
+			}
+
+			if (!query) return true;
+
+			var haystack = [
+				ord.code || '',
+				ord.buyerName || '',
+				ord.buyerPhone || '',
+				ord.buyerEmail || '',
+				ord.buyerAddress || '',
+				ord.buyerNotes || '',
+				ord.eventTitle || '',
+				ord.tierName || ''
+			].join(' ').toLowerCase();
+
+			return haystack.indexOf(query) !== -1;
+		});
+	}
+
+	function renderReportTab() {
+		if (!reportTableWrap) return;
+		var filtered = getFilteredReportOrders();
+
+		var selectedEvId = reportEventFilter ? reportEventFilter.value : 'all';
+		var selectedEv = selectedEvId !== 'all' ? findEventById(selectedEvId) : null;
+
+		var totalParticipants = filtered.length;
+		var totalTickets = 0;
+		var totalRevenue = 0;
+
+		for (var i = 0; i < filtered.length; i++) {
+			totalTickets += (filtered[i].qty || 1);
+			totalRevenue += (filtered[i].totalAmount || 0);
+		}
+
+		var targetQuota = 0;
+		var ordersAll = getSavedOrders();
+		var soldForQuota = 0;
+
+		if (selectedEv) {
+			targetQuota = getEventTotalQuota(selectedEv);
+			for (var o = 0; o < ordersAll.length; o++) {
+				if (ordersAll[o].status === 'verified') {
+					if (ordersAll[o].eventId === selectedEv.id || ordersAll[o].eventCode === selectedEv.code || ordersAll[o].eventTitle === selectedEv.title) {
+						soldForQuota += (ordersAll[o].qty || 1);
+					}
+				}
+			}
+		} else {
+			for (var e = 0; e < config.events.length; e++) {
+				targetQuota += getEventTotalQuota(config.events[e]);
+			}
+			for (var o2 = 0; o2 < ordersAll.length; o2++) {
+				if (ordersAll[o2].status === 'verified') {
+					soldForQuota += (ordersAll[o2].qty || 1);
+				}
+			}
+		}
+
+		var remainingQuota = Math.max(0, targetQuota - soldForQuota);
+
+		if (repStatParticipants) repStatParticipants.textContent = totalParticipants.toLocaleString('id-ID') + ' Orang';
+		if (repStatTickets) repStatTickets.textContent = totalTickets.toLocaleString('id-ID') + ' Tiket';
+		if (repStatRevenue) repStatRevenue.textContent = formatRupiah(totalRevenue);
+		if (repStatQuota) repStatQuota.textContent = remainingQuota.toLocaleString('id-ID') + ' Tiket';
+		if (reportTableCount) reportTableCount.textContent = String(totalParticipants);
+
+		if (reportActiveBadge) {
+			reportActiveBadge.textContent = selectedEv ? selectedEv.title : 'Semua Event Terdaftar';
+		}
+
+		if (filtered.length === 0) {
+			reportTableWrap.innerHTML = '<div class="elha-event-mini-summary">Belum ada data peserta berstatus Lunas atau Terverifikasi untuk event atau kata kunci pencarian ini.</div>';
+			return;
+		}
+
+		var html = '<table class="elha-quota-table"><thead><tr>' +
+			'<th>No</th>' +
+			'<th>Kode Booking</th>' +
+			'<th>Nama Peserta</th>' +
+			'<th>Kontak (WA / Email)</th>' +
+			'<th>Domisili</th>' +
+			'<th>Event &amp; Kategori</th>' +
+			'<th>Jml</th>' +
+			'<th>Total Bayar</th>' +
+			'<th>Waktu Verifikasi</th>' +
+			'<th>Aksi</th>' +
+			'</tr></thead><tbody>';
+
+		for (var k = 0; k < filtered.length; k++) {
+			var p = filtered[k];
+			var verTime = p.verifiedAt ? p.verifiedAt : (p.createdDateStr || '-');
+			html += '<tr>' +
+				'<td>' + (k + 1) + '</td>' +
+				'<td><strong class="elha-mono-text">' + escapeHtml(p.code) + '</strong></td>' +
+				'<td><strong>' + escapeHtml(p.buyerName) + '</strong></td>' +
+				'<td><div>' + escapeHtml(p.buyerPhone) + '</div><small style="color:var(--elha-text-muted);">' + escapeHtml(p.buyerEmail || '-') + '</small></td>' +
+				'<td>' + escapeHtml(p.buyerAddress || '-') + '</td>' +
+				'<td><div>' + escapeHtml(p.eventTitle) + '</div><small style="color:var(--elha-text-muted);">' + escapeHtml(p.tierName) + '</small></td>' +
+				'<td class="elha-mono-text"><strong>' + (p.qty || 1) + '</strong></td>' +
+				'<td class="elha-mono-text" style="font-weight:700;color:var(--elha-primary);">' + formatRupiah(p.totalAmount || 0) + '</td>' +
+				'<td><small>' + escapeHtml(verTime) + '</small></td>' +
+				'<td><button type="button" class="elha-table-action-btn is-view-quick" data-rep-view="' + escapeHtml(p.code) + '">Lihat E-Tiket</button></td>' +
+				'</tr>';
+		}
+
+		html += '</tbody></table>';
+		reportTableWrap.innerHTML = html;
+
+		var viewBtns = reportTableWrap.querySelectorAll('[data-rep-view]');
+		for (var b = 0; b < viewBtns.length; b++) {
+			viewBtns[b].addEventListener('click', function () {
+				var code = this.getAttribute('data-rep-view');
+				var ord = findOrderByCode(code);
+				if (ord) {
+					showOrderReceiptModal(ord, true);
+				}
+			});
+		}
+	}
+
+	function exportParticipantsExcelCsv() {
+		var list = getFilteredReportOrders();
+		if (list.length === 0) {
+			alert('Tidak ada data peserta terverifikasi untuk diekspor pada filter event saat ini.');
+			return;
+		}
+
+		var selectedEvId = reportEventFilter ? reportEventFilter.value : 'all';
+		var eventSlug = 'semua-event';
+		if (selectedEvId !== 'all') {
+			var evObj = findEventById(selectedEvId);
+			if (evObj) {
+				eventSlug = evObj.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+			}
+		}
+
+		function csvCell(val, isText) {
+			var str = String(val == null ? '' : val).trim();
+			if (isText && /^0\d+/.test(str)) {
+				return '="' + str + '"';
+			}
+			if (str.indexOf('"') !== -1 || str.indexOf(',') !== -1 || str.indexOf('\n') !== -1 || str.indexOf('\r') !== -1) {
+				return '"' + str.replace(/"/g, '""') + '"';
+			}
+			return str;
+		}
+
+		var headers = [
+			'No',
+			'Kode Booking',
+			'Status Pembayaran',
+			'Nama Peserta',
+			'Nomor WhatsApp',
+			'Email',
+			'Kota Domisili',
+			'Judul Event',
+			'Kode Event',
+			'Kategori Tiket',
+			'Jumlah Tiket',
+			'Total Pembayaran (Rp)',
+			'Tanggal Pemesanan',
+			'Waktu Verifikasi Lunas',
+			'Catatan Pesanan'
+		];
+
+		var csvRows = [];
+		csvRows.push(headers.map(function (h) { return csvCell(h, false); }).join(','));
+
+		for (var i = 0; i < list.length; i++) {
+			var item = list[i];
+			var row = [
+				i + 1,
+				csvCell(item.code, false),
+				csvCell('LUNAS / TERVERIFIKASI', false),
+				csvCell(item.buyerName, false),
+				csvCell(item.buyerPhone, true),
+				csvCell(item.buyerEmail, false),
+				csvCell(item.buyerAddress, false),
+				csvCell(item.eventTitle, false),
+				csvCell(item.eventCode, false),
+				csvCell(item.tierName, false),
+				item.qty || 1,
+				item.totalAmount || 0,
+				csvCell(item.createdDateStr, false),
+				csvCell(item.verifiedAt || item.createdDateStr, false),
+				csvCell(item.buyerNotes, false)
+			];
+			csvRows.push(row.join(','));
+		}
+
+		var csvContent = '\uFEFF' + csvRows.join('\r\n');
+		var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+		var url = URL.createObjectURL(blob);
+		var dateStamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+		var filename = 'laporan-peserta-' + eventSlug + '-' + dateStamp + '.csv';
+
+		var link = document.createElement('a');
+		link.href = url;
+		link.setAttribute('download', filename);
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+		URL.revokeObjectURL(url);
+	}
+
+	if (exportExcelBtn) {
+		exportExcelBtn.addEventListener('click', exportParticipantsExcelCsv);
+	}
+	if (reportEventFilter) {
+		reportEventFilter.addEventListener('change', function () {
+			renderReportTab();
+		});
+	}
+	if (reportSearchInput) {
+		reportSearchInput.addEventListener('input', function () {
+			renderReportTab();
+		});
 	}
 
 	function renderAdminEventsList() {
 		updateAdminStats();
 		syncSettingsFormFields();
 		renderAdminQuotaTable();
+		populateReportEventFilter();
 		if (!adminListEl) return;
 		if (adminCountEl) adminCountEl.textContent = String(config.events.length);
 
@@ -2354,6 +2705,7 @@
 
 		renderAllEventsUI();
 		updateOrdersBadgeAndStats();
+		populateReportEventFilter();
 
 		var urlParams = new URLSearchParams(window.location.search);
 		var verifyCodeParam = urlParams.get('verify');

@@ -2139,6 +2139,13 @@ body {
 	grid-column: span 2;
 }
 
+.elha-report-top-actions {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
 .elha-admin-form-actions {
 	display: flex;
 	flex-direction: column;
@@ -2318,7 +2325,7 @@ body {
 	}
 
 	.elha-admin-stats-grid {
-		grid-template-columns: repeat(4, minmax(0, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
 	}
 
 	.elha-admin-tier-fields {
