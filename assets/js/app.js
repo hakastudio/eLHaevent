@@ -6,7 +6,7 @@
 	var defaultConfig = {
 		settings: {
 			brand_name: 'eLHa Event',
-			whatsapp_number: '6281234567890',
+			whatsapp_number: '6285175114542',
 			whatsapp_admin_lbl: 'Admin eLHa Event',
 			promo_code: 'KOMUNITAS10',
 			promo_pct: 10
@@ -2756,6 +2756,9 @@
 		settingsForm.addEventListener('submit', function (e) {
 			e.preventDefault();
 			var waVal = adminWaInput ? adminWaInput.value.replace(/[^0-9]/g, '') : '';
+			if (waVal.indexOf('0') === 0) {
+				waVal = '62' + waVal.substring(1);
+			}
 			if (setBrandInput && setBrandInput.value.trim()) {
 				config.settings.brand_name = setBrandInput.value.trim();
 			}
@@ -2774,6 +2777,7 @@
 			saveConfigToLocal();
 			renderAllEventsUI();
 			updateAdminStats();
+			syncSettingsFormFields();
 			if (settingsFeedback) {
 				settingsFeedback.hidden = false;
 				settingsFeedback.textContent = 'Pengaturan brand, WhatsApp, dan kode promo berhasil disimpan.';
@@ -2827,6 +2831,47 @@
 		});
 	}
 
+	var reloadServerJsonBtn = document.getElementById('elha-reload-server-json-btn');
+	if (reloadServerJsonBtn) {
+		reloadServerJsonBtn.addEventListener('click', function () {
+			if (!window.fetch) return;
+			var jsonPath = (getBasePath() ? getBasePath() + '/' : '') + 'assets/data/events.json?v=' + Date.now();
+			fetch(jsonPath)
+				.then(function (res) { return res.ok ? res.json() : null; })
+				.then(function (jsonData) {
+					if (jsonData && Array.isArray(jsonData.events)) {
+						config = jsonData;
+						if (Array.isArray(config.events)) {
+							for (var evI = 0; evI < config.events.length; evI++) {
+								var evItem = config.events[evI];
+								if (Array.isArray(evItem.tiers)) {
+									for (var trI = 0; trI < evItem.tiers.length; trI++) {
+										evItem.tiers[trI].name = cleanTierName(evItem.tiers[trI].name);
+									}
+								}
+							}
+						}
+						saveConfigToLocal();
+						renderAllEventsUI();
+						updateOrdersBadgeAndStats();
+						populateReportEventFilter();
+						syncSettingsFormFields();
+						loadEventIntoForm('');
+						if (dataFeedback) {
+							dataFeedback.hidden = false;
+							dataFeedback.textContent = 'Berhasil memuat ulang dan menyinkronkan data dari file events.json server!';
+						}
+					}
+				})
+				.catch(function (err) {
+					if (dataFeedback) {
+						dataFeedback.hidden = false;
+						dataFeedback.textContent = 'Gagal memuat file dari server: ' + err.message;
+					}
+				});
+		});
+	}
+
 	if (resetDefaultBtn) {
 		resetDefaultBtn.addEventListener('click', function () {
 			try {
@@ -2846,7 +2891,6 @@
 
 	// Load initial data from localStorage or assets/data/events.json
 	function initData() {
-		var loadedLocal = false;
 		try {
 			localStorage.removeItem('elha_ticketing_data_v1');
 			var savedData = localStorage.getItem(STORAGE_KEY);
@@ -2854,7 +2898,6 @@
 				var parsed = JSON.parse(savedData);
 				if (parsed && Array.isArray(parsed.events)) {
 					config = parsed;
-					loadedLocal = true;
 				}
 			}
 		} catch (e) {}
@@ -2912,8 +2955,8 @@
 			openAdminStudio(false);
 		}
 
-		if (!loadedLocal && window.fetch) {
-			var jsonPath = (getBasePath() ? getBasePath() + '/' : '') + 'assets/data/events.json';
+		if (window.fetch) {
+			var jsonPath = (getBasePath() ? getBasePath() + '/' : '') + 'assets/data/events.json?v=' + Date.now();
 			fetch(jsonPath)
 				.then(function (res) { return res.ok ? res.json() : null; })
 				.then(function (jsonData) {
@@ -2929,7 +2972,11 @@
 								}
 							}
 						}
+						saveConfigToLocal();
 						renderAllEventsUI();
+						updateOrdersBadgeAndStats();
+						populateReportEventFilter();
+						syncSettingsFormFields();
 						if (shouldAutoOpenAdmin) {
 							openAdminStudio(false);
 						}
