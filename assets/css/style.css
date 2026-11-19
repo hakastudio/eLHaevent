@@ -161,6 +161,59 @@ body {
 	min-width: 0;
 }
 
+.elha-brand-logo {
+	display: block;
+	height: clamp(32px, 6vw, 40px);
+	width: auto;
+	max-width: 180px;
+	object-fit: contain;
+	transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.elha-brand:hover .elha-brand-logo {
+	transform: scale(1.02);
+}
+
+.elha-footer-logo {
+	display: block;
+	height: 38px;
+	width: auto;
+	max-width: 170px;
+	object-fit: contain;
+	margin-bottom: 8px;
+}
+
+.elha-eticket-head-left {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.elha-eticket-logo {
+	display: block;
+	height: 28px;
+	width: auto;
+	object-fit: contain;
+	flex-shrink: 0;
+}
+
+/* Theme-adaptive logo switching */
+[data-theme="light"] .elha-logo-dark {
+	display: none !important;
+}
+
+[data-theme="light"] .elha-logo-light {
+	display: block !important;
+}
+
+[data-theme="dark"] .elha-logo-light {
+	display: none !important;
+}
+
+[data-theme="dark"] .elha-logo-dark {
+	display: block !important;
+}
+
 .elha-brand-text {
 	display: flex;
 	align-items: center;
