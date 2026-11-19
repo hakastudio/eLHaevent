@@ -328,6 +328,10 @@
 		return null;
 	}
 
+	function cleanTierName(name) {
+		return String(name || '').replace(/\s*\([kK]uota.*?\)/gi, '').trim();
+	}
+
 	function isEventClosed(eventObj) {
 		if (!eventObj) return false;
 		if (eventObj.is_closed === true) return true;
@@ -465,7 +469,7 @@
 				btn.innerHTML =
 					'<span class="elha-quick-tier-name"></span>' +
 					'<strong class="elha-quick-tier-price"></strong>';
-				btn.querySelector('.elha-quick-tier-name').textContent = tier.name;
+				btn.querySelector('.elha-quick-tier-name').textContent = cleanTierName(tier.name);
 				btn.querySelector('.elha-quick-tier-price').textContent = formatRupiah(tier.price);
 				if (isFeatClosed) {
 					btn.disabled = true;
@@ -701,7 +705,8 @@
 			if (isClosed) {
 				radio.disabled = true;
 			}
-			radio.setAttribute('data-tier-name', tier.name);
+			var cTierName = cleanTierName(tier.name);
+			radio.setAttribute('data-tier-name', cTierName);
 			radio.setAttribute('data-tier-price', String(tier.price));
 			radio.setAttribute('data-tier-quota', String(Math.max(1, parseInt(tier.quota || 200, 10))));
 
@@ -712,7 +717,7 @@
 			top.className = 'elha-tier-card-top';
 
 			var titleStrong = document.createElement('strong');
-			titleStrong.textContent = tier.name;
+			titleStrong.textContent = cTierName;
 
 			var priceSpan = document.createElement('span');
 			priceSpan.className = 'elha-tier-card-price';
@@ -723,8 +728,7 @@
 
 			var noteSmall = document.createElement('small');
 			noteSmall.className = 'elha-tier-card-note';
-			var quotaSuffix = tier.quota ? ' (Kuota: ' + tier.quota + ' Tiket)' : '';
-			noteSmall.textContent = (tier.quota_note || 'Akses acara resmi') + quotaSuffix;
+			noteSmall.textContent = tier.quota_note || 'Akses acara resmi';
 
 			body.appendChild(top);
 			body.appendChild(noteSmall);
@@ -1288,19 +1292,18 @@
 	}
 
 	function buildWhatsAppOrderText(order) {
-		var adminVerifyUrl = window.location.origin + getBasePath() + '/adminelha?verify=' + order.code + '&od=' + encodeOrderPayload(order);
 		var lines = [
 			'Halo ' + config.settings.whatsapp_admin_lbl + ',',
 			'Saya ingin mengonfirmasi pemesanan E-Tiket dengan rincian berikut:',
 			'',
-			'Kode Booking E-Tiket: ' + order.code,
+			'Kode Booking: ' + order.code,
 			'Event: ' + order.eventTitle,
 			'Jadwal: ' + order.eventDate,
 			'Lokasi: ' + order.eventVenue,
-			'Kategori Tiket: ' + (order.qty || 1) + 'x ' + order.tierName,
+			'Kategori Tiket: ' + (order.qty || 1) + 'x ' + cleanTierName(order.tierName),
 			'Total Tagihan: ' + order.totalFormatted,
 			'',
-			'Pemegang E-Tiket:',
+			'Data Pemesan:',
 			'Nama: ' + order.buyerName,
 			'No. Telepon/WA: ' + order.buyerPhone,
 			'Email: ' + (order.buyerEmail || '-'),
@@ -1310,9 +1313,6 @@
 			lines.push('Catatan: ' + order.buyerNotes);
 		}
 		lines.push(
-			'',
-			'Link Verifikasi Admin:',
-			adminVerifyUrl,
 			'',
 			'Mohon instruksi pembayaran untuk aktivasi E-Tiket ini. Terima kasih.'
 		);
@@ -1740,7 +1740,7 @@
 			'</div>' +
 			'</div>';
 
-		row.querySelector('.elha-tier-name-input').value = tierData && tierData.name ? tierData.name : '';
+		row.querySelector('.elha-tier-name-input').value = tierData && tierData.name ? cleanTierName(tierData.name) : '';
 		row.querySelector('.elha-tier-price-input').value = tierData && tierData.price != null ? String(tierData.price) : '';
 		row.querySelector('.elha-tier-quota-input').value = tierData && tierData.quota != null ? String(tierData.quota) : '200';
 		row.querySelector('.elha-tier-note-field').value = tierData && tierData.quota_note ? tierData.quota_note : '';
@@ -2675,7 +2675,7 @@
 			var totalTierQuota = 0;
 			var tierCards = tiersAdminContainer ? tiersAdminContainer.querySelectorAll('.elha-admin-tier-card') : [];
 			for (var t = 0; t < tierCards.length; t++) {
-				var tName = tierCards[t].querySelector('.elha-tier-name-input').value.trim();
+				var tName = cleanTierName(tierCards[t].querySelector('.elha-tier-name-input').value.trim());
 				var tPrice = parseInt(tierCards[t].querySelector('.elha-tier-price-input').value || '0', 10);
 				var tQuota = Math.max(1, parseInt(tierCards[t].querySelector('.elha-tier-quota-input').value || '200', 10));
 				var tNote = tierCards[t].querySelector('.elha-tier-note-field').value.trim();
@@ -2859,6 +2859,26 @@
 			}
 		} catch (e) {}
 
+		if (Array.isArray(config.events)) {
+			var hasCleaned = false;
+			for (var evI = 0; evI < config.events.length; evI++) {
+				var evItem = config.events[evI];
+				if (Array.isArray(evItem.tiers)) {
+					for (var trI = 0; trI < evItem.tiers.length; trI++) {
+						var rawN = evItem.tiers[trI].name || '';
+						var cN = cleanTierName(rawN);
+						if (cN !== rawN) {
+							evItem.tiers[trI].name = cN;
+							hasCleaned = true;
+						}
+					}
+				}
+			}
+			if (hasCleaned) {
+				saveConfigToLocal();
+			}
+		}
+
 		renderAllEventsUI();
 		updateOrdersBadgeAndStats();
 		populateReportEventFilter();
@@ -2899,6 +2919,16 @@
 				.then(function (jsonData) {
 					if (jsonData && Array.isArray(jsonData.events)) {
 						config = jsonData;
+						if (Array.isArray(config.events)) {
+							for (var evI2 = 0; evI2 < config.events.length; evI2++) {
+								var evItem2 = config.events[evI2];
+								if (Array.isArray(evItem2.tiers)) {
+									for (var trI2 = 0; trI2 < evItem2.tiers.length; trI2++) {
+										evItem2.tiers[trI2].name = cleanTierName(evItem2.tiers[trI2].name);
+									}
+								}
+							}
+						}
 						renderAllEventsUI();
 						if (shouldAutoOpenAdmin) {
 							openAdminStudio(false);
