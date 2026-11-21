@@ -54,6 +54,17 @@
 		return config.events[0] || null;
 	}
 
+	function getEventAdminWa(ev) {
+		if (ev && ev.admin_wa && String(ev.admin_wa).trim()) {
+			var clean = String(ev.admin_wa).trim().replace(/[^0-9]/g, '');
+			if (clean.indexOf('0') === 0) clean = '62' + clean.substring(1);
+			if (clean) return clean;
+		}
+		var fallback = (config.settings && config.settings.whatsapp_number) ? String(config.settings.whatsapp_number).replace(/[^0-9]/g, '') : '6285175114542';
+		if (fallback.indexOf('0') === 0) fallback = '62' + fallback.substring(1);
+		return fallback || '6285175114542';
+	}
+
 	function saveConfigToLocal() {
 		try {
 			localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
@@ -353,7 +364,8 @@
 
 		var stubPaymentNote = document.getElementById('elha-stub-payment-note');
 		if (stubPaymentNote) {
-			stubPaymentNote.innerHTML = '<strong>Layanan Tiket Resmi:</strong> <span class="elha-mono-text">+' + config.settings.whatsapp_number + '</span>';
+			var activeEv = (eventSelect && eventSelect.value) ? findEventById(eventSelect.value) : (config.events[0] || null);
+			stubPaymentNote.innerHTML = '<strong>Layanan Tiket Resmi:</strong> <span class="elha-mono-text">+' + getEventAdminWa(activeEv) + '</span>';
 		}
 
 		if (!config.events || config.events.length === 0) {
@@ -810,6 +822,10 @@
 			if (stubDiscountRow) stubDiscountRow.hidden = true;
 			if (stubTotal) stubTotal.textContent = 'Rp 0';
 			if (submitCheckoutBtn) submitCheckoutBtn.textContent = 'Belum Ada Event Tersedia';
+			var stubPaymentNoteEmpty = document.getElementById('elha-stub-payment-note');
+			if (stubPaymentNoteEmpty) {
+				stubPaymentNoteEmpty.innerHTML = '<strong>Layanan Tiket Resmi:</strong> <span class="elha-mono-text">+' + getEventAdminWa(null) + '</span>';
+			}
 			return;
 		}
 
@@ -833,6 +849,11 @@
 		if (stubTotal) stubTotal.textContent = formatRupiah(finalTotal);
 		if (submitCheckoutBtn) {
 			submitCheckoutBtn.textContent = 'Pesan & Terbitkan E-Tiket (' + formatRupiah(finalTotal) + ')';
+		}
+
+		var stubPaymentNoteEl = document.getElementById('elha-stub-payment-note');
+		if (stubPaymentNoteEl) {
+			stubPaymentNoteEl.innerHTML = '<strong>Layanan Tiket Resmi:</strong> <span class="elha-mono-text">+' + getEventAdminWa(eventObj) + '</span>';
 		}
 	}
 
@@ -1380,7 +1401,9 @@
 
 		if (waTextarea) waTextarea.value = waMessage;
 		if (waDirectLink) {
-			var cleanNumber = (config.settings.whatsapp_number || '6281234567890').replace(/[^0-9]/g, '');
+			var eventObjForWa = findEventById(order.eventId);
+			var targetAdminWa = order.adminWa || getEventAdminWa(eventObjForWa);
+			var cleanNumber = targetAdminWa.replace(/[^0-9]/g, '');
 			if (isLunas) {
 				waDirectLink.textContent = 'Bagikan E-Tiket ke WhatsApp';
 				waDirectLink.href = 'https://wa.me/?text=' + encodeURIComponent('E-Tiket Resmi ' + order.eventTitle + ' (' + order.code + '): ' + ticketUrl);
@@ -1452,6 +1475,7 @@
 				eventId: evObj.id,
 				eventCode: evObj.code,
 				eventTitle: evObj.title,
+				adminWa: getEventAdminWa(evObj),
 				eventDate: evObj.date_label + ' (' + evObj.time_label + ')',
 				eventVenue: evObj.venue,
 				tierName: tierData.name,
@@ -2439,7 +2463,7 @@
 				'<button type="button" class="elha-btn elha-btn-secondary elha-btn-sm" data-del-ev="' + ev.id + '">Hapus</button>' +
 				'</div>';
 			item.querySelector('strong').textContent = (ev.featured ? '[HERO] ' : '') + ev.title;
-			item.querySelector('small').textContent = ev.code + ' \u2022 ' + ev.category_lbl + ' \u2022 ' + tierCount + ' Kategori (' + totalQ + ' Tiket)';
+			item.querySelector('small').textContent = ev.code + ' \u2022 ' + ev.category_lbl + ' \u2022 ' + tierCount + ' Kategori (' + totalQ + ' Tiket)' + (ev.admin_wa ? ' \u2022 WA: +' + ev.admin_wa : '');
 
 			item.querySelector('[data-edit-ev]').addEventListener('click', function () {
 				loadEventIntoForm(this.getAttribute('data-edit-ev'));
@@ -2468,6 +2492,7 @@
 		var dateField = document.getElementById('elha-ev-date');
 		var timeField = document.getElementById('elha-ev-time');
 		var venueField = document.getElementById('elha-ev-venue');
+		var evAdminWaField = document.getElementById('elha-ev-admin-wa');
 		var quotaField = document.getElementById('elha-ev-quota');
 		var summaryField = document.getElementById('elha-ev-summary');
 		var featField = document.getElementById('elha-ev-featured');
@@ -2488,6 +2513,7 @@
 			if (dateField) dateField.value = '';
 			if (timeField) timeField.value = '10.00 - 21.00 WIB';
 			if (venueField) venueField.value = '';
+			if (evAdminWaField) evAdminWaField.value = '';
 			if (summaryField) summaryField.value = '';
 			if (featField) featField.checked = config.events.length === 0;
 			var closedField = document.getElementById('elha-ev-closed');
@@ -2510,6 +2536,7 @@
 			if (dateField) dateField.value = ev.date_label;
 			if (timeField) timeField.value = ev.time_label;
 			if (venueField) venueField.value = ev.venue;
+			if (evAdminWaField) evAdminWaField.value = ev.admin_wa || '';
 			if (summaryField) summaryField.value = ev.summary;
 			if (featField) featField.checked = Boolean(ev.featured);
 			var closedField2 = document.getElementById('elha-ev-closed');
@@ -2659,6 +2686,9 @@
 			var dateLbl = document.getElementById('elha-ev-date').value.trim() || 'Jadwal Menyusul';
 			var timeLbl = document.getElementById('elha-ev-time').value.trim() || '10.00 - 21.00 WIB';
 			var venue = document.getElementById('elha-ev-venue').value.trim() || 'Lokasi Venue';
+			var evAdminWaInput = document.getElementById('elha-ev-admin-wa');
+			var evAdminWa = evAdminWaInput ? evAdminWaInput.value.replace(/[^0-9]/g, '') : '';
+			if (evAdminWa.indexOf('0') === 0) evAdminWa = '62' + evAdminWa.substring(1);
 			var quotaInputVal = document.getElementById('elha-ev-quota').value.trim();
 			var summary = document.getElementById('elha-ev-summary').value.trim() || 'Acara resmi eLHa Event.';
 			var isFeat = document.getElementById('elha-ev-featured').checked;
@@ -2723,6 +2753,7 @@
 				date_label: dateLbl,
 				time_label: timeLbl,
 				venue: venue,
+				admin_wa: evAdminWa,
 				quota_label: quotaInputVal || (totalTierQuota + ' Tiket Tersedia'),
 				poster_theme: pTheme || 'terracotta',
 				banner_image: finalBanner,
