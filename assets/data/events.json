@@ -1,7 +1,7 @@
 {
   "settings": {
     "brand_name": "eLHa Event",
-    "whatsapp_number": "6285175114542",
+    "whatsapp_number": "6285669406333",
     "whatsapp_admin_lbl": "Admin eLHa Event",
     "promo_code": "KOMUNITAS10",
     "promo_pct": 10
@@ -24,14 +24,13 @@
       "summary": "Mengajak seluruh komunitas sepeda untuk berkumpul dan bersepeda bersama tanpa membedakan jenis sepeda maupun latar belakang komunitas.\nMenghadirkan suasana festival yang menyenangkan melalui musik, hiburan, games, dan berbagai aktivitas menarik.",
       "tiers": [
         {
-          "tier_id": "tier-1795240145005-1",
+          "tier_id": "tier-1795243271597-1",
           "name": "Tiket Reguler",
           "price": 65000,
           "quota": 500,
           "quota_note": "Akses area utama acara"
         }
-      ],
-      "admin_wa": "6285175114542"
+      ]
     },
     {
       "id": "evt-002",
