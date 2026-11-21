@@ -2542,7 +2542,7 @@
 			if (dateField) dateField.value = ev.date_label;
 			if (timeField) timeField.value = ev.time_label;
 			if (venueField) venueField.value = ev.venue;
-			if (evAdminWaField) evAdminWaField.value = ev.admin_wa || '';
+			if (evAdminWaField) evAdminWaField.value = ev.admin_wa || getEventAdminWa(ev);
 			if (summaryField) summaryField.value = ev.summary;
 			if (featField) featField.checked = Boolean(ev.featured);
 			var closedField2 = document.getElementById('elha-ev-closed');
@@ -2760,7 +2760,7 @@
 				date_label: dateLbl,
 				time_label: timeLbl,
 				venue: venue,
-				admin_wa: evAdminWa,
+				admin_wa: evAdminWa || getEventAdminWa(null),
 				quota_label: quotaInputVal || (totalTierQuota + ' Tiket Tersedia'),
 				poster_theme: pTheme || 'terracotta',
 				banner_image: finalBanner,
