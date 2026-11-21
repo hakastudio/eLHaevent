@@ -31,6 +31,38 @@
           "quota_note": "Akses area utama acara"
         }
       ]
+    },
+    {
+      "id": "evt-002",
+      "code": "EVT-028",
+      "title": "eLHa Music & Creative Expo",
+      "category": "music-festival",
+      "category_lbl": "Music & Expo",
+      "featured": false,
+      "date_label": "15 Februari 2027",
+      "time_label": "15.00 - 22.00 WIB",
+      "venue": "Gedung Serba Guna (GSG) Unila, Bandar Lampung",
+      "admin_wa": "6285163671033",
+      "quota_label": "1000 Tiket Tersedia",
+      "poster_theme": "ocean",
+      "banner_image": "",
+      "summary": "Panggung pertunjukan musik indie dan pameran industri kreatif lokal.",
+      "tiers": [
+        {
+          "tier_id": "tier-002-presale",
+          "name": "Presale 1",
+          "price": 75000,
+          "quota": 300,
+          "quota_note": "Akses all-day festival"
+        },
+        {
+          "tier_id": "tier-002-normal",
+          "name": "Tiket Normal",
+          "price": 100000,
+          "quota": 700,
+          "quota_note": "Akses festival dan voucher belanja stan"
+        }
+      ]
     }
   ]
 }

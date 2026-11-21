@@ -6,7 +6,7 @@
 	var defaultConfig = {
 		settings: {
 			brand_name: 'eLHa Event',
-			whatsapp_number: '6285175114542',
+			whatsapp_number: '6285163671033',
 			whatsapp_admin_lbl: 'Admin eLHa Event',
 			promo_code: 'KOMUNITAS10',
 			promo_pct: 10
@@ -58,11 +58,13 @@
 		if (ev && ev.admin_wa && String(ev.admin_wa).trim()) {
 			var clean = String(ev.admin_wa).trim().replace(/[^0-9]/g, '');
 			if (clean.indexOf('0') === 0) clean = '62' + clean.substring(1);
+			else if (clean.indexOf('8') === 0) clean = '62' + clean;
 			if (clean) return clean;
 		}
-		var fallback = (config.settings && config.settings.whatsapp_number) ? String(config.settings.whatsapp_number).replace(/[^0-9]/g, '') : '6285175114542';
+		var fallback = (config && config.settings && config.settings.whatsapp_number) ? String(config.settings.whatsapp_number).replace(/[^0-9]/g, '') : '6285163671033';
 		if (fallback.indexOf('0') === 0) fallback = '62' + fallback.substring(1);
-		return fallback || '6285175114542';
+		else if (fallback.indexOf('8') === 0) fallback = '62' + fallback;
+		return fallback || '6285163671033';
 	}
 
 	function saveConfigToLocal() {
@@ -2693,6 +2695,7 @@
 			var evAdminWaInput = document.getElementById('elha-ev-admin-wa');
 			var evAdminWa = evAdminWaInput ? evAdminWaInput.value.replace(/[^0-9]/g, '') : '';
 			if (evAdminWa.indexOf('0') === 0) evAdminWa = '62' + evAdminWa.substring(1);
+			else if (evAdminWa.indexOf('8') === 0) evAdminWa = '62' + evAdminWa;
 			var quotaInputVal = document.getElementById('elha-ev-quota').value.trim();
 			var summary = document.getElementById('elha-ev-summary').value.trim() || 'Acara resmi eLHa Event.';
 			var isFeat = document.getElementById('elha-ev-featured').checked;
@@ -2776,6 +2779,7 @@
 				config.events.unshift(newEventObj);
 			}
 
+			config._user_modified = true;
 			saveConfigToLocal();
 			renderAllEventsUI();
 			loadEventIntoForm(newEventObj.id);
@@ -2809,6 +2813,7 @@
 			if (setPromoPctInput) {
 				config.settings.promo_pct = Math.max(0, Math.min(90, parseInt(setPromoPctInput.value || '0', 10)));
 			}
+			config._user_modified = true;
 			saveConfigToLocal();
 			renderAllEventsUI();
 			updateAdminStats();
@@ -2826,7 +2831,9 @@
 				adminForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
 			} catch (e) {}
 		}
-		var dataStr = JSON.stringify(config, null, 2);
+		var exportConfig = JSON.parse(JSON.stringify(config));
+		delete exportConfig._user_modified;
+		var dataStr = JSON.stringify(exportConfig, null, 2);
 		var blob = new Blob([dataStr], { type: 'application/json' });
 		var url = URL.createObjectURL(blob);
 		var a = document.createElement('a');
@@ -2919,6 +2926,7 @@
 				localStorage.removeItem('elha_ticketing_data_v1');
 			} catch (e) {}
 			config = JSON.parse(JSON.stringify(defaultConfig));
+			config._user_modified = true;
 			saveConfigToLocal();
 			renderAllEventsUI();
 			loadEventIntoForm('');
@@ -3001,7 +3009,23 @@
 				.then(function (res) { return res.ok ? res.json() : null; })
 				.then(function (jsonData) {
 					if (jsonData && Array.isArray(jsonData.events)) {
-						config = jsonData;
+						var hasLocalModifications = false;
+						try {
+							var localRaw = localStorage.getItem(STORAGE_KEY);
+							if (localRaw) {
+								var localParsed = JSON.parse(localRaw);
+								if (localParsed && Array.isArray(localParsed.events) && (localParsed._user_modified || localParsed.events.length !== jsonData.events.length)) {
+									hasLocalModifications = true;
+								}
+							}
+						} catch (e) {}
+
+						if (!hasLocalModifications) {
+							config = jsonData;
+						} else {
+							if (!config.settings) config.settings = jsonData.settings;
+						}
+
 						if (Array.isArray(config.events)) {
 							for (var evI2 = 0; evI2 < config.events.length; evI2++) {
 								var evItem2 = config.events[evI2];
