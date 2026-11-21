@@ -24,43 +24,11 @@
       "summary": "Mengajak seluruh komunitas sepeda untuk berkumpul dan bersepeda bersama tanpa membedakan jenis sepeda maupun latar belakang komunitas.\nMenghadirkan suasana festival yang menyenangkan melalui musik, hiburan, games, dan berbagai aktivitas menarik.",
       "tiers": [
         {
-          "tier_id": "tier-1795243271597-1",
+          "tier_id": "tier-1795243706890-1",
           "name": "Tiket Reguler",
           "price": 65000,
           "quota": 500,
           "quota_note": "Akses area utama acara"
-        }
-      ]
-    },
-    {
-      "id": "evt-002",
-      "code": "EVT-028",
-      "title": "eLHa Music & Creative Expo",
-      "category": "music-festival",
-      "category_lbl": "Music & Expo",
-      "featured": false,
-      "date_label": "15 Februari 2027",
-      "time_label": "15.00 - 22.00 WIB",
-      "venue": "Gedung Serba Guna (GSG) Unila, Bandar Lampung",
-      "admin_wa": "6281298765432",
-      "quota_label": "1000 Tiket Tersedia",
-      "poster_theme": "ocean",
-      "banner_image": "",
-      "summary": "Panggung pertunjukan musik indie dan pameran industri kreatif lokal.",
-      "tiers": [
-        {
-          "tier_id": "tier-002-presale",
-          "name": "Presale 1",
-          "price": 75000,
-          "quota": 300,
-          "quota_note": "Akses all-day festival"
-        },
-        {
-          "tier_id": "tier-002-normal",
-          "name": "Tiket Normal",
-          "price": 100000,
-          "quota": 700,
-          "quota_note": "Akses festival dan voucher belanja stan"
         }
       ]
     }
