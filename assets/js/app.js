@@ -144,6 +144,10 @@
 		if (viewAdmin) viewAdmin.hidden = mode !== 'admin';
 		if (faqSection) faqSection.hidden = mode === 'admin';
 
+		if (mode === 'checkout') {
+			updateStubCalculation();
+		}
+
 		try {
 			if (window.history && window.history.replaceState) {
 				var base = getBasePath();
@@ -2817,6 +2821,11 @@
 	}
 
 	function triggerJsonDownload() {
+		if (adminForm && document.getElementById('elha-ev-title') && document.getElementById('elha-ev-title').value.trim()) {
+			try {
+				adminForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+			} catch (e) {}
+		}
 		var dataStr = JSON.stringify(config, null, 2);
 		var blob = new Blob([dataStr], { type: 'application/json' });
 		var url = URL.createObjectURL(blob);
