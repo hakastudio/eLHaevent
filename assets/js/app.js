@@ -1,12 +1,12 @@
 (function () {
 	'use strict';
 
-	var STORAGE_KEY = 'elha_event_custom_v2';
+	var STORAGE_KEY = 'elha_event_custom_v4';
 
 	var defaultConfig = {
 		settings: {
 			brand_name: 'eLHa Event',
-			whatsapp_number: '6285163671033',
+			whatsapp_number: '6285175114542',
 			whatsapp_admin_lbl: 'Admin eLHa Event',
 			promo_code: 'KOMUNITAS10',
 			promo_pct: 10
@@ -61,10 +61,10 @@
 			else if (clean.indexOf('8') === 0) clean = '62' + clean;
 			if (clean) return clean;
 		}
-		var fallback = (config && config.settings && config.settings.whatsapp_number) ? String(config.settings.whatsapp_number).replace(/[^0-9]/g, '') : '6285163671033';
+		var fallback = (config && config.settings && config.settings.whatsapp_number) ? String(config.settings.whatsapp_number).replace(/[^0-9]/g, '') : '6285175114542';
 		if (fallback.indexOf('0') === 0) fallback = '62' + fallback.substring(1);
 		else if (fallback.indexOf('8') === 0) fallback = '62' + fallback;
-		return fallback || '6285163671033';
+		return fallback || '6285175114542';
 	}
 
 	function saveConfigToLocal() {
@@ -2941,6 +2941,8 @@
 	function initData() {
 		try {
 			localStorage.removeItem('elha_ticketing_data_v1');
+			localStorage.removeItem('elha_event_custom_v2');
+			localStorage.removeItem('elha_event_custom_v3');
 			var savedData = localStorage.getItem(STORAGE_KEY);
 			if (savedData) {
 				var parsed = JSON.parse(savedData);
@@ -3009,21 +3011,32 @@
 				.then(function (res) { return res.ok ? res.json() : null; })
 				.then(function (jsonData) {
 					if (jsonData && Array.isArray(jsonData.events)) {
-						var hasLocalModifications = false;
+						var localCustomEvents = null;
 						try {
 							var localRaw = localStorage.getItem(STORAGE_KEY);
 							if (localRaw) {
 								var localParsed = JSON.parse(localRaw);
-								if (localParsed && Array.isArray(localParsed.events) && (localParsed._user_modified || localParsed.events.length !== jsonData.events.length)) {
-									hasLocalModifications = true;
+								if (localParsed && localParsed._user_modified && Array.isArray(localParsed.events)) {
+									localCustomEvents = localParsed;
 								}
 							}
 						} catch (e) {}
 
-						if (!hasLocalModifications) {
+						if (!localCustomEvents) {
 							config = jsonData;
 						} else {
 							if (!config.settings) config.settings = jsonData.settings;
+							for (var sIdx = 0; sIdx < config.events.length; sIdx++) {
+								var cEv = config.events[sIdx];
+								if (!cEv.admin_wa) {
+									for (var je = 0; je < jsonData.events.length; je++) {
+										if (jsonData.events[je].id === cEv.id && jsonData.events[je].admin_wa) {
+											cEv.admin_wa = jsonData.events[je].admin_wa;
+											break;
+										}
+									}
+								}
+							}
 						}
 
 						if (Array.isArray(config.events)) {

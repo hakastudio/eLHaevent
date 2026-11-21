@@ -51,7 +51,7 @@ Berikut adalah contoh isi file `assets/data/events.json` yang berisi 2 event ber
 {
   "settings": {
     "brand_name": "eLHa Event",
-    "whatsapp_number": "6285163671033",
+    "whatsapp_number": "6285175114542",
     "whatsapp_admin_lbl": "Admin eLHa Event",
     "promo_code": "KOMUNITAS10",
     "promo_pct": 10
