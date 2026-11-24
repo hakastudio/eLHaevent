@@ -8,10 +8,12 @@
 		(function () {
 			try {
 				sessionStorage.setItem('elha_admin_route', '1');
+				sessionStorage.setItem('elha_admin_unlocked', '1');
 			} catch (e) {}
 			var rootPath = window.location.pathname.replace(/\/adminelha\/?(index\.html)?$/i, '/');
 			if (!rootPath) rootPath = '/';
-			window.location.replace(rootPath + (window.location.search || ''));
+			var glue = rootPath.indexOf('?') === -1 ? '?' : '&';
+			window.location.replace(rootPath + glue + 'admin=1');
 		})();
 	</script>
 </head>

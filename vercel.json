@@ -2,6 +2,19 @@
   "version": 2,
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/",
+      "missing": [
+        {
+          "type": "query",
+          "key": "admin"
+        }
+      ],
+      "destination": "/maintenance",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/adminelha",
@@ -10,18 +23,6 @@
     {
       "source": "/adminelha/",
       "destination": "/index.html"
-    },
-    {
-      "source": "/maintenance",
-      "destination": "/maintenance.html"
-    },
-    {
-      "source": "/maintenance/",
-      "destination": "/maintenance.html"
-    },
-    {
-      "source": "/",
-      "destination": "/maintenance.html"
     }
   ],
   "headers": [
