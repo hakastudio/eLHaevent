@@ -2330,6 +2330,218 @@ body {
 	}
 }
 
+/* ==========================================================================
+   eLHa Event : Maintenance Page Component Styles
+   ========================================================================== */
+
+.elha-maintenance-page {
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.elha-maintenance-main {
+	flex: 1 0 auto;
+	display: flex;
+	align-items: center;
+	padding: clamp(2rem, 5vw, 4rem) 0;
+}
+
+.elha-maintenance-card {
+	background-color: var(--elha-hero-bg);
+	color: var(--elha-hero-text);
+	border-radius: var(--elha-radius-lg);
+	padding: clamp(1.75rem, 4vw, 3.25rem);
+	box-shadow: var(--elha-shadow-lg);
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	position: relative;
+	overflow: hidden;
+}
+
+.elha-maintenance-card::before {
+	content: '';
+	position: absolute;
+	top: -50px;
+	right: -50px;
+	width: 220px;
+	height: 220px;
+	background: radial-gradient(circle, rgba(255, 115, 21, 0.16) 0%, rgba(21, 70, 158, 0) 70%);
+	pointer-events: none;
+	border-radius: 50%;
+}
+
+.elha-maintenance-top-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	background-color: rgba(255, 115, 21, 0.14);
+	color: var(--elha-accent);
+	border: 1px solid rgba(255, 115, 21, 0.32);
+	padding: 6px 14px;
+	border-radius: 999px;
+	font-family: var(--elha-font-mono);
+	font-size: 0.82rem;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	margin-bottom: 1.25rem;
+}
+
+.elha-pulse-dot {
+	width: 9px;
+	height: 9px;
+	background-color: #10B981;
+	border-radius: 50%;
+	display: inline-block;
+	box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+	animation: elhaPulse 2s infinite;
+}
+
+@keyframes elhaPulse {
+	0% {
+		transform: scale(0.95);
+		box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+	}
+	70% {
+		transform: scale(1);
+		box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+	}
+	100% {
+		transform: scale(0.95);
+		box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+	}
+}
+
+.elha-maintenance-title {
+	font-family: var(--elha-font-serif);
+	font-size: clamp(1.8rem, 4vw, 2.75rem);
+	font-weight: 800;
+	line-height: 1.15;
+	margin: 0 0 1rem 0;
+	color: #FFFFFF;
+	letter-spacing: -0.02em;
+}
+
+.elha-maintenance-desc {
+	font-size: clamp(0.98rem, 1.8vw, 1.12rem);
+	color: var(--elha-hero-muted);
+	line-height: 1.6;
+	max-width: 680px;
+	margin: 0 0 2rem 0;
+}
+
+.elha-maintenance-grid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 14px;
+	margin-bottom: 2.25rem;
+}
+
+@media (min-width: 740px) {
+	.elha-maintenance-grid {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}
+
+.elha-maintenance-item {
+	background-color: rgba(255, 255, 255, 0.05);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: var(--elha-radius-md);
+	padding: 1.25rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.elha-maintenance-item:hover {
+	transform: translateY(-2px);
+	border-color: rgba(255, 115, 21, 0.45);
+}
+
+.elha-maintenance-item-header {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 0.75rem;
+}
+
+.elha-maintenance-item-icon {
+	width: 38px;
+	height: 38px;
+	border-radius: 10px;
+	background-color: rgba(255, 115, 21, 0.15);
+	color: var(--elha-accent);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+}
+
+.elha-maintenance-item-title {
+	font-family: var(--elha-font-sans);
+	font-weight: 700;
+	font-size: 0.96rem;
+	color: #FFFFFF;
+	margin: 0;
+}
+
+.elha-maintenance-item-desc {
+	font-size: 0.84rem;
+	color: var(--elha-hero-muted);
+	line-height: 1.45;
+	margin: 0 0 1rem 0;
+}
+
+.elha-maintenance-item-status {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-family: var(--elha-font-mono);
+	font-size: 0.75rem;
+	font-weight: 700;
+	color: var(--elha-accent);
+	background-color: rgba(0, 0, 0, 0.25);
+	padding: 4px 8px;
+	border-radius: 6px;
+	width: fit-content;
+}
+
+.elha-maintenance-actions {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	margin-bottom: 1.75rem;
+}
+
+@media (min-width: 600px) {
+	.elha-maintenance-actions {
+		flex-direction: row;
+		align-items: center;
+	}
+}
+
+.elha-maintenance-actions .elha-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	text-decoration: none;
+}
+
+.elha-maintenance-note {
+	background-color: rgba(0, 0, 0, 0.2);
+	border-left: 3px solid var(--elha-accent);
+	padding: 12px 16px;
+	border-radius: 0 var(--elha-radius-sm) var(--elha-radius-sm) 0;
+	font-size: 0.88rem;
+	color: var(--elha-hero-muted);
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
 /* Breakpoint 2: Tablet & Small Laptop (680px - 1023px) */
 @media (min-width: 680px) {
 	.elha-header-inner {

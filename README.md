@@ -7,7 +7,8 @@ Dirancang menggunakan **HTML5, CSS3, dan Vanilla JavaScript murni** tanpa keterg
 ## Struktur File
 ```text
 ├── index.html               # Halaman utama (Katalog Event + Checkout E-Tiket + Admin Studio)
-├── vercel.json              # Konfigurasi siap deploy ke Vercel
+├── maintenance.html         # Halaman pemeliharaan sistem (Maintenance Page) modern & responsif
+├── vercel.json              # Konfigurasi siap deploy ke Vercel (routing URL & cache headers)
 ├── assets/
 │   ├── css/
 │   │   └── style.css        # Stylesheet responsif (Tema Oranye & Biru Royal + Mode Gelap + Cetak PDF)
@@ -157,3 +158,37 @@ Jika Anda tidak ingin mengedit kode JSON secara manual, gunakan Dashboard Admin 
 3. Klik tombol **Simpan / Tambah Event**. Anda juga bisa klik tombol **Duplikat** pada event yang sudah ada untuk mempercepat proses pembuatan.
 4. Klik tombol **Download File `events.json`**.
 5. Gantikan file lama di folder `assets/data/events.json` dengan file hasil download tersebut, lalu lakukan git commit dan push ke GitHub repository.
+
+---
+
+## Halaman Pemeliharaan Sistem (Maintenance Page)
+
+Tersedia halaman pemeliharaan sistem mandiri yang modern, elegan, dan responsif di [`maintenance.html`](maintenance.html) (dapat diakses di `/maintenance` atau `/maintenance.html`).
+
+### Fitur Halaman Maintenance:
+1. **Desain Terpadu & Responsif:** Mengikuti tema resmi eLHa Event (Royal Blue & Vibrant Orange) dengan dukungan otomatis mode terang & gelap (*Dark Mode*).
+2. **Status Sistem Real-time:** Menampilkan indikator denyut hijau (*pulsing dot*) serta status modul Server, E-Tiket, dan Helpdesk.
+3. **Integrasi Kontak Admin Otomatis:** Tombol WhatsApp Helpdesk secara otomatis menarik nomor admin aktif dari `assets/data/events.json`.
+4. **Tombol Cek Status:** Pengunjung dapat melakukan refresh status sistem tanpa harus mengetik ulang URL.
+5. **Akses Admin:** Tetap menyediakan tombol pintas langsung ke portal admin `/adminelha`.
+
+### Cara Mengaktifkan Mode Maintenance untuk Seluruh Website:
+Jika Anda ingin seluruh pengunjung yang mengakses domain utama (`/`) langsung dialihkan ke halaman maintenance, cukup edit file [`vercel.json`](vercel.json):
+Tambahkan konfigurasi rewrite root ke `maintenance.html`:
+```json
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/maintenance.html"
+    },
+    {
+      "source": "/maintenance",
+      "destination": "/maintenance.html"
+    },
+    {
+      "source": "/adminelha",
+      "destination": "/index.html"
+    }
+  ]
+```
+*(Portal admin `/adminelha` akan tetap dapat diakses normal oleh pemilik website).*

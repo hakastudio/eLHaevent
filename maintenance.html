@@ -1,202 +1,291 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Situs Dalam Perbaikan — eLHa Event</title>
-  <style>
-    :root {
-      --bg-dark: #070b14;
-      --card-bg: rgba(17, 24, 39, 0.78);
-      --border-subtle: rgba(255, 255, 255, 0.1);
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --accent-1: #38bdf8;
-      --accent-2: #818cf8;
-      --wa-green: #22c55e;
-      --wa-green-hover: #16a34a;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      background-color: var(--bg-dark);
-      background-image:
-        radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.16), transparent 42%),
-        radial-gradient(circle at 80% 75%, rgba(129, 140, 248, 0.18), transparent 45%);
-      color: var(--text-main);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      overflow-x: hidden;
-    }
-
-    .wrapper {
-      width: 100%;
-      max-width: 540px;
-      background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--border-subtle);
-      border-radius: 24px;
-      padding: 40px 32px;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.55);
-      text-align: center;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 14px;
-      border-radius: 999px;
-      background: rgba(56, 189, 248, 0.12);
-      border: 1px solid rgba(56, 189, 248, 0.28);
-      color: #7dd3fc;
-      font-size: 0.8rem;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      margin-bottom: 22px;
-    }
-
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background-color: var(--accent-1);
-      box-shadow: 0 0 10px var(--accent-1);
-      animation: pulse 1.8s infinite ease-in-out;
-    }
-
-    @keyframes pulse {
-      0%, 100% {
-        transform: scale(1);
-        opacity: 1;
-      }
-      50% {
-        transform: scale(1.35);
-        opacity: 0.55;
-      }
-    }
-
-    .brand {
-      font-size: 0.9rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 10px;
-    }
-
-    h1 {
-      font-size: clamp(1.6rem, 4vw, 2.2rem);
-      line-height: 1.2;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      margin-bottom: 14px;
-    }
-
-    .desc {
-      color: var(--text-muted);
-      font-size: 0.98rem;
-      line-height: 1.65;
-      margin-bottom: 28px;
-    }
-
-    .contact-card {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--border-subtle);
-      border-radius: 16px;
-      padding: 20px;
-    }
-
-    .contact-label {
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-    }
-
-    .contact-person {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--text-main);
-      margin-bottom: 16px;
-    }
-
-    .wa-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      width: 100%;
-      padding: 13px 20px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, var(--wa-green), var(--wa-green-hover));
-      color: #ffffff;
-      font-size: 0.96rem;
-      font-weight: 700;
-      text-decoration: none;
-      box-shadow: 0 10px 24px rgba(34, 197, 94, 0.25);
-      transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
-    }
-
-    .wa-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 14px 28px rgba(34, 197, 94, 0.35);
-      filter: brightness(1.05);
-    }
-
-    .footer-note {
-      margin-top: 22px;
-      font-size: 0.78rem;
-      color: #64748b;
-    }
-
-    @media (max-width: 480px) {
-      .wrapper {
-        padding: 32px 20px;
-        border-radius: 20px;
-      }
-    }
-  </style>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="eLHa Event : Platform resmi pemesanan E-Tiket. Sistem saat ini sedang dalam peningkatan performa berkala." />
+	<title>eLHa Event : Sistem Dalam Pemeliharaan</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@500;600;700&family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+	<link rel="icon" type="image/png" href="assets/images/favicon.png?v=20261121" />
+	<link rel="stylesheet" href="assets/css/style.css?v=20261124" />
 </head>
 <body>
-  <main class="wrapper">
-    <div class="badge">
-      <span class="dot"></span>
-      <span>Pemeliharaan Sistem</span>
-    </div>
+<div id="elha-eo-app" class="elha-eo-wrapper elha-maintenance-page" data-theme="light">
+	<a href="#elha-maintenance-content" class="elha-skip-link">Langsung ke konten utama</a>
 
-    <div class="brand">eLHa Event</div>
-    <h1>Situs Sedang Dalam Perbaikan</h1>
-    <p class="desc">
-      Kami sedang melakukan peningkatan sistem dan pembaruan fitur agar pengalaman layanan eLHa Event menjadi lebih baik. Terima kasih atas kesabaran Anda.
-    </p>
+	<!-- HEADER -->
+	<header class="elha-header" role="banner">
+		<div class="elha-container elha-header-inner">
+			<a href="index.html" class="elha-brand" aria-label="eLHa Event - Beranda">
+				<img src="assets/images/logo-light.png?v=20261121" alt="eLHa Management" class="elha-brand-logo elha-logo-light" />
+				<img src="assets/images/logo-dark.png?v=20261121" alt="eLHa Management" class="elha-brand-logo elha-logo-dark" />
+			</a>
 
-    <section class="contact-card" aria-label="Informasi Kontak">
-      <div class="contact-label">Butuh bantuan atau informasi lebih lanjut?</div>
-      <div class="contact-person">Hubungi Heri kurniawan — 085175114542</div>
-      <a
-        class="wa-btn"
-        href="https://wa.me/6285175114542?text=Halo%20Heri%20kurniawan%2C%20saya%20ingin%20bertanya%20terkait%20eLHa%20Event."
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <span>Hubungi via WhatsApp</span>
-      </a>
-    </section>
+			<div class="elha-header-actions">
+				<a href="adminelha" class="elha-theme-btn" aria-label="Akses Portal Admin eLHa" style="text-decoration: none;">
+					<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+						<rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+						<path d="M7 11V7a5 5 0 0 1 10 0v4" />
+					</svg>
+					<span>Akses Admin</span>
+				</a>
 
-    <div class="footer-note">&copy; eLHa Event — Segera kembali online</div>
-  </main>
+				<button type="button" id="elha-theme-toggle" class="elha-theme-btn elha-theme-icon-btn" aria-label="Ganti ke mode gelap" aria-pressed="false">
+					<svg id="elha-icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+						<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+					</svg>
+					<svg id="elha-icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" hidden>
+						<circle cx="12" cy="12" r="5" />
+						<line x1="12" y1="1" x2="12" y2="3" />
+						<line x1="12" y1="21" x2="12" y2="23" />
+						<line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+						<line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+						<line x1="1" y1="12" x2="3" y2="12" />
+						<line x1="21" y1="12" x2="23" y2="12" />
+						<line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+						<line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+					</svg>
+				</button>
+			</div>
+		</div>
+	</header>
+
+	<!-- MAIN CONTENT -->
+	<main id="elha-maintenance-content" class="elha-maintenance-main">
+		<div class="elha-container">
+			<div class="elha-maintenance-card">
+				<div class="elha-maintenance-top-badge">
+					<span class="elha-pulse-dot" aria-hidden="true"></span>
+					<span>Status Sistem : Pemeliharaan Berkala</span>
+				</div>
+
+				<h1 class="elha-maintenance-title">Kami Sedang Meningkatkan Kualitas Layanan Tiket</h1>
+				<p class="elha-maintenance-desc">
+					Halo Pengunjung Setia eLHa Event! Saat ini platform ticketing sedang menjalani proses pemeliharaan infrastruktur dan peningkatan sistem agar transaksi pemesanan, verifikasi, serta penerbitan E-Tiket Anda berjalan semakin cepat, stabil, dan aman.
+				</p>
+
+				<!-- 3-CARD STATUS GRID -->
+				<div class="elha-maintenance-grid" role="list">
+					<!-- Item 1: Server -->
+					<div class="elha-maintenance-item" role="listitem">
+						<div>
+							<div class="elha-maintenance-item-header">
+								<div class="elha-maintenance-item-icon" aria-hidden="true">
+									<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+										<rect x="2" y="2" width="20" height="8" rx="2" ry="2" />
+										<rect x="2" y="14" width="20" height="8" rx="2" ry="2" />
+										<line x1="6" y1="6" x2="6.01" y2="6" />
+										<line x1="6" y1="18" x2="6.01" y2="18" />
+									</svg>
+								</div>
+								<h2 class="elha-maintenance-item-title">Infrastruktur Server</h2>
+							</div>
+							<p class="elha-maintenance-item-desc">Peningkatan kapasitas data dan akselerasi kecepatan checkout tiket.</p>
+						</div>
+						<div class="elha-maintenance-item-status">
+							<span>SEDANG BERJALAN</span>
+						</div>
+					</div>
+
+					<!-- Item 2: E-Tiket -->
+					<div class="elha-maintenance-item" role="listitem">
+						<div>
+							<div class="elha-maintenance-item-header">
+								<div class="elha-maintenance-item-icon" aria-hidden="true">
+									<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+										<path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
+										<path d="M13 5v2" />
+										<path d="M13 17v2" />
+										<path d="M13 11v2" />
+									</svg>
+								</div>
+								<h2 class="elha-maintenance-item-title">Sistem E-Tiket</h2>
+							</div>
+							<p class="elha-maintenance-item-desc">Sinkronisasi kode booking digital dan generator barcode tiket.</p>
+						</div>
+						<div class="elha-maintenance-item-status">
+							<span>OPTIMALISASI</span>
+						</div>
+					</div>
+
+					<!-- Item 3: WhatsApp Support -->
+					<div class="elha-maintenance-item" role="listitem">
+						<div>
+							<div class="elha-maintenance-item-header">
+								<div class="elha-maintenance-item-icon" aria-hidden="true">
+									<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+										<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+									</svg>
+								</div>
+								<h2 class="elha-maintenance-item-title">Layanan Admin WA</h2>
+							</div>
+							<p class="elha-maintenance-item-desc">Helpdesk resmi tetap aktif merespons pertanyaan dan pemesanan.</p>
+						</div>
+						<div class="elha-maintenance-item-status" style="color: #10B981;">
+							<span>AKTIF 24 JAM</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- ACTIONS -->
+				<div class="elha-maintenance-actions">
+					<a href="https://wa.me/6285669406333?text=Halo%20Admin%20eLHa%20Event%2C%20saya%20ingin%20menanyakan%20informasi%20tiket%20selama%20masa%20pemeliharaan%20sistem." 
+					   id="elha-maintenance-wa-btn" 
+					   class="elha-btn elha-btn-primary elha-btn-large" 
+					   target="_blank" 
+					   rel="noopener noreferrer"
+					   aria-label="Hubungi Admin eLHa Event via WhatsApp">
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+							<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+						</svg>
+						<span>Hubungi Admin via WhatsApp</span>
+					</a>
+
+					<button type="button" id="elha-refresh-btn" class="elha-btn elha-btn-secondary elha-btn-large" aria-label="Periksa kembali status website">
+						<svg id="elha-refresh-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+							<polyline points="23 4 23 10 17 10" />
+							<polyline points="1 20 1 14 7 14" />
+							<path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+						</svg>
+						<span id="elha-refresh-text">Cek Status Website</span>
+					</button>
+				</div>
+
+				<!-- HELPDESK NOTE -->
+				<div class="elha-maintenance-note">
+					<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--elha-accent); flex-shrink: 0;" aria-hidden="true">
+						<circle cx="12" cy="12" r="10" />
+						<line x1="12" y1="16" x2="12" y2="12" />
+						<line x1="12" y1="8" x2="12.01" y2="8" />
+					</svg>
+					<div>
+						Pemesanan atau tiket yang telah terbit sebelumnya tetap aman di database kami. Hubungi <span id="elha-admin-label-display">Heri Kurniawan / Admin eLHa</span> di <strong id="elha-admin-phone-display" class="elha-mono-text">+62 856-6940-6333</strong>.
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<!-- FOOTER -->
+	<footer class="elha-footer" role="contentinfo">
+		<div class="elha-container elha-footer-inner">
+			<div class="elha-footer-brand">
+				<a href="index.html" aria-label="eLHa Event - Beranda">
+					<img src="assets/images/logo-dark.png?v=20261121" alt="eLHa Management" class="elha-footer-logo" />
+				</a>
+				<p>Platform resmi pemesanan tiket pameran, bazar kurasi, dan workshop komunitas.</p>
+			</div>
+
+			<div class="elha-footer-cta">
+				<a href="index.html" class="elha-btn elha-btn-secondary" style="text-decoration: none;">
+					<span>Ke Halaman Utama</span>
+				</a>
+			</div>
+		</div>
+	</footer>
+</div>
+
+<!-- CLIENT SCRIPT -->
+<script>
+	(function () {
+		// 1. Theme Management
+		var appWrapper = document.getElementById('elha-eo-app');
+		var themeToggle = document.getElementById('elha-theme-toggle');
+		var iconMoon = document.getElementById('elha-icon-moon');
+		var iconSun = document.getElementById('elha-icon-sun');
+
+		function applyTheme(theme) {
+			if (!appWrapper) return;
+			appWrapper.setAttribute('data-theme', theme);
+			try {
+				localStorage.setItem('elha_theme', theme);
+			} catch (e) {}
+
+			if (theme === 'dark') {
+				if (iconMoon) iconMoon.setAttribute('hidden', '');
+				if (iconSun) iconSun.removeAttribute('hidden');
+				if (themeToggle) {
+					themeToggle.setAttribute('aria-label', 'Ganti ke mode terang');
+					themeToggle.setAttribute('aria-pressed', 'true');
+				}
+			} else {
+				if (iconSun) iconSun.setAttribute('hidden', '');
+				if (iconMoon) iconMoon.removeAttribute('hidden');
+				if (themeToggle) {
+					themeToggle.setAttribute('aria-label', 'Ganti ke mode gelap');
+					themeToggle.setAttribute('aria-pressed', 'false');
+				}
+			}
+		}
+
+		var savedTheme = 'light';
+		try {
+			savedTheme = localStorage.getItem('elha_theme') || 'light';
+		} catch (e) {}
+		applyTheme(savedTheme);
+
+		if (themeToggle) {
+			themeToggle.addEventListener('click', function () {
+				var current = appWrapper.getAttribute('data-theme') || 'light';
+				var targetTheme = current === 'dark' ? 'light' : 'dark';
+				applyTheme(targetTheme);
+			});
+		}
+
+		// 2. Dynamic Fetch of Admin WhatsApp from events.json
+		var waBtn = document.getElementById('elha-maintenance-wa-btn');
+		var phoneDisplay = document.getElementById('elha-admin-phone-display');
+		var adminLabelDisplay = document.getElementById('elha-admin-label-display');
+
+		fetch('assets/data/events.json?t=' + Date.now())
+			.then(function (res) { return res.json(); })
+			.then(function (data) {
+				if (data && data.settings) {
+					var rawNumber = String(data.settings.whatsapp_number || '6285669406333').replace(/[^0-9]/g, '');
+					var adminName = data.settings.whatsapp_admin_lbl || 'Admin eLHa Event';
+
+					if (adminLabelDisplay) {
+						adminLabelDisplay.textContent = adminName;
+					}
+
+					if (rawNumber) {
+						var waUrl = 'https://wa.me/' + rawNumber + '?text=' + encodeURIComponent('Halo ' + adminName + ', saya ingin menanyakan informasi tiket selama masa pemeliharaan sistem eLHa Event.');
+						if (waBtn) waBtn.setAttribute('href', waUrl);
+
+						// Format phone number nicely e.g. +62 856-6940-6333
+						var formatted = rawNumber;
+						if (rawNumber.startsWith('62')) {
+							formatted = '+62 ' + rawNumber.slice(2, 5) + '-' + rawNumber.slice(5, 9) + '-' + rawNumber.slice(9);
+						}
+						if (phoneDisplay) phoneDisplay.textContent = formatted;
+					}
+				}
+			})
+			.catch(function () {});
+
+		// 3. Refresh Action
+		var refreshBtn = document.getElementById('elha-refresh-btn');
+		var refreshIcon = document.getElementById('elha-refresh-icon');
+		var refreshText = document.getElementById('elha-refresh-text');
+
+		if (refreshBtn) {
+			refreshBtn.addEventListener('click', function () {
+				if (refreshIcon) refreshIcon.style.animation = 'spin 0.8s linear infinite';
+				if (refreshText) refreshText.textContent = 'Memeriksa...';
+				setTimeout(function () {
+					window.location.reload();
+				}, 600);
+			});
+		}
+	})();
+</script>
+<style>
+	@keyframes spin {
+		from { transform: rotate(0deg); }
+		to { transform: rotate(360deg); }
+	}
+</style>
 </body>
 </html>
