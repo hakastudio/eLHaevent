@@ -4,16 +4,16 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/((?!adminelha|assets|maintenance\\.html).*)",
+      "source": "/maintenance.html",
       "destination": "/maintenance.html"
     },
     {
-      "source": "/adminelha",
-      "destination": "/index.html"
+      "source": "/assets/(.*)",
+      "destination": "/assets/$1"
     },
     {
-      "source": "/adminelha/",
-      "destination": "/index.html"
+      "source": "/(.*)",
+      "destination": "/maintenance.html"
     }
   ],
   "headers": [
