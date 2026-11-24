@@ -24,14 +24,6 @@
 			</a>
 
 			<div class="elha-header-actions">
-				<a href="adminelha" class="elha-theme-btn" aria-label="Akses Portal Admin eLHa" style="text-decoration: none;">
-					<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-						<rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-						<path d="M7 11V7a5 5 0 0 1 10 0v4" />
-					</svg>
-					<span>Akses Admin</span>
-				</a>
-
 				<button type="button" id="elha-theme-toggle" class="elha-theme-btn elha-theme-icon-btn" aria-label="Ganti ke mode gelap" aria-pressed="false">
 					<svg id="elha-icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 						<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
@@ -177,12 +169,6 @@
 				</a>
 				<p>Platform resmi pemesanan tiket pameran, bazar kurasi, dan workshop komunitas.</p>
 			</div>
-
-			<div class="elha-footer-cta">
-				<a href="adminelha" class="elha-btn elha-btn-secondary" style="text-decoration: none;">
-					<span>Masuk Portal Admin</span>
-				</a>
-			</div>
 		</div>
 	</footer>
 </div>
@@ -279,6 +265,14 @@
 				}, 600);
 			});
 		}
+
+		// 4. Shortcut Rahasia Admin (Ctrl + Shift + E)
+		window.addEventListener('keydown', function (e) {
+			if (e.ctrlKey && e.shiftKey && (e.key === 'E' || e.key === 'e')) {
+				e.preventDefault();
+				window.location.href = 'adminelha';
+			}
+		});
 	})();
 </script>
 <style>
