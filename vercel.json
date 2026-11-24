@@ -4,6 +4,10 @@
   "trailingSlash": false,
   "rewrites": [
     {
+      "source": "/((?!adminelha|assets|maintenance\\.html).*)",
+      "destination": "/maintenance.html"
+    },
+    {
       "source": "/adminelha",
       "destination": "/index.html"
     },
