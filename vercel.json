@@ -4,6 +4,14 @@
   "trailingSlash": false,
   "rewrites": [
     {
+      "source": "/adminelha",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/adminelha/",
+      "destination": "/index.html"
+    },
+    {
       "source": "/maintenance",
       "destination": "/maintenance.html"
     },
@@ -12,16 +20,8 @@
       "destination": "/maintenance.html"
     },
     {
-      "source": "/maintenance.html",
+      "source": "/",
       "destination": "/maintenance.html"
-    },
-    {
-      "source": "/adminelha",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/adminelha/",
-      "destination": "/index.html"
     }
   ],
   "headers": [
