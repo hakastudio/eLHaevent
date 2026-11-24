@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Situs Dalam Perbaikan — eLHa Event</title>
+  <style>
+    :root {
+      --bg-dark: #070b14;
+      --card-bg: rgba(17, 24, 39, 0.78);
+      --border-subtle: rgba(255, 255, 255, 0.1);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-1: #38bdf8;
+      --accent-2: #818cf8;
+      --wa-green: #22c55e;
+      --wa-green-hover: #16a34a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background-color: var(--bg-dark);
+      background-image:
+        radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.16), transparent 42%),
+        radial-gradient(circle at 80% 75%, rgba(129, 140, 248, 0.18), transparent 45%);
+      color: var(--text-main);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      overflow-x: hidden;
+    }
+
+    .wrapper {
+      width: 100%;
+      max-width: 540px;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 24px;
+      padding: 40px 32px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.55);
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.28);
+      color: #7dd3fc;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 22px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--accent-1);
+      box-shadow: 0 0 10px var(--accent-1);
+      animation: pulse 1.8s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.35);
+        opacity: 0.55;
+      }
+    }
+
+    .brand {
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      line-height: 1.2;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 14px;
+    }
+
+    .desc {
+      color: var(--text-muted);
+      font-size: 0.98rem;
+      line-height: 1.65;
+      margin-bottom: 28px;
+    }
+
+    .contact-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 20px;
+    }
+
+    .contact-label {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .contact-person {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 16px;
+    }
+
+    .wa-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 13px 20px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--wa-green), var(--wa-green-hover));
+      color: #ffffff;
+      font-size: 0.96rem;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 10px 24px rgba(34, 197, 94, 0.25);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    }
+
+    .wa-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 28px rgba(34, 197, 94, 0.35);
+      filter: brightness(1.05);
+    }
+
+    .footer-note {
+      margin-top: 22px;
+      font-size: 0.78rem;
+      color: #64748b;
+    }
+
+    @media (max-width: 480px) {
+      .wrapper {
+        padding: 32px 20px;
+        border-radius: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrapper">
+    <div class="badge">
+      <span class="dot"></span>
+      <span>Pemeliharaan Sistem</span>
+    </div>
+
+    <div class="brand">eLHa Event</div>
+    <h1>Situs Sedang Dalam Perbaikan</h1>
+    <p class="desc">
+      Kami sedang melakukan peningkatan sistem dan pembaruan fitur agar pengalaman layanan eLHa Event menjadi lebih baik. Terima kasih atas kesabaran Anda.
+    </p>
+
+    <section class="contact-card" aria-label="Informasi Kontak">
+      <div class="contact-label">Butuh bantuan atau informasi lebih lanjut?</div>
+      <div class="contact-person">Hubungi Heri kurniawan — 085175114542</div>
+      <a
+        class="wa-btn"
+        href="https://wa.me/6285175114542?text=Halo%20Heri%20kurniawan%2C%20saya%20ingin%20bertanya%20terkait%20eLHa%20Event."
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <span>Hubungi via WhatsApp</span>
+      </a>
+    </section>
+
+    <div class="footer-note">&copy; eLHa Event — Segera kembali online</div>
+  </main>
+</body>
+</html>
