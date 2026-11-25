@@ -10,7 +10,7 @@
 			whatsapp_admin_lbl: 'Admin eLHa Event',
 			promo_code: 'KOMUNITAS10',
 			promo_pct: 10,
-			gsheet_url: ''
+			gsheet_url: 'https://script.google.com/macros/s/AKfycbyKTiz_4cBAMqeUBz09Md_dV7Ljau7MysGr3vTP4pEMVD9pFNoA8FOoX14zUD2OIrsx3Q/exec'
 		},
 		events: []
 	};
@@ -1114,21 +1114,28 @@
 		isCloudSyncing = true;
 		updateGsheetStatusUI('syncing', 'Cloud: Mengambil Data...');
 
+		var isMigrated = false;
+		try {
+			isMigrated = localStorage.getItem('elha_gsheet_migrated_v1') === '1';
+		} catch (e) {}
+
 		var localOrders = getSavedOrders();
 		var pendingUploads = [];
 		for (var p = 0; p < localOrders.length; p++) {
-			if (localOrders[p] && localOrders[p]._pendingSync) {
+			if (localOrders[p] && (localOrders[p]._pendingSync || !isMigrated)) {
 				pendingUploads.push(localOrders[p]);
 			}
 		}
 
 		var flushPromise = Promise.resolve();
 		if (pendingUploads.length > 0) {
-			flushPromise = Promise.all(pendingUploads.map(function (ord) {
-				var cleanOrd = Object.assign({}, ord);
-				delete cleanOrd._pendingSync;
-				return pushOrderActionToSheet({ action: 'upsert', order: cleanOrd, forceStatus: false });
-			}));
+			flushPromise = pendingUploads.reduce(function (chain, ord) {
+				return chain.then(function () {
+					var cleanOrd = Object.assign({}, ord);
+					delete cleanOrd._pendingSync;
+					return pushOrderActionToSheet({ action: 'upsert', order: cleanOrd, forceStatus: false });
+				});
+			}, Promise.resolve());
 		}
 
 		var sep = url.indexOf('?') === -1 ? '?' : '&';
@@ -1142,6 +1149,9 @@
 					updateGsheetStatusUI('error', 'Cloud: Respons Tidak Valid');
 					return false;
 				}
+				try {
+					localStorage.setItem('elha_gsheet_migrated_v1', '1');
+				} catch (e) {}
 
 				var cloudOrders = resData.orders;
 				var remainingPending = getSavedOrders().filter(function (o) {

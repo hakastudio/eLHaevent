@@ -4,7 +4,8 @@
     "whatsapp_number": "6285669406333",
     "whatsapp_admin_lbl": "Admin eLHa Event",
     "promo_code": "KOMUNITAS10",
-    "promo_pct": 10
+    "promo_pct": 10,
+    "gsheet_url": "https://script.google.com/macros/s/AKfycbyKTiz_4cBAMqeUBz09Md_dV7Ljau7MysGr3vTP4pEMVD9pFNoA8FOoX14zUD2OIrsx3Q/exec"
   },
   "events": [
     {
