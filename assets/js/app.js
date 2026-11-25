@@ -9,7 +9,8 @@
 			whatsapp_number: '6285175114542',
 			whatsapp_admin_lbl: 'Admin eLHa Event',
 			promo_code: 'KOMUNITAS10',
-			promo_pct: 10
+			promo_pct: 10,
+			gsheet_url: ''
 		},
 		events: []
 	};
@@ -1001,6 +1002,44 @@
 	var checkoutFeedback = document.getElementById('elha-checkout-feedback');
 
 	var ORDERS_STORAGE_KEY = 'elha_orders_v1';
+	var isCloudSyncing = false;
+
+	function getGsheetUrl() {
+		var raw = (config && config.settings && config.settings.gsheet_url) ? String(config.settings.gsheet_url).trim() : '';
+		if (raw && raw.indexOf('https://') === 0) return raw;
+		return '';
+	}
+
+	function updateGsheetStatusUI(state, customLabel) {
+		var statusEl = document.getElementById('elha-gsheet-sync-status');
+		var syncBtn = document.getElementById('elha-sync-gsheet-btn');
+		var url = getGsheetUrl();
+
+		if (syncBtn) {
+			syncBtn.hidden = !url;
+			syncBtn.disabled = state === 'syncing';
+		}
+		if (!statusEl) return;
+
+		if (!url) {
+			statusEl.hidden = true;
+			return;
+		}
+		statusEl.hidden = false;
+		statusEl.className = 'elha-stat-pill';
+		if (state === 'synced') {
+			statusEl.classList.add('is-verified');
+			statusEl.textContent = customLabel || 'Cloud: Tersinkron';
+		} else if (state === 'syncing') {
+			statusEl.classList.add('is-pending');
+			statusEl.textContent = customLabel || 'Cloud: Menyinkronkan...';
+		} else if (state === 'error') {
+			statusEl.style.color = 'var(--elha-danger)';
+			statusEl.textContent = customLabel || 'Cloud: Gagal Koneksi';
+		} else {
+			statusEl.textContent = customLabel || 'Cloud: Aktif';
+		}
+	}
 
 	function getSavedOrders() {
 		try {
@@ -1015,8 +1054,140 @@
 
 	function saveOrders(orders) {
 		try {
-			localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders.slice(0, 100)));
+			localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders.slice(0, 1000)));
 		} catch (e) {}
+	}
+
+	function markOrderPendingSync(orderCode, pendingState) {
+		if (!orderCode) return;
+		var orders = getSavedOrders();
+		var changed = false;
+		for (var i = 0; i < orders.length; i++) {
+			if (orders[i].code === orderCode) {
+				if (pendingState) {
+					orders[i]._pendingSync = true;
+				} else {
+					delete orders[i]._pendingSync;
+				}
+				changed = true;
+				break;
+			}
+		}
+		if (changed) saveOrders(orders);
+	}
+
+	function pushOrderActionToSheet(payload) {
+		var url = getGsheetUrl();
+		if (!url || !window.fetch) return Promise.resolve(false);
+
+		updateGsheetStatusUI('syncing', 'Cloud: Mengirim...');
+		return fetch(url, {
+			method: 'POST',
+			headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+			body: JSON.stringify(payload)
+		})
+			.then(function (res) { return res.ok ? res.json() : { ok: false }; })
+			.then(function (resData) {
+				if (resData && resData.ok) {
+					if (payload && payload.order && payload.order.code) {
+						markOrderPendingSync(payload.order.code, false);
+					}
+					updateGsheetStatusUI('synced', 'Cloud: Tersinkron');
+					return true;
+				}
+				updateGsheetStatusUI('error', 'Cloud: Gagal Simpan');
+				return false;
+			})
+			.catch(function () {
+				if (payload && payload.order && payload.order.code) {
+					markOrderPendingSync(payload.order.code, true);
+				}
+				updateGsheetStatusUI('error', 'Cloud: Offline (Cache Lokal)');
+				return false;
+			});
+	}
+
+	function syncOrdersFromSheet(forceRefreshUi) {
+		var url = getGsheetUrl();
+		if (!url || !window.fetch || isCloudSyncing) return Promise.resolve(false);
+
+		isCloudSyncing = true;
+		updateGsheetStatusUI('syncing', 'Cloud: Mengambil Data...');
+
+		var localOrders = getSavedOrders();
+		var pendingUploads = [];
+		for (var p = 0; p < localOrders.length; p++) {
+			if (localOrders[p] && localOrders[p]._pendingSync) {
+				pendingUploads.push(localOrders[p]);
+			}
+		}
+
+		var flushPromise = Promise.resolve();
+		if (pendingUploads.length > 0) {
+			flushPromise = Promise.all(pendingUploads.map(function (ord) {
+				var cleanOrd = Object.assign({}, ord);
+				delete cleanOrd._pendingSync;
+				return pushOrderActionToSheet({ action: 'upsert', order: cleanOrd, forceStatus: false });
+			}));
+		}
+
+		var sep = url.indexOf('?') === -1 ? '?' : '&';
+		return flushPromise.then(function () {
+			return fetch(url + sep + 'action=getOrders&t=' + Date.now());
+		})
+			.then(function (res) { return res.ok ? res.json() : null; })
+			.then(function (resData) {
+				isCloudSyncing = false;
+				if (!resData || !resData.ok || !Array.isArray(resData.orders)) {
+					updateGsheetStatusUI('error', 'Cloud: Respons Tidak Valid');
+					return false;
+				}
+
+				var cloudOrders = resData.orders;
+				var remainingPending = getSavedOrders().filter(function (o) {
+					if (!o || !o._pendingSync) return false;
+					for (var c = 0; c < cloudOrders.length; c++) {
+						if (cloudOrders[c].code === o.code) return false;
+					}
+					return true;
+				});
+
+				var merged = remainingPending.concat(cloudOrders);
+				saveOrders(merged);
+				updateGsheetStatusUI('synced', 'Cloud: Tersinkron (' + merged.length + ')');
+				updateOrdersBadgeAndStats();
+
+				if (typeof renderAdminOrdersTable === 'function') {
+					renderAdminOrdersTable();
+				}
+				if (typeof activeVerificationOrder !== 'undefined' && activeVerificationOrder && activeVerificationOrder.code) {
+					var refreshedActive = findOrderByCode(activeVerificationOrder.code);
+					if (refreshedActive && typeof selectOrderForVerification === 'function' && typeof selectedBox !== 'undefined' && selectedBox && !selectedBox.hidden) {
+						selectOrderForVerification(refreshedActive);
+					}
+				}
+				if (currentReceiptOrder && currentReceiptOrder.code) {
+					var receiptModalEl = document.getElementById('elha-receipt-modal');
+					if (receiptModalEl && !receiptModalEl.hidden) {
+						var refreshedReceipt = findOrderByCode(currentReceiptOrder.code);
+						if (refreshedReceipt && refreshedReceipt.status !== currentReceiptOrder.status) {
+							showOrderReceiptModal(refreshedReceipt, refreshedReceipt.status === 'verified');
+						}
+					}
+				}
+				if (forceRefreshUi && typeof renderReportTab === 'function') {
+					renderReportTab();
+				}
+				if (forceRefreshUi && typeof renderAdminQuotaTable === 'function') {
+					renderAdminQuotaTable();
+				}
+				return true;
+			})
+			.catch(function () {
+				isCloudSyncing = false;
+				updateGsheetStatusUI('error', 'Cloud: Gagal Sinkron');
+				return false;
+			});
 	}
 
 	function encodeOrderPayload(order) {
@@ -1075,7 +1246,7 @@
 		}
 	}
 
-	function addOrUpdateOrder(newOrder) {
+	function addOrUpdateOrder(newOrder, allowDowngrade, skipCloudSync) {
 		var orders = getSavedOrders();
 		var idx = -1;
 		for (var i = 0; i < orders.length; i++) {
@@ -1085,7 +1256,7 @@
 			}
 		}
 		if (idx >= 0) {
-			if (orders[idx].status === 'verified' && newOrder.status !== 'verified') {
+			if (!allowDowngrade && orders[idx].status === 'verified' && newOrder.status !== 'verified') {
 				newOrder.status = 'verified';
 				newOrder.verifiedAt = orders[idx].verifiedAt;
 			}
@@ -1095,6 +1266,17 @@
 		}
 		saveOrders(orders);
 		updateOrdersBadgeAndStats();
+
+		if (!skipCloudSync && getGsheetUrl()) {
+			var cloudOrder = Object.assign({}, newOrder);
+			delete cloudOrder._pendingSync;
+			pushOrderActionToSheet({
+				action: 'upsert',
+				order: cloudOrder,
+				forceStatus: !!allowDowngrade
+			});
+		}
+
 		return newOrder;
 	}
 
@@ -1598,6 +1780,7 @@
 	var setAdminLblInput = document.getElementById('elha-set-admin-lbl');
 	var setPromoCodeInput = document.getElementById('elha-set-promo-code');
 	var setPromoPctInput = document.getElementById('elha-set-promo-pct');
+	var setGsheetUrlInput = document.getElementById('elha-set-gsheet-url');
 	var settingsFeedback = document.getElementById('elha-settings-feedback');
 
 	function updateAdminStats() {
@@ -1633,6 +1816,8 @@
 		if (setAdminLblInput) setAdminLblInput.value = config.settings.whatsapp_admin_lbl || 'Admin eLHa Event';
 		if (setPromoCodeInput) setPromoCodeInput.value = config.settings.promo_code || '';
 		if (setPromoPctInput) setPromoPctInput.value = String(config.settings.promo_pct != null ? config.settings.promo_pct : 10);
+		if (setGsheetUrlInput) setGsheetUrlInput.value = config.settings.gsheet_url || '';
+		updateGsheetStatusUI('idle');
 	}
 
 	function normalizeBannerUrl(rawUrl) {
@@ -1826,12 +2011,22 @@
 		}
 		if (targetTab === 'verify') {
 			renderAdminOrdersTable();
+			syncOrdersFromSheet(true);
 		} else if (targetTab === 'reports') {
 			populateReportEventFilter();
 			renderReportTab();
+			syncOrdersFromSheet(true);
 		} else if (targetTab === 'quotas') {
 			renderAdminQuotaTable();
+			syncOrdersFromSheet(true);
 		}
+	}
+
+	var syncGsheetBtn = document.getElementById('elha-sync-gsheet-btn');
+	if (syncGsheetBtn) {
+		syncGsheetBtn.addEventListener('click', function () {
+			syncOrdersFromSheet(true);
+		});
 	}
 
 	// Order Verification Engine
@@ -2036,7 +2231,7 @@
 			if (!activeVerificationOrder) return;
 			activeVerificationOrder.status = 'pending';
 			activeVerificationOrder.verifiedAt = null;
-			addOrUpdateOrder(activeVerificationOrder);
+			addOrUpdateOrder(activeVerificationOrder, true);
 			selectOrderForVerification(activeVerificationOrder);
 			renderAdminOrdersTable();
 		});
@@ -2045,12 +2240,14 @@
 	if (btnDelete) {
 		btnDelete.addEventListener('click', function () {
 			if (!activeVerificationOrder) return;
-			if (window.confirm('Hapus pesanan ' + activeVerificationOrder.code + ' dari log pesanan?')) {
-				var orders = getSavedOrders().filter(function (o) { return o.code !== activeVerificationOrder.code; });
+			var deletedCode = activeVerificationOrder.code;
+			if (window.confirm('Hapus pesanan ' + deletedCode + ' dari log pesanan?')) {
+				var orders = getSavedOrders().filter(function (o) { return o.code !== deletedCode; });
 				saveOrders(orders);
 				activeVerificationOrder = null;
 				if (selectedBox) selectedBox.hidden = true;
 				renderAdminOrdersTable();
+				pushOrderActionToSheet({ action: 'delete', code: deletedCode });
 			}
 		});
 	}
@@ -2086,6 +2283,7 @@
 					if (selectedBox) selectedBox.hidden = true;
 				}
 				renderAdminOrdersTable();
+				pushOrderActionToSheet({ action: 'clearVerified' });
 			}
 		});
 	}
@@ -2813,14 +3011,22 @@
 			if (setPromoPctInput) {
 				config.settings.promo_pct = Math.max(0, Math.min(90, parseInt(setPromoPctInput.value || '0', 10)));
 			}
+			if (setGsheetUrlInput) {
+				config.settings.gsheet_url = setGsheetUrlInput.value.trim();
+			}
 			config._user_modified = true;
 			saveConfigToLocal();
 			renderAllEventsUI();
 			updateAdminStats();
 			syncSettingsFormFields();
+			if (getGsheetUrl()) {
+				syncOrdersFromSheet(true);
+			}
 			if (settingsFeedback) {
 				settingsFeedback.hidden = false;
-				settingsFeedback.textContent = 'Pengaturan brand, WhatsApp, dan kode promo berhasil disimpan.';
+				settingsFeedback.textContent = getGsheetUrl()
+					? 'Pengaturan disimpan & sinkronisasi Google Sheets diaktifkan! Jangan lupa Unduh File events.json lalu update ke GitHub/Vercel.'
+					: 'Pengaturan brand, WhatsApp, dan kode promo berhasil disimpan.';
 			}
 		});
 	}
@@ -3026,6 +3232,9 @@
 							config = jsonData;
 						} else {
 							if (!config.settings) config.settings = jsonData.settings;
+							if (jsonData.settings && jsonData.settings.gsheet_url && !config.settings.gsheet_url) {
+								config.settings.gsheet_url = jsonData.settings.gsheet_url;
+							}
 							for (var sIdx = 0; sIdx < config.events.length; sIdx++) {
 								var cEv = config.events[sIdx];
 								if (!cEv.admin_wa) {
@@ -3054,12 +3263,21 @@
 						updateOrdersBadgeAndStats();
 						populateReportEventFilter();
 						syncSettingsFormFields();
+						if (getGsheetUrl()) {
+							syncOrdersFromSheet(true);
+						}
 						if (shouldAutoOpenAdmin) {
 							openAdminStudio(false);
 						}
 					}
 				})
-				.catch(function () {});
+				.catch(function () {
+					if (getGsheetUrl()) {
+						syncOrdersFromSheet(true);
+					}
+				});
+		} else if (getGsheetUrl()) {
+			syncOrdersFromSheet(true);
 		}
 	}
 

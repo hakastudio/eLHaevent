@@ -630,6 +630,8 @@
 								<p class="elha-checkout-sub">Kelola konfirmasi transfer, verifikasi pesanan menjadi Lunas, dan kirimkan tautan E-Tiket resmi terverifikasi ke WhatsApp pembeli.</p>
 							</div>
 							<div class="elha-verify-stats">
+								<span id="elha-gsheet-sync-status" class="elha-stat-pill" hidden>Cloud: Lokal</span>
+								<button type="button" id="elha-sync-gsheet-btn" class="elha-btn elha-btn-secondary elha-btn-sm" hidden>Sinkronkan Cloud</button>
 								<span class="elha-stat-pill is-pending">Menunggu: <strong id="elha-verify-count-pending">0</strong></span>
 								<span class="elha-stat-pill is-verified">Lunas: <strong id="elha-verify-count-verified">0</strong></span>
 							</div>
@@ -827,6 +829,11 @@
 								<label for="elha-set-promo-pct">Persentase Diskon Promo (%)</label>
 								<input type="number" id="elha-set-promo-pct" class="elha-input elha-mono-text" min="0" max="90" placeholder="10" />
 							</div>
+							<div class="elha-form-row">
+								<label for="elha-set-gsheet-url">URL Web App Google Apps Script (Database Cloud)</label>
+								<input type="url" id="elha-set-gsheet-url" class="elha-input elha-mono-text" placeholder="https://script.google.com/macros/s/.../exec" />
+								<small style="color: var(--elha-text-muted); display: block; margin-top: 4px;">Isi dengan URL deployment Apps Script agar data penjualan &amp; kuota tersinkronisasi otomatis ke semua perangkat/akun. Lihat <code>PANDUAN_GOOGLE_SHEETS.md</code>.</small>
+							</div>
 						</div>
 						<div id="elha-settings-feedback" class="elha-feedback-banner" role="status" hidden></div>
 						<div class="elha-admin-form-actions">
@@ -1020,6 +1027,6 @@
 		</div>
 	</div>
 </div>
-<script src="assets/js/app.js?v=20261119b"></script>
+<script src="assets/js/app.js?v=20261125"></script>
 </body>
 </html>
